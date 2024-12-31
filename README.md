@@ -11,16 +11,18 @@ Obtener parámetros para software directo - [Aquí](https://www.youtube.com/watc
 
 ## 2.- Ejemplos para la API / Collection POSTMAN
 
- Primero descargue la herramienta POSTMAN desde internet, y luego importe el archivo collection aquí [postman collection](https://gitlab.com/facturalatam/co-apidian2023/-/blob/master/ApiDianV2.1%20postman_collection.json "Clic") 
+ Primero descargue la herramienta POSTMAN desde internet, y luego importe el archivo collection aquí [postman collection](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/ApiDianV2.1.postman_collection.json?ref_type=heads "Clic") 
 
 
 ## 3.- Videos para la instalación y despliegue en local (Windows)
 
 * Video de instalación [Aquí](https://www.youtube.com/watch?v=9Ds2DR3QLGY)
 
+* Pasos instalación Linux Ubuntu 22 [Aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/Comandos%20Instalacion%20API%202024%20Windows.txt?ref_type=heads)
+
 ## 4.- Manuales de instalación en VPS LINUX
 
-* Pasos instalación Linux Ubuntu 20 [Aquí](https://gitlab.buho.la/facturalatam/co-apidian2024/-/blob/master/Comandos%20Instalacion%20API%202024%20Linux%20Ubuntu%2020.txt?ref_type=heads)
+* Pasos instalación Linux Ubuntu 22 [Aquí](https://gitlab.buho.la/facturalatam/co-apidian2024/-/blob/master/Comandos%20Instalacion%20API%202024%20Linux%20Ubuntu%2020.txt?ref_type=heads)
 
 * Video de instalación [Aquí](https://www.youtube.com/watch?v=rEgrHADjsCY)
 
