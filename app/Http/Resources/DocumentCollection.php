@@ -15,7 +15,7 @@ class DocumentCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->transform(function($row, $key) {
-            
+
             return [
                 'key' => $key + 1,
                 'id' => $row->id,
@@ -35,5 +35,5 @@ class DocumentCollection extends ResourceCollection
             ];
         });
     }
-    
+
 }

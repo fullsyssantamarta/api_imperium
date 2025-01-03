@@ -22,7 +22,7 @@ class Document extends Model
     protected $casts = [
         'client' => 'object',
         'taxes' => 'object',
-
+        'date_issue' => 'datetime',
     ];
 
     protected $with = ['type_document', 'currency', 'customer_document'];
@@ -213,4 +213,20 @@ class Document extends Model
     }
 
     protected $appends = ['client_data'];
+
+    public function scopeFilter($query, $search = null) {
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('number', 'LIKE', "%$search%")
+                    ->orWhere('prefix', 'LIKE', "%$search%")
+                    ->orWhere('total', 'LIKE', "%$search%")
+                    ->orWhere('date_issue', 'LIKE', "%$search%")
+                    ->orWhereRaw("JSON_UNQUOTE(client->'$.name') LIKE ?", ["%$search%"])
+                    ->orWhereRaw("JSON_UNQUOTE(client->'$.email') LIKE ?", ["%$search%"])
+                    ->orWhereRaw("JSON_UNQUOTE(client->'$.phone') LIKE ?", ["%$search%"])
+                    ->orWhereRaw("JSON_UNQUOTE(client->'$.identification_number') LIKE ?", ["%$search%"]);
+                });
+        }
+        return $query;
+    }
 }

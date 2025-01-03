@@ -401,3 +401,9 @@ if(env('ALLOW_PUBLIC_DOWNLOAD', TRUE)){
         }
     );
 }
+
+Route::post('login', 'Api\AuthController@login');
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('documents', 'Api\MobileController@documents');
+});
