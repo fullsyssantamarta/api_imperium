@@ -39,6 +39,7 @@ class MobileController extends Controller
                 'total' => $row->total,
                 'xml' => $row->xml,
                 'pdf' => $row->pdf,
+                'state_document_id' => $row->state_document_id,
             ];
         });
         return $records;

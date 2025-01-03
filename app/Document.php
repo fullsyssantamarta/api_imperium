@@ -217,8 +217,9 @@ class Document extends Model
     public function scopeFilter($query, $search = null) {
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
-                $q->where('number', 'LIKE', "%$search%")
+                $q->orWhere('number', 'LIKE', "%$search%")
                     ->orWhere('prefix', 'LIKE', "%$search%")
+                    ->orWhereRaw("CONCAT(COALESCE(prefix, ''), COALESCE(number, '')) LIKE ?", ["%$search%"])
                     ->orWhere('total', 'LIKE', "%$search%")
                     ->orWhere('date_issue', 'LIKE', "%$search%")
                     ->orWhereRaw("JSON_UNQUOTE(client->'$.name') LIKE ?", ["%$search%"])
