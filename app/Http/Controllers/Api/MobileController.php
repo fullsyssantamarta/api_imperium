@@ -20,6 +20,7 @@ class MobileController extends Controller
         $records = Document::where('identification_number', $company->identification_number)
             ->orderBy('date_issue', 'desc')
             ->filter($request->search)
+            ->filterByRangeDate($request->date)
             ->paginate(20);
 
         $records->getCollection()->transform(function($row) {

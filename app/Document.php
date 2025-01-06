@@ -230,4 +230,38 @@ class Document extends Model
         }
         return $query;
     }
+
+    public function scopeFilterByRangeDate($query, $date = null) {
+        if (!empty($date)) {
+            $now = now();
+            switch ($date) {
+                case 'current_month':
+                    $query->whereBetween('date_issue', [
+                        $now->startOfMonth(),
+                        $now->endOfMonth(),
+                    ]);
+                    break;
+                case 'last_month':
+                    $lastMonthStart = $now->subMonthNoOverflow()->startOfMonth();
+                    $lastMonthEnd = $lastMonthStart->copy()->endOfMonth();
+                    $query->whereBetween('date_issue', [
+                        $lastMonthStart,
+                        $lastMonthEnd,
+                    ]);
+                    break;
+                case 'last_ninety':
+                    $lastNinety = $now->copy()->subDays(90)->startOfDay();
+                    $query->whereBetween('date_issue', [
+                        $lastNinety,
+                        $now,
+                    ]);
+                    break;
+                case 'all':
+                default:
+                    // No se aplica filtro
+                    break;
+            }
+        }
+        return $query;
+    }
 }
