@@ -237,12 +237,12 @@ class Document extends Model
             switch ($date) {
                 case 'current_month':
                     $query->whereBetween('date_issue', [
-                        $now->startOfMonth(),
+                        $now->copy()->startOfMonth(),
                         $now->endOfMonth(),
                     ]);
                     break;
                 case 'last_month':
-                    $lastMonthStart = $now->subMonthNoOverflow()->startOfMonth();
+                    $lastMonthStart = $now->copy()->subMonthNoOverflow()->startOfMonth();
                     $lastMonthEnd = $lastMonthStart->copy()->endOfMonth();
                     $query->whereBetween('date_issue', [
                         $lastMonthStart,
