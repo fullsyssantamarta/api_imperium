@@ -22,9 +22,11 @@ Obtener parámetros para software directo - [Aquí](https://www.youtube.com/watc
 
 ## 4.- Manuales de instalación en VPS LINUX
 
-* Pasos instalación Linux Ubuntu 22 [Aquí](https://gitlab.buho.la/facturalatam/co-apidian2024/-/blob/master/Comandos%20Instalacion%20API%202024%20Linux%20Ubuntu%2020.txt?ref_type=heads)
+* Pasos manuales de instalación para Ubuntu 22 [Aquí](https://gitlab.buho.la/facturalatam/co-apidian2024/-/blob/master/Comandos%20Instalacion%20API%202024%20Linux%20Ubuntu%2020.txt?ref_type=heads)
 
 * Video de instalación [Aquí](https://www.youtube.com/watch?v=rEgrHADjsCY)
+
+* Script automatizado de instalación para ubuntu 20 y 22 [Aquí](https://gitlab.buho.la/-/snippets/29)
 
 
 ## 5.- Configuración / Habilitación / Producción API
