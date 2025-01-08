@@ -55,7 +55,14 @@ $cust_id = $path[2];
                             <span>Test API SWAGGER</span>
                         </a>
                     </li>
+                    <li class="">
+                        <a href="{{route('logs')}}" class="nav-link" target="BLANK">
+                            <i class="fa fa-bug" aria-hidden="true"></i>
+                            <span>Logs</span>
+                        </a>
+                    </li>
                     @endif
+
 
                     {{-- @if(isset(Auth::user()->email))
                         <li class="{{ ($path[0] === 'dashboard')?'nav-active':'' }}">
