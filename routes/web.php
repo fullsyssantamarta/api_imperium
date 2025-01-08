@@ -89,6 +89,9 @@ Route::group(['middleware' => 'auth'], function() {
     // documentacion
     Route::get('documentation', '\L5Swagger\Http\Controllers\SwaggerController@api')->name('documentation');
 
+    // logs
+    Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->name('logs');
+
 });
 
 Route::get('qr', 'QrController@generateQr');

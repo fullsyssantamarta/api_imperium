@@ -26,6 +26,7 @@
         "mpdf/mpdf": "^8.0",
         "mtownsend/request-xml": "^1.1",
         "piotrooo/wsdl-creator": "^2.0",
+        "rap2hpoutre/laravel-log-viewer": "1.7.0",
         "rguedes/pdfmerger": "^1.0",
         "simplesoftwareio/simple-qrcode": "^2.0",
         "spatie/flysystem-dropbox": "^1.0",
