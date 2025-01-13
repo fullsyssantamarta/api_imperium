@@ -18,11 +18,11 @@ Obtener parámetros para software directo - [Aquí](https://www.youtube.com/watc
 
 * Video de instalación [Aquí](https://www.youtube.com/watch?v=9Ds2DR3QLGY)
 
-* Pasos instalación Linux Ubuntu 22 [Aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/Comandos%20Instalacion%20API%202024%20Windows.txt?ref_type=heads)
+* Pasos instalación Linux Ubuntu 22 [Aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/Comandos%20Instalacion%20API%202025%20Windows.txt?ref_type=heads)
 
 ## 4.- Manuales de instalación en VPS LINUX
 
-* Pasos manuales de instalación para Ubuntu 22 [Aquí](https://gitlab.buho.la/facturalatam/co-apidian2024/-/blob/master/Comandos%20Instalacion%20API%202024%20Linux%20Ubuntu%2020.txt?ref_type=heads)
+* Pasos manuales de instalación para Ubuntu 22 [Aquí](https://gitlab.buho.la/facturalatam/co-apidian2024/-/blob/master/Comandos%20Instalacion%20API%202025%20Linux%20Ubuntu%2020.txt?ref_type=heads)
 
 * Video de instalación [Aquí](https://www.youtube.com/watch?v=rEgrHADjsCY)
 
@@ -41,10 +41,10 @@ Obtener parámetros para software directo - [Aquí](https://www.youtube.com/watc
 * Actualizacion desde APIDIAN2022 y la api APIDIAN2023 [Aquí](https://www.youtube.com/watch?v=6lwLKQCYvNY)
 
 * Script de actualización
-[Aquí](https://gitlab.buho.la/facturalatam/co-apidian2024/-/blob/master/Proceso%20de%20actualizacion%20APIDIAN.txt?ref_type=heads)
+[Aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/Proceso%20de%20actualizacion%20APIDIAN.txt?ref_type=heads)
 
 * Imagen docker instalación api
-[Aquí](https://gitlab.buho.la/facturalatam/co-apidian2024/-/blob/master/api_docker.zip?ref_type=heads)
+[Aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/api_docker.zip?ref_type=heads)
 
 * Deshabilitar registro por API
   * añadir si no existe el parametro `ENABLE_API_REGISTER` en el .env con el valor en `false`
