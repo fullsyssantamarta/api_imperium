@@ -29,7 +29,8 @@
                     @else   --}}
                         <cbc:TaxAmount currencyID="{{preg_replace("/[\r\n|\n|\r]+/", "", $company->type_currency->code)}}">{{preg_replace("/[\r\n|\n|\r]+/", "", number_format($taxTotal->tax_amount, 2, '.', ''))}}</cbc:TaxAmount>
 {{--                    @endif  --}}
-                    @if ($taxTotal->is_fixed_value)
+                    @if ($taxTotal->is_fixed_value && $taxTotal->base_unit_measure)
+
                         <cbc:BaseUnitMeasure unitCode="{{preg_replace("/[\r\n|\n|\r]+/", "", $taxTotal->unit_measure->code)}}">{{preg_replace("/[\r\n|\n|\r]+/", "", number_format($taxTotal->base_unit_measure, 6, '.', ''))}}</cbc:BaseUnitMeasure>
 {{--                        @if(isset($idcurrency))
                             <cbc:PerUnitAmount currencyID="{{preg_replace("/[\r\n|\n|\r]+/", "", $idcurrency->code)}}">{{preg_replace("/[\r\n|\n|\r]+/", "", number_format($taxTotal->per_unit_amount, 2, '.', ''))}}</cbc:PerUnitAmount>
