@@ -65,6 +65,6 @@ class TaxTotal extends Model
      */
     public function getIsFixedValueAttribute()
     {
-        return in_array($this->tax_id, [2, 10, 19, 20, 21, 23]);
+        return in_array($this->tax_id, [10, 19, 20, 21, 23]);
     }
 }
