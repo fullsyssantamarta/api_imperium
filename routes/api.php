@@ -63,8 +63,10 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/health_contracting_payment_methods', 'Api\ConfigurationController@table_health_contracting_payment_methods');
         Route::get('/health_coverages', 'Api\ConfigurationController@table_health_coverages');
         Route::get('/resolutions/{identification_number}', 'Api\ConfigurationController@table_resolutions');
+        Route::get('/payment-methods', 'Api\PaymentController@getPaymentMethods');
+        Route::get('/payment-forms', 'Api\PaymentController@getPaymentForms');
+        Route::get('/items', 'Api\ItemController@index');
     });
-
     // UBL 2.1
     Route::prefix('/ubl2.1')->group(function () {
         // Xml Document
@@ -102,6 +104,9 @@ Route::middleware('auth:api')->group(function () {
         Route::prefix('/delete')->middleware(['check.api.register'])->group(function () {
             Route::post('/company/{nit}/{dv}', 'Api\ConfigurationController@deleteCompany');
         });
+
+        // items
+        Route::post('/items/add', 'Api\ItemController@store');
 
         // Next Consecutive
         Route::post('/next-consecutive', 'Api\MiscelaneousController@NextConsecutive');
