@@ -25,17 +25,23 @@ class CreditNoteRequest extends FormRequest
      */
     public function rules()
     {
-        $this->count_resolutions = auth()->user()->company->resolutions->where('type_document_id', $this->type_document_id)->count();
-        if($this->count_resolutions < 2)
-            $this->resolution = auth()->user()->company->resolutions->where('type_document_id', $this->type_document_id)->first();
-        else{
-            $this->count_resolutions = auth()->user()->company->resolutions->where('type_document_id', $this->type_document_id)->where('resolution', $this->resolution_number)->count();
-            if($this->count_resolutions < 2){
-               $this->resolution = auth()->user()->company->resolutions->where('type_document_id', $this->type_document_id)->where('resolution', $this->resolution_number)->first();
+        if(is_null($this->invoice_period)) {
+            $this->count_resolutions = auth()->user()->company->resolutions->where('type_document_id', $this->type_document_id)->count();
+            if($this->count_resolutions < 2)
+                $this->resolution = auth()->user()->company->resolutions->where('type_document_id', $this->type_document_id)->first();
+            else{
+                $this->count_resolutions = auth()->user()->company->resolutions->where('type_document_id', $this->type_document_id)->where('resolution', $this->resolution_number)->count();
+                if($this->count_resolutions < 2){
+                $this->resolution = auth()->user()->company->resolutions->where('type_document_id', $this->type_document_id)->where('resolution', $this->resolution_number)->first();
+                }
+                else
+                    $this->resolution = auth()->user()->company->resolutions->where('type_document_id', $this->type_document_id)->where('resolution', $this->resolution_number)->where('prefix', $this->prefix)->first();
             }
-            else
-                $this->resolution = auth()->user()->company->resolutions->where('type_document_id', $this->type_document_id)->where('resolution', $this->resolution_number)->where('prefix', $this->prefix)->first();
+        } else {
+            $this->resolution = auth()->user()->company->resolutions->where('type_document_id', $this->type_document_id)->where('prefix', $this->prefix)->first();
         }
+
+        // dd(is_null($this->invoice_period));
 
         return [
             // Es documento equivalente
@@ -111,7 +117,7 @@ class CreditNoteRequest extends FormRequest
 
             // Resolution number for document sending
             'resolution_number' => Rule::requiredIf(function(){
-                if(auth()->user()->company->resolutions->where('type_document_id', $this->type_document_id)->count() >= 2)
+                if(auth()->user()->company->resolutions->where('type_document_id', $this->type_document_id)->count() >= 2 && is_null($this->invoice_period))
                   return true;
                 else
                   return false;
