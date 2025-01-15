@@ -14,7 +14,7 @@ class CreateItemsTable extends Migration
     public function up()
     {
         Schema::create('items', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
             $table->string('name', 500)->nullable()->collation('utf8mb4_unicode_ci');
             $table->string('second_name', 500)->nullable()->collation('utf8mb4_unicode_ci');
             $table->string('description', 500)->nullable()->collation('utf8mb4_unicode_ci');

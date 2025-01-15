@@ -65,7 +65,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/resolutions/{identification_number}', 'Api\ConfigurationController@table_resolutions');
         Route::get('/payment-methods', 'Api\PaymentController@getPaymentMethods');
         Route::get('/payment-forms', 'Api\PaymentController@getPaymentForms');
-        Route::get('/items', 'Api\ItemController@index');
+        Route::get('/items', 'Api\ItemController@records');
     });
     // UBL 2.1
     Route::prefix('/ubl2.1')->group(function () {
@@ -104,9 +104,6 @@ Route::middleware('auth:api')->group(function () {
         Route::prefix('/delete')->middleware(['check.api.register'])->group(function () {
             Route::post('/company/{nit}/{dv}', 'Api\ConfigurationController@deleteCompany');
         });
-
-        // items
-        Route::post('/items/add', 'Api\ItemController@store');
 
         // Next Consecutive
         Route::post('/next-consecutive', 'Api\MiscelaneousController@NextConsecutive');
@@ -409,6 +406,10 @@ if(env('ALLOW_PUBLIC_DOWNLOAD', TRUE)){
 
 Route::post('login', 'Api\AuthController@login');
 
+// Mobile
 Route::middleware('auth:api')->group(function () {
     Route::get('documents', 'Api\MobileController@documents');
+
+    // items
+    Route::post('/items/add', 'Api\ItemController@store');
 });
