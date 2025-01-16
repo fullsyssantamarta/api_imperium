@@ -412,4 +412,10 @@ Route::middleware('auth:api')->group(function () {
 
     // items
     Route::post('/items/add', 'Api\ItemController@store');
+
+    //customers
+    Route::get('/customers', 'Api\CustomerController@records');
+
+    //type currencies
+    Route::get('/type-currencies', 'Api\TypeCurrencyController@records');
 });

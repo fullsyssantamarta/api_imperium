@@ -10,8 +10,19 @@ class ItemController extends Controller
 {
     public function records()
     {
-        $items = Item::all();
-        return compact('items');
+        try {
+            $items = Item::select('id', 'name', 'description', 'internal_id', 'sale_unit_price', 'stock', 'percentage_of_profit', 'is_set', 'has_perception', 'percentage_perception')->get();
+    
+            return response()->json([
+                'success' => true,
+                'data' => $items
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function store(Request $request)
