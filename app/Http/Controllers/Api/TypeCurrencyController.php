@@ -11,7 +11,7 @@ class TypeCurrencyController extends Controller
     public function records()
     {
         try {
-            $currencies = TypeCurrency::select('name', 'code')->get();
+            $currencies = TypeCurrency::select('id','name', 'code')->get();
             return response()->json([
                 'success' => true,
                 'data' => $currencies

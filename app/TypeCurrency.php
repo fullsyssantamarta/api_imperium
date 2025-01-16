@@ -11,6 +11,7 @@ class TypeCurrency extends Model
      *
      * @var array
      */
+    protected $primaryKey = 'id';
     protected $fillable = [
         'name', 'code',
     ];
