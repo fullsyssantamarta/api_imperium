@@ -415,6 +415,7 @@ Route::middleware('auth:api')->group(function () {
 
     //customers
     Route::get('/customers', 'Api\CustomerController@records');
+    Route::post('/customers/add', 'Api\CustomerController@store');
 
     //type currencies
     Route::get('/type-currencies', 'Api\TypeCurrencyController@records');
