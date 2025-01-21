@@ -1,37 +1,43 @@
-version: '3'
+version: '3.8'
 
 services:
-    nginx:
-        image: rash07/nginx
-        working_dir: /var/www/html
-        environment:
-            VIRTUAL_HOST: 
-        volumes:
-            - ./:/var/www/html
-            - /proxy/fpms/api_dir:/etc/nginx/sites-available
-    php:
-        image: rash07/php-api
-        working_dir: /var/www/html
-        volumes:
-            - ./:/var/www/html
-    mariadb:
-        image: mariadb:10.5.6
-        environment:
-            - MYSQL_USER=${MYSQL_USER}
-            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-            - MYSQL_DATABASE=${MYSQL_DATABASE}
-            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-            - MYSQL_PORT_HOST=${MYSQL_PORT_HOST}
-        ports:
-            - "${MYSQL_PORT_HOST}:3306"
-        volumes:
-            - mysqldata:/var/lib/mysql
+  nginx_api:
+    image: rash07/nginx-api
+    working_dir: /var/www/html
+    ports:
+      - 80:80
+    volumes:
+      - ./:/var/www/html
+      - ./docker/default.conf:/etc/nginx/sites-available/default
+    networks:
+      - apinet
+
+  php_api:
+    image: rash07/php-api
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - apinet
+
+  mariadb:
+    image: mariadb:11.5.2
+    environment:
+      - MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD}"
+    ports:
+      - "${MYSQL_PORT_HOST}:3306"
+    volumes:
+      - api_mysqldata:/var/lib/mysql
+      # generar usuario y base de datos para utilizar en conexion del .env
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - apinet
 
 networks:
-    default:
-        external:
-            name: proxynet
+  apinet:
+    external: true
+    name: apinet
 
 volumes:
-    mysqldata:
-        driver: "local"
+  api_mysqldata:
+    driver: "local"
