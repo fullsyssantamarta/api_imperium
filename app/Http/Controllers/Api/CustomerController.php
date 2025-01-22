@@ -26,6 +26,7 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
+        try {
             $validatedData = $request->validate([
                 'identification_number' => 'required|string|max:20|unique:customers',
                 'dv' => 'nullable|string|max:1',
@@ -48,6 +49,13 @@ class CustomerController extends Controller
                         'email' => $customer->email
                     ]
                 ]
-            ], 201);
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al crear el cliente',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
