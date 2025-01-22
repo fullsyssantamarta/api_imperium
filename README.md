@@ -27,7 +27,7 @@ Estamos enfocados en crear herramientas y soluciones para desarrolladores de sof
 ## 3. Ejemplos para la API / Collection POSTMAN
 
 - Descargar Postman [Aquí](https://www.postman.com/downloads/)
-- Ver ejemplos en sitio web. [Aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/README.md)
+- Ver ejemplos en sitio web. [Aquí](https://documenter.getpostman.com/view/1431398/2sAY4uCido)
 - Descargar colección para importar en Postman (*actualizaciones menos constantes*). [Aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/ApiDianV2.1.postman_collection.json?ref_type=heads)
 
 ## 4. Proceso de habilitación DIAN Validación Previa UBL 2.1
