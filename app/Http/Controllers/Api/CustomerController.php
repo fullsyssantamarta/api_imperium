@@ -26,30 +26,37 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
-       try{
+        try {
+            $validatedData = $request->validate([
+                'identification_number' => 'required|string|max:20|unique:customers',
+                'dv' => 'nullable|string|max:1',
+                'name' => 'required|string|max:500',
+                'phone' => 'nullable|string|max:20',
+                'address' => 'nullable|string|max:500',
+                'email' => 'nullable|email|max:255',
+                'password' => 'required|string|min:6'
+            ]);
 
-        $validatedData = $request->validate([
-            'identification_number' => 'required|string|max:20|unique:customers',
-            'dv' => 'nullable|string|max:1',
-            'name' => 'required|string|max:500',
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:500',
-            'email' => 'nullable|email|max:255',
-            'password' => 'required|string|min:6'
-        ]);
+            $validatedData['password'] = bcrypt($validatedData['password']);
+            $customer = Customer::create($validatedData);
 
-        $validatedData['password'] = bcrypt($validatedData['password']);
-        $customer = Customer::create($validatedData);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Cliente creado exitosamente',
-            'data' => $customer
-        ], 201);
+            return response()->json([
+                'success' => true,
+                'message' => 'Cliente creado exitosamente',
+                'data' => [
+                    'customer' => [
+                        'id' => $customer->id,
+                        'identification_number' => $customer->identification_number,
+                        'name' => $customer->name,
+                        'email' => $customer->email
+                    ]
+                ]
+            ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => 'Error al crear el cliente',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
