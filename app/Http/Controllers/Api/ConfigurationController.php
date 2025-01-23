@@ -84,8 +84,9 @@ class ConfigurationController extends Controller
     }
 
     public function table_resolutions($identification_number){
+        $company = auth()->user()->company;
         try{
-            $resolutions = Resolution::where('company_id', Company::where('identification_number', $identification_number)->firstOrFail()->id)->get();
+            $resolutions = Resolution::where('company_id', Company::where('identification_number', $company->$identification_number)->firstOrFail()->id)->get();
             return compact('resolutions');
         } catch (Exception $e) {
             $resolutions = [];

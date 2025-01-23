@@ -62,6 +62,6 @@ class ItemController extends Controller
 
         $item = Item::create($validatedData);
 
-        return response()->json($item, 201);
+        return response()->json($item);
     }
 }
