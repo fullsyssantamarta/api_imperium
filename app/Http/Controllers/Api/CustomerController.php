@@ -11,7 +11,11 @@ class CustomerController extends Controller
     public function records()
     {
         try {
-            $customers = Customer::select('identification_number', 'dv', 'name', 'phone', 'address', 'email')->get();
+            $companyId = auth()->user()->company->id;
+
+            $customers = Customer::Where('companies_id', $companyId)
+                            ->select('identification_number', 'dv', 'name', 'phone', 'address', 'email','companies_id')
+                            ->get();
             return response()->json([
                 'success' => true,
                 'data' => $customers
@@ -34,7 +38,8 @@ class CustomerController extends Controller
                 'phone' => 'nullable|string|max:20',
                 'address' => 'nullable|string|max:500',
                 'email' => 'nullable|email|max:255',
-                'password' => 'required|string|min:6'
+                'password' => 'required|string|min:6',
+                'companies_id' => 'required|exists:companies,id'
             ]);
 
             $validatedData['password'] = bcrypt($validatedData['password']);

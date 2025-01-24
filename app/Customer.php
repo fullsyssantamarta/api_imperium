@@ -13,6 +13,11 @@ class Customer extends Model
      */
     protected $primaryKey = 'identification_number';
     protected $fillable = [
-        'identification_number', 'dv', 'name', 'phone', 'address', 'email', 'password', 'newpassword',
+        'identification_number', 'dv', 'name', 'phone', 'address', 'email', 'password', 'newpassword','companies_id',
     ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'companies_id');
+    }
 }

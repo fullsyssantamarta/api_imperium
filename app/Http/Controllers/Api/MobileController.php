@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Department;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Document;
 use App\Http\Resources\DocumentCollection;
+use App\Municipality;
+use App\TypeDocumentIdentification;
+use App\TypeLiability;
+use App\TypeOrganization;
+use App\TypeRegime;
 
 class MobileController extends Controller
 {
@@ -44,5 +50,44 @@ class MobileController extends Controller
             ];
         });
         return $records;
+    }
+    
+    public function table()
+    {
+        try {
+            $departments = Department::all();
+
+            $municipalities = Municipality::all();
+
+            $typeDocumentIdentifications = TypeDocumentIdentification::all();
+
+            $typeLiabilities = TypeLiability::all();
+
+            $typeOrganizations = TypeOrganization::all();
+
+            $typeRegimes = TypeRegime::all();
+
+            $urlBase = url('/'); 
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'departments' => $departments,
+                    'municipalities' => $municipalities,
+                    'type_document_identifications' => $typeDocumentIdentifications,
+                    'type_liabilities' => $typeLiabilities,
+                    'type_organizations' => $typeOrganizations,
+                    'type_regimes' => $typeRegimes,
+                    'url_base' => $urlBase,
+                ]
+            ], 200);
+            
+        } catch (\Exception $e) {
+            // En caso de error, devolver el mensaje de error
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

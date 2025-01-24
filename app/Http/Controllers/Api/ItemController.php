@@ -11,8 +11,12 @@ class ItemController extends Controller
     public function records()
     {
         try {
-            $items = Item::select('id', 'name', 'description', 'internal_id', 'sale_unit_price', 'stock', 'percentage_of_profit', 'is_set', 'has_perception', 'percentage_perception')->get();
-    
+            $companyId = auth()->user()->company->id;
+
+            $items = Item::where('companies_id', $companyId) 
+                        ->select('id', 'name', 'description', 'internal_id', 'sale_unit_price', 'percentage_of_profit', 'is_set', 'has_perception', 'percentage_perception','companies_id')
+                        ->get();
+            
             return response()->json([
                 'success' => true,
                 'data' => $items
@@ -46,8 +50,6 @@ class ItemController extends Controller
             'image' => 'nullable|string|max:255',
             'image_medium' => 'nullable|string|max:255',
             'image_small' => 'nullable|string|max:255',
-            'stock' => 'nullable|numeric',
-            'stock_min' => 'nullable|numeric',
             'lot_code' => 'nullable|string|max:255',
             'lots_enabled' => 'nullable|boolean',
             'series_enabled' => 'nullable|boolean',
@@ -58,6 +60,7 @@ class ItemController extends Controller
             'active' => 'nullable|boolean',
             'status' => 'nullable|boolean',
             'apply_store' => 'nullable|boolean',
+            'companies_id' => 'required|integer|exists:companies,id',
         ]);
 
         $item = Item::create($validatedData);

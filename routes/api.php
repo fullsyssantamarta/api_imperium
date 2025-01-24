@@ -419,4 +419,7 @@ Route::middleware('auth:api')->group(function () {
 
     //type currencies
     Route::get('/type-currencies', 'Api\TypeCurrencyController@records');
+
+    //table
+    Route::get('/table', 'Api\MobileController@table');
 });

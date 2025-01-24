@@ -27,8 +27,6 @@ class Item extends Model
         'image',
         'image_medium',
         'image_small',
-        'stock',
-        'stock_min',
         'lot_code',
         'lots_enabled',
         'series_enabled',
@@ -39,5 +37,11 @@ class Item extends Model
         'active',
         'status',
         'apply_store',
+        'companies_id',
     ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'companies_id');
+    }
 }

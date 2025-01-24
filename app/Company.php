@@ -57,6 +57,16 @@ class Company extends Model
         return $this->hasMany(Resolution::class);
     }
 
+    public function items()
+    {
+        return $this->hasMany(Item::class, 'companies_id');
+    }
+
+    public function customers()
+    {
+        return $this->hasMany(Customer::class, 'companies_id');
+    }
+
     /**
      * Get the language that owns the company.
      */
