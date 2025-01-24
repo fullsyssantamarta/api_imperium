@@ -16,8 +16,12 @@ Estamos enfocados en crear herramientas y soluciones para desarrolladores de sof
      * [Pasos y script aquí](https://gitlab.buho.la/-/snippets/29)
   * Linux | Entorno **Docker** | *Aporte de usuario de la comunidad*
      * [Descarga aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/api_docker.zip?ref_type=heads)
-  * Ubuntu **20.04** y **22.04** | [PRO2](https://gitlab.buho.la/facturalatam/co-facturadorpro2) junto con APIDIAN | Entorno Docker | Dominio | ejecución de script
+
+- ### Despliegue con Docker
+  * Ubuntu **20.04** y **22.04** | [PRO2](https://gitlab.buho.la/facturalatam/co-facturadorpro2) junto con APIDIAN  | Dominio | ejecución de script
      * [Pasos, requisitos y script aquí](https://gitlab.buho.la/facturalatam/co-facturadorpro2/-/snippets/26)
+  * Ubuntu 20.04 y 22.04 | sólo API | sin dominio | proceso manual
+     * [Pasos aquí](https://gitlab.buho.la/-/snippets/31)
 
 ## 2. Actualización
 
