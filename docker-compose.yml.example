@@ -1,11 +1,12 @@
-version: '3.8'
+version: '3.3'
 
 services:
   nginx_api:
     image: rash07/nginx-api
+    container_name: nginx_api
     working_dir: /var/www/html
     ports:
-      - 80:80
+      - "${APP_PORT}:80"
     volumes:
       - ./:/var/www/html
       - ./docker/default.conf:/etc/nginx/sites-available/default
@@ -14,6 +15,7 @@ services:
 
   php_api:
     image: rash07/php-api
+    container_name: php_api
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
@@ -22,10 +24,11 @@ services:
 
   mariadb:
     image: mariadb:11.5.2
+    container_name: mariadb_api
     environment:
-      - MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD}"
+      - MYSQL_ROOT_PASSWORD="${DB_PASSWORD}"
     ports:
-      - "${MYSQL_PORT_HOST}:3306"
+      - "${DB_PORT_EXTERNAL}:${DB_PORT}"
     volumes:
       - api_mysqldata:/var/lib/mysql
       # generar usuario y base de datos para utilizar en conexion del .env
@@ -35,8 +38,8 @@ services:
 
 networks:
   apinet:
-    external: true
-    name: apinet
+    external:
+      name: apinet
 
 volumes:
   api_mysqldata:
