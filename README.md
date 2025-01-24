@@ -8,6 +8,7 @@ Estamos enfocados en crear herramientas y soluciones para desarrolladores de sof
 
 - ###  Despliegue en local (Windows)
   * Video de instalación. [Aquí](https://www.youtube.com/watch?v=9Ds2DR3QLGY)
+  * [Pasos aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/Comandos%20Instalacion%20API%202024%20Windows.txt)
 - ### Despliegue en linux
   *  Exclusivo para Ubuntu **20.04** | entorno LAMP | ejecucion de comandos de forma manual.
      * [Video aquí](https://www.youtube.com/watch?v=rEgrHADjsCY)
@@ -18,8 +19,6 @@ Estamos enfocados en crear herramientas y soluciones para desarrolladores de sof
      * [Descarga aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/api_docker.zip?ref_type=heads)
 
 - ### Despliegue con Docker
-  * Ubuntu **20.04** y **22.04** | [PRO2](https://gitlab.buho.la/facturalatam/co-facturadorpro2) junto con APIDIAN  | Dominio | ejecución de script
-     * [Pasos, requisitos y script aquí](https://gitlab.buho.la/facturalatam/co-facturadorpro2/-/snippets/26)
   * Ubuntu 20.04 y 22.04 | sólo API | sin dominio | proceso manual
      * [Pasos aquí](https://gitlab.buho.la/-/snippets/31)
 
