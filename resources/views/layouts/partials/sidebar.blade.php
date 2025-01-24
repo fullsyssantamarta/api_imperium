@@ -49,10 +49,28 @@ $cust_id = $path[2];
                         </li>
                     @endif
                     @if(!Request::is('company*'))
-                    <li class="">
-                        <a href="{{route('documentation')}}" class="nav-link" target="BLANK">
+                    <li>
+                        <a href="{{route('documentation')}}" class="nav-link" target="_blank">
                             <i class="fa fa-server" aria-hidden="true"></i>
                             <span>Test API SWAGGER</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://documenter.getpostman.com/view/1431398/2sAY4uCido#intro" class="nav-link" target="_blank">
+                            <i class="fas fa-rocket" aria-hidden="true"></i>
+                            <span>Documentación Postman</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://chatgpt.com/g/g-6757cbff7bf08191a45c4ee5ff55bc22-facturacion-electronica-dian-colombia" class="nav-link" target="_blank">
+                            <i class="fa fa-robot" aria-hidden="true"></i>
+                            <span>Chat GPT BOT API facturalatam</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link">
+                            <i class="fab fa-android" aria-hidden="true"></i>
+                            <span>APP Android</span>
                         </a>
                     </li>
                     <li class="">
