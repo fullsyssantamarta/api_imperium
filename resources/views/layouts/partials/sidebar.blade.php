@@ -49,29 +49,47 @@ $cust_id = $path[2];
                         </li>
                     @endif
                     @if(!Request::is('company*'))
-                    <li>
-                        <a href="{{route('documentation')}}" class="nav-link" target="_blank">
-                            <i class="fa fa-server" aria-hidden="true"></i>
-                            <span>Test API SWAGGER</span>
+                    <li class="nav-parent">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-cogs" aria-hidden="true"></i>
+                            <span>Tools</span>
                         </a>
-                    </li>
-                    <li>
-                        <a href="https://documenter.getpostman.com/view/1431398/2sAY4uCido#intro" class="nav-link" target="_blank">
-                            <i class="fas fa-rocket" aria-hidden="true"></i>
-                            <span>Documentación Postman</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://chatgpt.com/g/g-6757cbff7bf08191a45c4ee5ff55bc22-facturacion-electronica-dian-colombia" class="nav-link" target="_blank">
-                            <i class="fa fa-robot" aria-hidden="true"></i>
-                            <span>Chat GPT BOT API facturalatam</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="nav-link">
-                            <i class="fab fa-android" aria-hidden="true"></i>
-                            <span>APP Android</span>
-                        </a>
+                        <ul class="nav nav-children">
+                            <li class="d-flex flex-wrap">
+                                <div class="col-6">
+                                    <div class="card border">
+                                        <a href="#" target="_blank" class="px-0 text-center" style="font-size: 0.7rem;  ">
+                                            <i class="fab fa-android mr-0"></i><br>
+                                            APP Android
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card border">
+                                        <a href="https://chatgpt.com/g/g-6757cbff7bf08191a45c4ee5ff55bc22-facturacion-electronica-dian-colombia" target="_blank" class="px-0 text-center" style="font-size: 0.7rem;  ">
+                                            <i class="fa fa-robot mr-0"></i><br>
+                                            BOT ChatGPT
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-6 mt-1">
+                                    <div class="card border">
+                                        <a href="https://documenter.getpostman.com/view/1431398/2sAY4uCido#intro" target="_blank" class="px-0 text-center" style="font-size: 0.7rem;  ">
+                                            <i class="fas fa-rocket mr-0"></i><br>
+                                            API Postman
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-6 mt-1">
+                                    <div class="card border">
+                                        <a href="{{route('documentation')}}" target="_blank" class="px-0 text-center" style="font-size: 0.7rem;  ">
+                                            <i class="fa fa-server mr-0"></i><br>
+                                            API SWAGGER
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
                     </li>
                     <li class="">
                         <a href="{{route('logs')}}" class="nav-link" target="BLANK">
