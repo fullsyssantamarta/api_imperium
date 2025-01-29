@@ -15,7 +15,7 @@ class CustomerController extends Controller
 
             $customers = Customer::Where('companies_id', $companyId)
                             ->select('identification_number', 'dv', 'name', 'phone', 'address', 'email','companies_id')
-                            ->get();
+                            ->paginate(20);
             return response()->json([
                 'success' => true,
                 'data' => $customers

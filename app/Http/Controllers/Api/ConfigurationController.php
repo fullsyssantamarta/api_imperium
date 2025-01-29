@@ -83,21 +83,21 @@ class ConfigurationController extends Controller
         return compact('health_coverages');
     }
 
-    public function table_resolutions($identification_number){
+    public function table_resolutions($identification_number, $type_document_id = null){
         $company = auth()->user()->company;
         try{
             $companyId = Company::where('identification_number', $identification_number)
                                 ->firstOrFail()
                                 ->id;
-            $resolutions = Resolution::where('company_id', $companyId)->get();
-            
+            $resolutions = Resolution::where('company_id', $companyId)->filterByDocumentType($type_document_id)->get();
+
             return compact('resolutions');
         } catch (Exception $e) {
             $resolutions = [];
             return compact('resolutions');
         }
     }
-    
+
 
     public function emailconfig()
     {
