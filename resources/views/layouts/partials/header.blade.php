@@ -40,6 +40,13 @@
                 </a>
                 <div class="dropdown-menu">
                     <ul class="list-unstyled mb-2">
+                        <li>
+                            {{--<a role="menuitem" href="#"><i class="fas fa-user"></i> Perfil</a>--}}
+                            <a role="menuitem" href="#" id="default-primary">
+                                <input type="text" id="copyToken" value="{{ Auth::user()->api_token }}" style="position:absolute;left:-9999px;">
+                                Copiar Token
+                            </a>
+                        </li>
                         <li class="divider"></li>
                         <li>
                             {{--<a role="menuitem" href="#"><i class="fas fa-user"></i> Perfil</a>--}}

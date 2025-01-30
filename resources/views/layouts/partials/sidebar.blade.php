@@ -49,48 +49,6 @@ $cust_id = $path[2];
                         </li>
                     @endif
                     @if(!Request::is('company*'))
-                    <li class="nav-parent">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-cogs" aria-hidden="true"></i>
-                            <span>Tools</span>
-                        </a>
-                        <ul class="nav nav-children">
-                            <li class="d-flex flex-wrap">
-                                <div class="col-6">
-                                    <div class="card border">
-                                        <a href="#" target="_blank" class="px-0 text-center" style="font-size: 0.7rem;  ">
-                                            <i class="fab fa-android mr-0"></i><br>
-                                            APP Android
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="card border">
-                                        <a href="https://chatgpt.com/g/g-6757cbff7bf08191a45c4ee5ff55bc22-facturacion-electronica-dian-colombia" target="_blank" class="px-0 text-center" style="font-size: 0.7rem;  ">
-                                            <i class="fa fa-robot mr-0"></i><br>
-                                            BOT ChatGPT
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="col-6 mt-1">
-                                    <div class="card border">
-                                        <a href="https://documenter.getpostman.com/view/1431398/2sAY4uCido#intro" target="_blank" class="px-0 text-center" style="font-size: 0.7rem;  ">
-                                            <i class="fas fa-rocket mr-0"></i><br>
-                                            API Postman
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="col-6 mt-1">
-                                    <div class="card border">
-                                        <a href="{{route('documentation')}}" target="_blank" class="px-0 text-center" style="font-size: 0.7rem;  ">
-                                            <i class="fa fa-server mr-0"></i><br>
-                                            API SWAGGER
-                                        </a>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </li>
                     <li class="">
                         <a href="{{route('logs')}}" class="nav-link" target="BLANK">
                             <i class="fa fa-bug" aria-hidden="true"></i>
