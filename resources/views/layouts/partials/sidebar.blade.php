@@ -21,12 +21,21 @@ $cust_id = $path[2];
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
                     @if(!Request::is('company*'))
+
                     <li class="{{ ($path[0] === 'home')?'nav-active':'' }}">
                         <a class="nav-link" href="{{route('home')}}">
                             <i class="fas fa-industry" aria-hidden="true"></i>
                             <span>Empresas</span>
                         </a>
                     </li>
+
+                    <li class="{{ ($path[0] === 'tools')?'nav-active':'' }}">
+                        <a class="nav-link" href="{{route('tools')}}">
+                            <i class="fas fa-wrench" aria-hidden="true"></i>
+                            <span>Herramientas</span>
+                        </a>
+                    </li>
+
                     @endif
                     @if(Request::is('company*'))
                         <li class="{{ Route::is('company') ? 'nav-active' : '' }}">
