@@ -66,4 +66,4 @@ Los cambios podrán decargarse a partir de enero del 2025 progresivamente, con l
   MAIL_FROM_ADDRESS=username@gmail.com
   MAIL_FROM_NAME=username
   ```
-  * eliminar la cache de la aplicacion `php artisan config:cache & php artisan cache:clear & php artisan optimize:clear`
+  * eliminar la cache de la aplicacion `php artisan config:clear && php artisan config:cache & php artisan optimize:clear`
