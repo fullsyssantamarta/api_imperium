@@ -19,9 +19,7 @@ cd apidian2025
 cp .env.example .env
 #[Nota] Abra el archivo .env y verifique la cadena de conexión a la base de datos, son las variables con prefijos DB_
 
-rm composer.lock
 composer install
-php artisan config:cache && php artisan cache:clear
 php artisan key:generate
 php artisan migrate --seed
 unzip storage.zip
@@ -29,7 +27,6 @@ chmod -R 777 storage
 chmod -R 777 bootstrap/cache
 chmod -R 777 vendor/mpdf/mpdf
 php artisan storage:link
-php artisan config:cache && php artisan config:clear && php artisan cache:clear
 urn_on.bat
 
 
