@@ -15,7 +15,7 @@ https://villagrabaez.medium.com/actualizar-php-a-la-versi%C3%B3n-7-4-en-laragon-
 
 git config --global http.sslverify false
 git clone https://gitlab.buho.la/facturalatam/co-apidian2025.git apidian2025
-cd apidian
+cd apidian2025
 cp .env.example .env
 rm composer.lock
 composer install
