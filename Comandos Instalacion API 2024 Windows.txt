@@ -17,6 +17,9 @@ git config --global http.sslverify false
 git clone https://gitlab.buho.la/facturalatam/co-apidian2025.git apidian2025
 cd apidian2025
 cp .env.example .env
+
+#[Nota] Abra el archivo .env y verifique la cadena de conexión a la base de datos, son las variables con prefijos DB_
+
 rm composer.lock
 composer install
 php artisan config:cache && php artisan cache:clear
