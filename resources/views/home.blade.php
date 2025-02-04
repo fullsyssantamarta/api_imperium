@@ -1,9 +1,10 @@
 @extends('layouts.app')
 @section('content')
-<div class="card">
-    <div class="card-header">
-        Empresas
-    </div>
+<header class="page-header">
+    <h2>Listado de Empresas</h2>
+</header>
+
+<div class="card border">
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead class="thead-light">

@@ -36,6 +36,7 @@
     <link rel="stylesheet" href="{{asset('porto-light/vendor/jquery-ui/jquery-ui.theme.css')}}" />
     <link rel="stylesheet" href="{{asset('porto-light/vendor/select2/css/select2.css')}}" />
     <link rel="stylesheet" href="{{asset('porto-light/vendor/select2-bootstrap-theme/select2-bootstrap.min.css')}}" />
+    <link rel="stylesheet" href="{{asset('porto-light/vendor/pnotify/pnotify.custom.css')}}" />
 
     <!-- Daterange picker plugins css -->
     <link href="{{ asset('porto-light/vendor/bootstrap-timepicker/css/bootstrap-timepicker.css') }}" rel="stylesheet">
@@ -185,5 +186,24 @@
 
     </script>
     <!-- <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script> -->
+
+    <script src="{{asset('porto-light/vendor/pnotify/pnotify.custom.js')}}"></script>
+    <script>
+        $('#default-primary').click(function() {
+            document.getElementById("copyToken").select();
+            document.execCommand('copy');
+            // let input = document.getElementById("copytoken");
+            // input.select();
+            // document.execCommand("copy");
+            new PNotify({
+                // title: 'Token copiado al portapapeles',
+                text: 'Token copiado al portapapeles',
+                type: 'success',
+                addclass: 'notification-success',
+                // icon: 'fab fa-twitter'
+                delay: 500
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,9 +1,9 @@
 @extends('layouts.app')
 @section('content')
-<div class="card">
-    <div class="card-header">
-        Listado de documentos generados
-    </div>
+<header class="page-header">
+    <h2>Documentos generados</h2>
+</header>
+<div class="card border">
     <div class="table-responsive card-body p-0">
         <table class="table table-sm table-striped table-hover">
             <thead class="thead-light">
