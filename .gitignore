@@ -19,3 +19,4 @@ composer.lock
 usuario_admin.txt
 .vscode/
 !storage/api-docs/api-docs.json
+docker-compose.yml
