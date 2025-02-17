@@ -4,13 +4,14 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use \App\User;
 use \App\Customer;
 use \App\Employee;
 use \App\Company;
-use Validator;
 use App\Traits\DocumentTrait;
-use Illuminate\Support\Facades\URL;
+use Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        DB::setDefaultConnection('mysql');
         Schema::defaultStringLength(191);
 
         if (config('system_configuration.force_https')) URL::forceScheme('https');
