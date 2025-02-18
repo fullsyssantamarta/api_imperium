@@ -342,7 +342,7 @@
                                         <td class="text-right">{{number_format($request->legal_monetary_totals['payable_amount'] + 0, 2)}}</td>
                                     @endif
                                 @else
-                                    <td class="text-right">{{number_format($request->legal_monetary_totals['payable_amount'], 2)}}</td>
+                                    <td class="text-right">{{number_format(($request->legal_monetary_totals['payable_amount'] - $TotalRetenciones), 2)}}</td>
                                 @endif
                             </tr>
                         </tbody>
@@ -365,7 +365,7 @@
                     <p> <strong>SON</strong>: {{$Varios->convertir(round($request->legal_monetary_totals['payable_amount'] + 0, 2), $request->idcurrency)}} M/CTE*********.</p>
                 @endif
             @else
-                <p><strong>SON</strong>: {{$Varios->convertir(round($request->legal_monetary_totals['payable_amount'], 2), $request->idcurrency)}} M/CTE*********.</p>
+                <p><strong>SON</strong>: {{$Varios->convertir(round(($request->legal_monetary_totals['payable_amount'] - $TotalRetenciones), 2), $request->idcurrency)}} M/CTE*********.</p>
             @endif
         </div>
     </div>
