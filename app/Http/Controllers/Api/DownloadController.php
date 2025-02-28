@@ -115,7 +115,7 @@ class DownloadController extends Controller
             // Retenciones globales
 
             // Notes
-            $notes = $request->notes;
+            $notes = $request->notes ?? null;
 
             // $request->legal_monetary_totals = json_decode(json_encode($request->legal_monetary_totals), true);
             // $request->tax_totals = json_decode(json_encode($request->tax_totals), true);

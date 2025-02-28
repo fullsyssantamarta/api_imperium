@@ -43,10 +43,12 @@
                         <td style="padding: 0; width: 40%;">Email:</td>
                         <td style="padding: 0;">{{$customer->email}}</td>
                     </tr>
+                    @if(is_array($paymentForm))
                     <tr>
                         <td style="padding: 0; width: 40%;">Forma de Pago:</td>
                         <td style="padding: 0;">{{$paymentForm[0]->name}}</td>
                     </tr>
+                    @endif
                 </table>
             </td>
             <td class="vertical-align-top" style="width: 35%; padding-left: 1rem">
@@ -67,6 +69,7 @@
                         <td style="padding: 0; width: 50%;">Teléfono:</td>
                         <td style="padding: 0;">{{$customer->company->phone}}</td>
                     </tr>
+                    @if(is_array($paymentForm))
                     <br>
                     <tr>
                         <td style="padding: 0; width: 50%;">Medios de Pago:</td>
@@ -76,6 +79,7 @@
                             @endforeach
                         </td>
                     </tr>
+                    @endif
                 </table>
             </td>
             <td class="vertical-align-top" style="width: 25%; text-align: right">
@@ -127,6 +131,7 @@
                         <td style="padding: 0;">{{$currency->where('code', 'like', '%'.$request['k_supplement']['MonedaCop'].'%')->firstOrFail()['name']}}</td>
                     </tr>
                     @endif
+                    @if(is_array($paymentForm))
                     <tr>
                         <td style="padding: 0; width: 50%;">Plazo Para Pagar:</td>
                         <td style="padding: 0;">{{$paymentForm[0]->duration_measure}} Dias</td>
@@ -135,6 +140,7 @@
                         <td style="padding: 0; width: 50%;">Fecha Vencimiento:</td>
                         <td style="padding: 0;">{{$paymentForm[0]->payment_due_date}}</td>
                     </tr>
+                    @endif
                 </table>
             </td>
         </tr>

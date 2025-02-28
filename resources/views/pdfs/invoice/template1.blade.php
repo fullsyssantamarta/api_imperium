@@ -23,6 +23,7 @@
                         <td>Régimen:</td>
                         <td>{{$customer->company->type_regime->name}}</td>
                     </tr>
+                    @if(is_array($paymentForm))
                     <tr>
                         <td>Medio de Pago:</td>
                         <td>
@@ -31,6 +32,7 @@
                             @endforeach
                         </td>
                     </tr>
+                    @endif
                 </table>
             </td>
 
@@ -59,10 +61,12 @@
                         <td>{{$request['order_reference']['id_order']}}</td>
                     </tr>
                     @endif
+                    @if(is_array($paymentForm))
                     <tr>
                         <td>Plazo Para Pagar:</td>
                         <td>{{$paymentForm[0]->duration_measure}} Días</td>
                     </tr>
+                    @endif
                 </table>
             </td>
 
@@ -77,20 +81,24 @@
                         <td>Email:</td>
                         <td>{{$customer->email}}</td>
                     </tr>
+                    @if(is_array($paymentForm))
                     <tr>
                         <td>Forma de Pago:</td>
                         <td>{{$paymentForm[0]->name}}</td>
                     </tr>
+                    @endif
                     @if(isset($request['order_reference']['issue_date_order']))
                     <tr>
                         <td>Fecha Pedido:</td>
                         <td>{{$request['order_reference']['issue_date_order']}}</td>
                     </tr>
                     @endif
+                    @if(is_array($paymentForm))
                     <tr>
                         <td>Fecha Vencimiento:</td>
                         <td>{{$paymentForm[0]->payment_due_date}}</td>
                     </tr>
+                    @endif
                 </table>
             </td>
             <!-- Cuarta Columna -->

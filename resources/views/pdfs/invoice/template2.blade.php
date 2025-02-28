@@ -64,6 +64,7 @@
             </td>
             <td class="vertical-align-top" style="width: 40%; padding-left: 1rem">
                 <table>
+                    @if(is_array($paymentForm))
                     <tr>
                         <td>Forma de Pago:</td>
                         <td>{{$paymentForm[0]->name}}</td>
@@ -84,6 +85,7 @@
                         <td>Fecha Vencimiento:</td>
                         <td>{{$paymentForm[0]->payment_due_date}}</td>
                     </tr>
+                    @endif
                     @if(isset($request['order_reference']['id_order']))
                     <tr>
                         <td>Número Pedido:</td>
