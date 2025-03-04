@@ -55,6 +55,9 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('reload-pdf/{identification}/{file}/{cufe}', 'Api\DownloadController@reloadPdf');
 
+    Route::get('/templates', 'Api\ConfigurationController@getTemplates');
+    Route::put('/templates', 'Api\ConfigurationController@updateTemplate');
+
     Route::post('process-seller-document-reception', 'Api\RadianEventController@processSellerDocumentReception');
 
     Route::prefix('/table')->group(function(){

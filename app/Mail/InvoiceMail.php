@@ -58,98 +58,90 @@ class InvoiceMail extends Mailable
     {
         if($this->GuardarEn)
             if($this->PDFAlternativo)
-                if(env('MAIL_USERNAME') and $this->user->validate_mail_server() == false){
+                if(config('mail.username') and $this->user->validate_mail_server() == false){
                     if($this->filename)
                         $nameZIP = $this->zipEmail($this->GuardarEn."\\{$this->filename}.xml", $this->GuardarEn."\\PDF-{$this->invoice[0]->prefix}{$this->invoice[0]->number}.pdf");
                     else
                         $nameZIP = $this->zipEmail($this->GuardarEn."\\{$this->filename}.xml", $this->GuardarEn."\\PDF-{$this->invoice[0]->prefix}{$this->invoice[0]->number}.pdf");
-                    return $this->view('mails.mail')->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
-                                                    ->from(\Config::get('mail.from.address'), \Config::get('mail.from.name'))
-//                                                    ->from(env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME')), env('MAIL_FROM_NAME', env('APP_NAME')))
-//                                                    ->from(env('MAIL_USERNAME'))
-                                                    ->attach($nameZIP);
+                    return $this->view('mails.mail')
+                        ->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
+                        ->from(config('mail.from.address'), config('mail.from.name'))
+                        ->attach($nameZIP);
                 }
                 else{
                     if($this->filename)
                         $nameZIP = $this->zipEmail($this->GuardarEn."\\{$this->filename}.xml", $this->GuardarEn."\\PDF-{$this->invoice[0]->prefix}{$this->invoice[0]->number}.pdf");
                     else
                         $nameZIP = $this->zipEmail($this->GuardarEn."\\{$this->filename}.xml", $this->GuardarEn."\\PDF-{$this->invoice[0]->prefix}{$this->invoice[0]->number}.pdf");
-                    return $this->view('mails.mail')->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
-                                                    ->from(\Config::get('mail.from.address'), \Config::get('mail.from.name'))
-//                                                    ->from(env('MAIL_FROM_ADDRESS', config('mail.username')), env('MAIL_FROM_NAME', env('APP_NAME')))
-//                                                    ->from(config('mail.username'))
-                                                    ->attach($nameZIP);
+                    return $this->view('mails.mail')
+                        ->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
+                        ->from(config('mail.from.address'), config('mail.from.name'))
+                        ->attach($nameZIP);
                 }
             else
-                if(env('MAIL_USERNAME') and $this->user->validate_mail_server() == false){
+                if(config('mail.username') and $this->user->validate_mail_server() == false){
                     if($this->filename)
                         $nameZIP = $this->zipEmail($this->GuardarEn."\\{$this->filename}.xml", $this->GuardarEn."\\".$this->invoice[0]->pdf);
                     else
                         $nameZIP = $this->zipEmail($this->GuardarEn."\\{$this->filename}.xml", $this->GuardarEn."\\".$this->invoice[0]->pdf);
-                    return $this->view('mails.mail')->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
-                                                    ->from(\Config::get('mail.from.address'), \Config::get('mail.from.name'))
-//                                                    ->from(env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME')), env('MAIL_FROM_NAME', env('APP_NAME')))
-//                                                    ->from(env('MAIL_USERNAME'))
-                                                    ->attach($nameZIP);
+                    return $this->view('mails.mail')
+                        ->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
+                        ->from(config('mail.from.address'), config('mail.from.name'))
+                        ->attach($nameZIP);
                 }
                 else{
                     if($this->filename)
                         $nameZIP = $this->zipEmail($this->GuardarEn."\\{$this->filename}.xml", $this->GuardarEn."\\{$this->invoice[0]->pdf}");
                     else
                         $nameZIP = $this->zipEmail($this->GuardarEn."\\{$this->filename}.xml", $this->GuardarEn."\\{$this->invoice[0]->pdf}");
-                    return $this->view('mails.mail')->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
-                                                    ->from(\Config::get('mail.from.address'), \Config::get('mail.from.name'))
-//                                                    ->from(env('MAIL_FROM_ADDRESS', config('mail.username')), env('MAIL_FROM_NAME', env('APP_NAME')))
-//                                                    ->from(config('mail.username'))
-                                                    ->attach($nameZIP);
+                    return $this->view('mails.mail')
+                        ->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
+                        ->from(config('mail.from.address'), config('mail.from.name'))
+                        ->attach($nameZIP);
                 }
         else
             if($this->PDFAlternativo)
-                if(env('MAIL_USERNAME') and $this->user->validate_mail_server() == false){
+                if(config('mail.username') and $this->user->validate_mail_server() == false){
                     if($this->filename)
                         $nameZIP = $this->zipEmail(storage_path("app/public/{$this->company->identification_number}/{$this->filename}.xml"), storage_path("app/public/{$this->company->identification_number}/PDF-{$this->invoice[0]->prefix}{$this->invoice[0]->number}.pdf"));
                     else
                         $nameZIP = $this->zipEmail(storage_path("app/public/{$this->company->identification_number}/{$this->filename}.xml"), storage_path("app/public/{$this->company->identification_number}/PDF-{$this->invoice[0]->prefix}{$this->invoice[0]->number}.pdf"));
-                    return $this->view('mails.mail')->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
-                                                    ->from(\Config::get('mail.from.address'), \Config::get('mail.from.name'))
-//                                                    ->from(env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME')), env('MAIL_FROM_NAME', env('APP_NAME')))
-//                                                    ->from(env('MAIL_USERNAME'))
-                                                    ->attach($nameZIP);
+                    return $this->view('mails.mail')
+                        ->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
+                        ->from(config('mail.from.address'), config('mail.from.name'))
+                        ->attach($nameZIP);
                 }
                 else{
                     if($this->filename)
                         $nameZIP = $this->zipEmail(storage_path("app/public/{$this->company->identification_number}/{$this->filename}.xml"), storage_path("app/public/{$this->company->identification_number}/PDF-{$this->invoice[0]->prefix}{$this->invoice[0]->number}.pdf"));
                     else
                         $nameZIP = $this->zipEmail(storage_path("app/public/{$this->company->identification_number}/{$this->filename}.xml"), storage_path("app/public/{$this->company->identification_number}/PDF-{$this->invoice[0]->prefix}{$this->invoice[0]->number}.pdf"));
-                    return $this->view('mails.mail')->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
-                                                    ->from(\Config::get('mail.from.address'), \Config::get('mail.from.name'))
-//                                                    ->from(env('MAIL_FROM_ADDRESS', config('mail.username')), env('MAIL_FROM_NAME', env('APP_NAME')))
-//                                                    ->from(config('mail.username'))
-                                                    ->attach($nameZIP);
+                    return $this->view('mails.mail')
+                        ->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
+                        ->from(config('mail.from.address'), config('mail.from.name'))
+                        ->attach($nameZIP);
                 }
             else{
-                if(env('MAIL_USERNAME') and $this->user->validate_mail_server() == false){
+                if(config('mail.username') and $this->user->validate_mail_server() == false){
                     if($this->filename)
                         $nameZIP = $this->zipEmail(storage_path("app/public/{$this->company->identification_number}/{$this->filename}.xml"), storage_path("app/public/{$this->company->identification_number}/{$this->invoice[0]->pdf}"));
                     else
                         $nameZIP = $this->zipEmail(storage_path("app/public/{$this->company->identification_number}/{$this->filename}.xml"), storage_path("app/public/{$this->company->identification_number}/{$this->invoice[0]->pdf}"));
-                    return $this->view('mails.mail')->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
-                                                    ->from(\Config::get('mail.from.address'), \Config::get('mail.from.name'))
-//                                                    ->from(env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME')), env('MAIL_FROM_NAME', env('APP_NAME')))
-//                                                    ->from(env('MAIL_USERNAME'))
-                                                    ->attach($nameZIP);
+                    return $this->view('mails.mail')
+                        ->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
+                        ->from(config('mail.from.address'), config('mail.from.name'))
+                        ->attach($nameZIP);
                 }
                 else{
-//                    \Log::debug(storage_path("app/public/{$this->company->identification_number}/{$this->invoice[0]->pdf}"));
+                    // \Log::debug(storage_path("app/public/{$this->company->identification_number}/{$this->invoice[0]->pdf}"));
                     if($this->filename)
                         $nameZIP = $this->zipEmail(storage_path("app/public/{$this->company->identification_number}/{$this->filename}.xml"), storage_path("app/public/{$this->company->identification_number}/{$this->invoice[0]->pdf}"));
                     else
                         $nameZIP = $this->zipEmail(storage_path("app/public/{$this->company->identification_number}/{$this->filename}.xml"), storage_path("app/public/{$this->company->identification_number}/{$this->invoice[0]->pdf}"));
-                    return $this->view('mails.mail')->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
-                                                    ->from(\Config::get('mail.from.address'), \Config::get('mail.from.name'))
-//                                                    ->from(env('MAIL_FROM_ADDRESS', config('mail.username')), env('MAIL_FROM_NAME', env('APP_NAME')))
-//                                                    ->from(config('mail.username'))
-                                                    ->attach($nameZIP);
+                    return $this->view('mails.mail')
+                        ->subject("Factura Electronica: {$this->company->identification_number}-{$this->company->user->name}-{$this->invoice[0]->prefix}{$this->invoice[0]->number}-{$this->invoice[0]->type_document->code}")
+                        ->from(config('mail.from.address'), config('mail.from.name'))
+                        ->attach($nameZIP);
                 }
             }
     }

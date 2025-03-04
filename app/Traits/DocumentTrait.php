@@ -316,25 +316,22 @@ trait DocumentTrait
      */
     protected function createPDF($user, $company, $customer, $typeDocument, $resolution, $date, $time, $paymentForm, $request, $cufecude, $tipodoc = "INVOICE", $withHoldingTaxTotal = NULL, $notes = NULL, $healthfields)
     {
-        $template_json = false;
         set_time_limit(0);
-        if(isset($request->invoice_template))
-          if(!is_null($request->invoice_template) && ($request->invoice_template <> '')){
-            if(password_verify($company->identification_number, $request->template_token)){
+        ini_set("pcre.backtrack_limit", "5000000");
+        define("DOMPDF_ENABLE_REMOTE", true);
+
+        $template_json = false;
+        $template_pdf = $company->graphic_representation_template;
+
+        if (!empty($request->invoice_template)) {
+            if (password_verify($company->identification_number, $request->template_token)) {
                 $template_pdf = $request->invoice_template;
                 $template_json = true;
             }
-            else
-                $template_pdf = env("GRAPHIC_REPRESENTATION_TEMPLATE", 2);
-          }
-          else
-            $template_pdf = env("GRAPHIC_REPRESENTATION_TEMPLATE", 2);
-        else
-          $template_pdf = env("GRAPHIC_REPRESENTATION_TEMPLATE", 2);
-        ini_set("pcre.backtrack_limit", "5000000");
+        }
+
         $QRStr = '';
 //        try {
-            define("DOMPDF_ENABLE_REMOTE", true);
             if(isset($request->establishment_logo)){
                 $filenameLogo   = storage_path("app/public/{$company->identification_number}/alternate_{$company->identification_number}{$company->dv}.jpg");
                 $this->storeLogo($request->establishment_logo);

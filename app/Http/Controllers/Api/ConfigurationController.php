@@ -7,6 +7,7 @@ use Storage;
 use App\User;
 use Exception;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\PlanRequest;
@@ -1193,5 +1194,65 @@ class ConfigurationController extends Controller
                 'payload' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Obtener las plantillas disponibles.
+     */
+    public function getTemplates()
+    {
+        $templatePath = resource_path('views/pdfs/invoice/');
+        $imageBaseUrl = asset('pdf/');
+
+        // Buscar archivos que coincidan con 'templateX.blade.php'
+        $files = File::files($templatePath);
+        $templates = [];
+
+        foreach ($files as $file) {
+            if (preg_match('/template(\d+)\.blade\.php$/', $file->getFilename(), $matches)) {
+                $templateNumber = $matches[1]; // Obtener solo el número
+
+                // Generar la URL de la imagen
+                $imageUrl = $imageBaseUrl . "/template{$templateNumber}.png";
+
+                $templates[] = [
+                    'id' => $templateNumber,
+                    'name' => $file->getFilename(),
+                    'image_url' => $imageUrl,
+                ];
+            }
+        }
+
+        return response()->json([
+            'templates' => $templates
+        ]);
+    }
+
+    /**
+     * Actualizar la plantilla de una empresa.
+     */
+    public function updateTemplate(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|string'
+        ]);
+
+        $company = auth()->user()->company;
+
+        // Validar si el template existe en la carpeta
+        $templatePath = resource_path("views/pdfs/invoice/template{$request->id}.blade.php");
+
+        if (!File::exists($templatePath)) {
+            return response()->json(['error' => 'La plantilla no existe.'], 404);
+        }
+
+        // Guardar en BD
+        $company->graphic_representation_template = $request->id;
+        $company->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Plantilla actualizada correctamente.'
+        ]);
     }
 };
