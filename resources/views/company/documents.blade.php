@@ -1,7 +1,12 @@
 @extends('layouts.app')
 @section('content')
-<header class="page-header">
+<header class="page-header d-flex justify-content-between align-items-center">
     <h2>Documentos generados</h2>
+    <div>
+        <button class="btn btn-primary btn-lg shadow-sm" data-toggle="modal" data-target="#excelModal">
+            <i class="fas fa-upload mr-2"></i>Subida Masiva
+        </button>
+    </div>
 </header>
 <div class="card border">
     <div class="table-responsive card-body p-0">
@@ -153,11 +158,73 @@
     </div>
 </div>
 
+<!-- Modal Excel a JSON -->
+<div class="modal fade" id="excelModal" tabindex="-1" role="dialog" aria-labelledby="excelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex align-items-center">
+                <h5 class="modal-title mr-3" id="excelModalLabel">
+                    <i class="fas fa-upload mr-2"></i>Subida Masiva de Facturas
+                </h5>
+                <a href="{{ asset('co-documents-batch.xlsx') }}" class="btn btn-sm">
+                    <i class="fas fa-download mr-1"></i>Descargar Plantilla
+                </a>
+                <button type="button" class="close ml-auto" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="excelFile" class="font-weight-bold d-block">
+                        <i class="fas fa-upload mr-2"></i>Archivo Excel
+                    </label>
+                    <input type="file" class="form-control-file" id="excelFile" accept=".xls,.xlsx">
+                </div>
+                <div class="progress mt-3 d-none" id="progressBar">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"></div>
+                </div>
+                <div class="card border mt-4">
+                    <div class="card-header">
+                        <i class="fas fa-list-alt mr-2"></i>Resultado del Procesamiento
+                    </div>
+                    <div id="apiResults" class="card-body bg-light" style="max-height: 300px; overflow-y: auto; font-family: monospace;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-2"></i>Cerrar
+                </button>
+                <button type="button" class="btn btn-success d-none" id="finishProcess" onclick="location.reload()">
+                    <i class="fas fa-check mr-2"></i>Finalizar
+                </button>
+                <button type="button" class="btn btn-primary" id="processInvoices">
+                    <i class="fas fa-cogs mr-2"></i>Procesar Facturas
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 $(document).ready(function() {
+    // Añadir función para copiar token
+    window.copyToken = function() {
+        const tokenText = document.getElementById('apiToken').textContent;
+        navigator.clipboard.writeText(tokenText).then(() => {
+            alert('Token copiado al portapapeles');
+        }).catch(err => {
+            console.error('Error al copiar token:', err);
+            alert('Error al copiar token');
+        });
+    };
+    
+    // Variable global para almacenar los datos
+    window.transformedData = []; // Cambiamos a window.transformedData para acceso global
+
     $('.makeApiRequest').click(function() {
         var cufe = $(this).data('id');
         var $button = $(this);
@@ -191,6 +258,334 @@ $(document).ready(function() {
         $('#verificarInput').val(id);
         $('#changeStateModal').modal('show');
     });
+    // Manejo de Excel a JSON
+    $('#excelFile').on('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) {
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {
+                    type: 'array',
+                    cellDates: true,
+                    dateNF: 'yyyy-mm-dd'
+                });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, {
+                    raw: false,
+                    dateNF: 'yyyy-mm-dd'
+                });
+                
+                if (jsonData.length === 0) {
+                    alert('El archivo Excel está vacío');
+                    return;
+                }
+
+                const transformedData = [];
+                const invoiceGroups = {};
+
+                // Primero agrupamos por número de factura
+                jsonData.forEach(row => {
+                    if (!invoiceGroups[row.number]) {
+                        invoiceGroups[row.number] = {
+                            header: row,
+                            lines: [],
+                            totalDiscount: parseFloat(row.discount_amount) || 0
+                        };
+                    }
+                    // Agregamos la línea de producto sin descuento
+                    invoiceGroups[row.number].lines.push({
+                        unit_measure_id: parseInt(row.line_unit_measure_id),
+                        invoiced_quantity: row.line_invoiced_quantity.toString(),
+                        line_extension_amount: formatDecimal(row.line_extension_amount),
+                        free_of_charge_indicator: false,
+                        allowance_charges: [{
+                            charge_indicator: false,
+                            allowance_charge_reason: "DESCUENTO GENERAL",
+                            amount: "0.00",
+                            base_amount: formatDecimal(row.line_extension_amount)
+                        }],
+                        tax_totals: [{
+                            tax_id: parseInt(row.line_tax_tax_id),
+                            tax_amount: formatDecimal(row.line_tax_tax_amount),
+                            taxable_amount: formatDecimal(row.line_tax_taxable_amount),
+                            percent: row.line_tax_percent.toString()
+                        }],
+                        description: row.line_description,
+                        notes: row.line_notes || "",
+                        code: row.line_code,
+                        type_item_identification_id: parseInt(row.line_type_item_identification_id),
+                        price_amount: formatDecimal(row.line_price_amount),
+                        base_quantity: row.line_base_quantity.toString()
+                    });
+                });
+
+                // Luego creamos las facturas con todas sus líneas
+                Object.entries(invoiceGroups).forEach(([number, data]) => {
+                    const row = data.header;
+                    const now = new Date();
+                    const currentTime = now.toTimeString().split(' ')[0];
+
+                    // Calcular totales sumando todas las líneas
+                    const totals = data.lines.reduce((acc, line) => {
+                        const lineAmount = parseFloat(line.line_extension_amount);
+                        const taxAmount = parseFloat(line.tax_totals[0].tax_amount);
+                        
+                        return {
+                            line_extension_amount: acc.line_extension_amount + lineAmount,
+                            tax_amount: acc.tax_amount + taxAmount,
+                            payable_amount: acc.payable_amount + lineAmount + taxAmount
+                        };
+                    }, { line_extension_amount: 0, tax_amount: 0, payable_amount: 0 });
+
+                    // Aplicar el descuento general
+                    const totalDiscount = data.totalDiscount || 0;
+                    const finalPayableAmount = totals.payable_amount - totalDiscount;
+
+                    transformedData.push({
+                        number: parseInt(row.number),
+                        type_document_id: parseInt(row.type_document_id),
+                        date: formatDate(row.date),
+                        time: currentTime,
+                        resolution_number: row.resolution_number,
+                        prefix: row.prefix,
+                        notes: row.notes || "",
+                        disable_confirmation_text: true,
+                        establishment_name: row.establishment_name,
+                        establishment_address: row.establishment_address,
+                        establishment_phone: row.establishment_phone ? row.establishment_phone.toString() : "",
+                        establishment_municipality: parseInt(row.establishment_municipality),
+                        establishment_email: row.establishment_email,
+                        sendmail: true,
+                        sendmailtome: true,
+                        seze: "2021-2017",
+                        head_note: row.head_note || "",
+                        foot_note: row.foot_note || "",
+                        customer: {
+                            identification_number: parseInt(row.customer_identification_number),
+                            dv: parseInt(row.customer_dv),
+                            name: row.customer_name,
+                            phone: row.customer_phone ? row.customer_phone.toString() : "",
+                            address: row.customer_address,
+                            email: row.customer_email,
+                            merchant_registration: row.customer_merchant_registration || "0000000-00",
+                            type_document_identification_id: parseInt(row.customer_type_document_identification_id),
+                            type_organization_id: parseInt(row.customer_type_organization_id),
+                            type_liability_id: parseInt(row.customer_type_liability_id),
+                            municipality_id: parseInt(row.customer_municipality_id),
+                            type_regime_id: parseInt(row.customer_type_regime_id)
+                        },
+                        payment_form: {
+                            payment_form_id: parseInt(row.payment_form_id),
+                            payment_method_id: 10,
+                            payment_due_date: formatDate(row.payment_due_date),
+                            duration_measure: row.duration_measure ? row.duration_measure.toString() : "0"
+                        },
+                        legal_monetary_totals: {
+                            line_extension_amount: formatDecimal(totals.line_extension_amount),
+                            tax_exclusive_amount: formatDecimal(totals.line_extension_amount),
+                            tax_inclusive_amount: formatDecimal(totals.payable_amount),
+                            allowance_total_amount: formatDecimal(totalDiscount),
+                            payable_amount: formatDecimal(finalPayableAmount)
+                        },
+                        tax_totals: [{
+                            tax_id: 1,
+                            tax_amount: formatDecimal(totals.tax_amount),
+                            percent: "19",
+                            taxable_amount: formatDecimal(totals.line_extension_amount)
+                        }],
+                        invoice_lines: data.lines
+                    });
+                });
+
+                // Asignar los datos transformados a la variable
+                window.transformedData = transformedData;
+                
+                $('#apiResults').text('Datos preparados. ' + window.transformedData.length + ' facturas listas para procesar.');
+                console.log('Facturas preparadas:', window.transformedData.length);
+            } catch (error) {
+                console.error('Error procesando el Excel:', error);
+                $('#apiResults').text('Error: ' + error.message);
+                alert('Error procesando el archivo Excel: ' + error.message);
+            }
+        };
+
+        reader.onerror = function(ex) {
+            console.error('Error leyendo el archivo:', ex);
+            $('#apiResults').text('Error leyendo el archivo');
+            alert('Error leyendo el archivo Excel');
+        };
+
+        reader.readAsArrayBuffer(file);
+    });
+
+    // Procesamiento de facturas
+    $('#processInvoices').on('click', async function() {
+        if (!window.transformedData || window.transformedData.length === 0) {
+            alert('No hay facturas para procesar');
+            return;
+        }
+
+        const $processButton = $(this);
+        const $finishButton = $('#finishProcess');
+        const progressBar = $('#progressBar');
+        const progressBarInner = progressBar.find('.progress-bar');
+        const resultsContainer = $('#apiResults');
+        
+        // Deshabilitar botón procesar
+        $processButton.prop('disabled', true);
+        progressBar.removeClass('d-none');
+        let results = [];
+
+        for (let i = 0; i < window.transformedData.length; i++) {
+            const invoice = window.transformedData[i];
+            const progress = ((i + 1) / window.transformedData.length * 100).toFixed(2);
+            
+            progressBarInner.css('width', progress + '%')
+                          .text(progress + '%');
+
+            try {
+                const token = '{{ $company->user->api_token }}';
+                if (!token) {
+                    throw new Error('No se encontró el token de autenticación');
+                }
+
+                const response = await fetch('/api/ubl2.1/invoice', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(invoice)
+                });
+
+                const responseData = await response.json();
+                const statusCode = responseData.ResponseDian?.Envelope?.Body?.SendBillSyncResponse?.SendBillSyncResult?.StatusCode;
+                const errorMessage = responseData.ResponseDian?.Envelope?.Body?.SendBillSyncResponse?.SendBillSyncResult?.ErrorMessage?.string;
+                
+                const isSuccess = statusCode === "00";
+                results.push({
+                    invoice: invoice.number,
+                    status: statusCode,
+                    message: responseData.message,
+                    error: errorMessage,
+                    success: isSuccess
+                });
+
+                // Mostrar los resultados formateados
+                const resultadosFormateados = results.map(r => {
+                    let alertClass = 'alert-warning';
+                    let icon = 'question-circle';
+                    let message = '';
+
+                    if (r.status === "00") {
+                        alertClass = 'alert-success';
+                        icon = 'check-circle';
+                        message = `<div class="text-success">
+                            <strong>¡Enviado correctamente!</strong><br>
+                            ${r.message}
+                        </div>`;
+                    } else if (r.status === "99") {
+                        alertClass = 'alert-danger';
+                        icon = 'times-circle';
+                        message = `<div class="text-danger">
+                            <strong>Error en el envío:</strong><br>
+                            ${r.error}
+                        </div>`;
+                    }
+
+                    return `
+                        <div class="alert ${alertClass} mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-${icon} mr-2"></i>
+                                <h6 class="font-weight-bold mb-0">Factura ${r.invoice}</h6>
+                            </div>
+                            <div class="mt-2">
+                                ${message}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                resultsContainer.html(resultadosFormateados);
+                resultsContainer.scrollTop(resultsContainer[0].scrollHeight);
+
+                // Delay entre peticiones
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+            } catch (error) {
+                console.error('Error procesando factura:', invoice.number, error);
+                resultsContainer.append(`
+                    <div class="alert alert-danger mb-2">
+                        <strong>Error en Factura ${invoice.number}:</strong><br>
+                        ${error.message}
+                    </div>
+                `);
+                resultsContainer.scrollTop(resultsContainer[0].scrollHeight);
+            }
+        }
+
+        // Ocultar barra de progreso
+        progressBar.addClass('d-none');
+        $finishButton.removeClass('d-none'); // Mostrar botón finalizar
+        
+        // Agregar mensaje de completado
+        resultsContainer.prepend(`
+            <div class="alert alert-info">
+                <i class="fas fa-check-circle mr-2"></i>
+                <strong>Proceso Completado:</strong> Se procesaron ${results.length} facturas.
+                <br>
+                <small>Haga clic en "Finalizar" para actualizar la lista de documentos.</small>
+            </div>
+        `);
+    });
+
+    function formatDate(dateValue) {
+        if (!dateValue) return null;
+        
+        console.log('Fecha original:', dateValue); // Para debug
+        
+        // Si la fecha viene como string en formato DD/MM/YYYY
+        if (typeof dateValue === 'string' && dateValue.includes('/')) {
+            const parts = dateValue.split('/');
+            if (parts.length === 3) {
+                return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+            }
+        }
+        
+        // Si es una fecha de Excel (número)
+        if (!isNaN(dateValue) && typeof dateValue === 'number') {
+            const date = new Date((dateValue - 25569) * 86400 * 1000);
+            console.log('Fecha convertida de Excel:', date); // Para debug
+            return date.toISOString().split('T')[0];
+        }
+        
+        // Si es una fecha ya formateada YYYY-MM-DD
+        if (typeof dateValue === 'string' && dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            return dateValue;
+        }
+        
+        // Si es un objeto Date
+        if (dateValue instanceof Date) {
+            return dateValue.toISOString().split('T')[0];
+        }
+        
+        console.log('No se pudo procesar la fecha:', dateValue); // Para debug
+        return dateValue;
+    }
+
+    function formatDecimal(number) {
+        return number ? Number(number).toFixed(2) : "0.00";
+    }
 });
 </script>
+@endpush
+
+@push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 @endpush
