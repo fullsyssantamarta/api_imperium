@@ -35,7 +35,7 @@
     @include('xml._accrued_payroll')
     {{-- Deductions --}}
     @include('xml._deductions_payroll')
-    <DevengadosTotal>{{preg_replace("/[\r\n|\n|\r]+/", "", $accrued->accrued_total)}}</DevengadosTotal>
-    <DeduccionesTotal>{{preg_replace("/[\r\n|\n|\r]+/", "", $deductions->deductions_total)}}</DeduccionesTotal>
+    <DevengadosTotal>{{preg_replace("/[\r\n|\n|\r|',']+/", "", number_format($accrued->accrued_total, 2, '.', ''))}}</DevengadosTotal>
+    <DeduccionesTotal>{{preg_replace("/[\r\n|\n|\r]+/", "", number_format($deductions->deductions_total, 2, '.', ''))}}</DeduccionesTotal>
     <ComprobanteTotal>{{preg_replace("/[\r\n|\n|\r|',']+/", "", number_format($accrued->accrued_total - $deductions->deductions_total, 2))}}</ComprobanteTotal>
 </NominaIndividual>

@@ -1,11 +1,11 @@
 <Devengados>
     <Basico
         DiasTrabajados="{{preg_replace("/[\r\n|\n|\r]+/", "", $accrued->worked_days)}}"
-        SueldoTrabajado="{{preg_replace("/[\r\n|\n|\r]+/", "", $accrued->salary)}}"></Basico>
+        SueldoTrabajado="{{preg_replace("/[\r\n|\n|\r]+/", "", number_format($accrued->salary, 2, '.', ''))}}"></Basico>
     @if(isset($accrued->transportation_allowance) || isset($accrued->salary_viatics) ||isset($accrued->non_salary_viatics))
         <Transporte
             @if(isset($accrued->transportation_allowance))
-                AuxilioTransporte="{{preg_replace("/[\r\n|\n|\r]+/", "", $accrued->transportation_allowance)}}"
+                AuxilioTransporte="{{preg_replace("/[\r\n|\n|\r]+/", "", number_format($accrued->transportation_allowance, 2, '.', ''))}}"
             @endif
             @if(isset($accrued->salary_viatics))
                 ViaticoManuAlojS="{{preg_replace("/[\r\n|\n|\r]+/", "", $accrued->salary_viatics)}}"

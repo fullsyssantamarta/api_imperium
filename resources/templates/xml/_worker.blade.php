@@ -17,7 +17,7 @@
     LugarTrabajoDireccion="{{preg_replace("/[\r\n|\n|\r]+/", "", $worker->address)}}"
     SalarioIntegral="{{preg_replace("/[\r\n|\n|\r]+/", "", json_encode($worker->integral_salarary))}}"
     TipoContrato="{{preg_replace("/[\r\n|\n|\r]+/", "", $worker->type_contract->code)}}"
-    Sueldo="{{preg_replace("/[\r\n|\n|\r]+/", "", $worker->salary)}}"
+    Sueldo="{{preg_replace("/[\r\n|\n|\r]+/", "", number_format($worker->salary, 2, '.', ''))}}"
     @isset($worker->worker_code)
         CodigoTrabajador="{{preg_replace("/[\r\n|\n|\r]+/", "", $worker->worker_code)}}"
     @endisset
