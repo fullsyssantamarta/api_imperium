@@ -230,7 +230,6 @@ class PayrollAdjustNoteController extends Controller
 
         // Create XML
         $payroll_note = $this->createXML(compact('user', 'company', 'predecessor', 'period', 'worker', 'resolution', 'payment', 'payment_dates', 'typeDocument', 'notes', 'accrued', 'deductions', 'request', 'type_note', 'splited_name'));
-//        return $payroll_note->saveXML();
 
         // Signature XML
         $signPayrollNote = new SignPayrollNote($company->certificate->path, $company->certificate->password);
@@ -253,13 +252,9 @@ class PayrollAdjustNoteController extends Controller
         $filename = '';
         $respuestadian = '';
         $typeDocument = TypeDocument::findOrFail(7);
-//        $xml = new \DOMDocument;
         $ar = new \DOMDocument;
         try{
             $respuestadian = $sendPayrollSync->signToSend(storage_path("app/public/{$company->identification_number}/ReqNA-{$resolution->next_consecutive}.xml"))->getResponseToObject(storage_path("app/public/{$company->identification_number}/RptaNA-{$resolution->next_consecutive}.xml"));
-//            return $QRStr;
-//            return $payroll_note->saveXML();
-//            return json_encode($respuestadian);
             if(isset($respuestadian->html))
                 return [
                     'success' => false,
@@ -275,7 +270,6 @@ class PayrollAdjustNoteController extends Controller
                 $payroll_note_doc->cune = $cufecude;
                 $payroll_note_doc->save();
                 $signedxml = file_get_contents(storage_path("app/xml/{$company->id}/".$respuestadian->Envelope->Body->SendNominaSyncResponse->SendNominaSyncResult->XmlFileName.".xml"));
-//                $xml->loadXML($signedxml);
                 if(strpos($signedxml, "</Invoice>") > 0)
                     $td = '/Invoice';
                 else
@@ -291,20 +285,8 @@ class PayrollAdjustNoteController extends Controller
                 $fechavalidacion = $ar->documentElement->getElementsByTagName('IssueDate')->item(0)->nodeValue;
                 $horavalidacion = $ar->documentElement->getElementsByTagName('IssueTime')->item(0)->nodeValue;
                 $at = '';
-                // Create XML AttachedDocument
-//                $attacheddocument = $this->createXML(compact('user', 'company', 'worker', 'resolution', 'typeDocument', 'cufecude', 'signedxml', 'appresponsexml', 'fechavalidacion', 'horavalidacion'));
-                // Signature XML
-//                $signAttachedDocument = new SignAttachedDocument($company->certificate->path, $company->certificate->password);
-//                $signAttachedDocument->GuardarEn = storage_path("app/public/{$company->identification_number}/{$filename}.xml");
-
-//                $at = $signAttachedDocument->sign($attacheddocument)->xml;
-//                $at = str_replace("&gt;", ">", str_replace("&quot;", '"', str_replace("&lt;", "<", $at)));
-//                $file = fopen(storage_path("app/public/{$company->identification_number}/{$filename}".".xml"), "w");
-//                $file = fopen(storage_path("app/public/{$company->identification_number}/Attachment-".$this->valueXML($signedxml, $td."/cbc:ID/").".xml"), "w");
-//                fwrite($file, $at);
-//                fclose($file);
                 if(isset($request->sendmail) && (!$this->getTag($signedxml, 'EliminandoPredecesor', 0, 'CUNEPred'))){
-                    if($request->sendmail){
+                    if($request->sendmail && $worker){
                         $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
                                                     ->where('employee_id', '=', $worker->identification_number)
                                                     ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))

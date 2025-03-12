@@ -111,7 +111,7 @@ class StateController extends Controller
         $typeDocument = TypeDocument::findOrFail(7);
         $resolution = NULL;
         $customer = NULL;
-//        $xml = new \DOMDocument;
+        //        $xml = new \DOMDocument;
         $ar = new \DOMDocument;
         if ($GuardarEn){
             try{
@@ -146,7 +146,7 @@ class StateController extends Controller
                                     if(strpos($signedxml, "</NominaIndividualDeAjuste>") > 0)
                                         $td = '/NominaIndividualDeAjuste';
 
-//                    $xml->loadXML($signedxml);
+                    //  $xml->loadXML($signedxml);
 
                     $filename = str_replace('ttr', 'ad', str_replace('pos', 'ad', str_replace('ads', 'ad', str_replace('dse', 'ad', str_replace('ni', 'ad', str_replace('nd', 'ad', str_replace('nc', 'ad', str_replace('fv', 'ad', $respuestadian->Envelope->Body->GetStatusZipResponse->GetStatusZipResult->DianResponse->XmlFileName))))))));
                     if($request->atacheddocument_name_prefix)
@@ -154,10 +154,10 @@ class StateController extends Controller
 
                     $cufecude = $respuestadian->Envelope->Body->GetStatusZipResponse->GetStatusZipResult->DianResponse->XmlDocumentKey;
 
-//                    if ($td == '/NominaIndividual' || $td == 'NominaIndividualDeAjuste')
-//                        $cufecude = $this->getTag($signedxml, 'InformacionGeneral', 0, 'CUNE');
-//                    else
-//                        $cufecude = $this->ValueXML($signedxml, $td."/cbc:UUID/");
+                    //  if ($td == '/NominaIndividual' || $td == 'NominaIndividualDeAjuste')
+                    //      $cufecude = $this->getTag($signedxml, 'InformacionGeneral', 0, 'CUNE');
+                    //  else
+                    //      $cufecude = $this->ValueXML($signedxml, $td."/cbc:UUID/");
                     $appresponsexml = base64_decode($respuestadian->Envelope->Body->GetStatusZipResponse->GetStatusZipResult->DianResponse->XmlBase64Bytes);
                     $ar->loadXML($appresponsexml);
                     $fechavalidacion = $ar->documentElement->getElementsByTagName('IssueDate')->item(0)->nodeValue;
@@ -176,7 +176,7 @@ class StateController extends Controller
                             else
                                 $resolution = Resolution::where('prefix', NULL)->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
                         }
-//                        $resolution = Resolution::where('prefix', $this->ValueXML($signedxml, $td."/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme/cbc:ID/"))->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
+                    //      $resolution = Resolution::where('prefix', $this->ValueXML($signedxml, $td."/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme/cbc:ID/"))->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
                     else
                         if($td == '/NominaIndividual' || $td == '/NominaIndividualDeAjuste')
                             $resolution = Resolution::where('prefix', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))->firstOrFail();
@@ -219,8 +219,8 @@ class StateController extends Controller
                         $signAttachedDocument->GuardarEn = $GuardarEn."\\{$filename}.xml";
 
                         $at = $signAttachedDocument->sign($attacheddocument)->xml;
-//                        $at = str_replace("&gt;", ">", str_replace("&quot;", '"', str_replace("&lt;", "<", $at)));
-//                        $file = fopen($GuardarEn."\\Attachment-".$this->valueXML($signedxml, $td."/cbc:ID/").".xml", "w");
+                        //      $at = str_replace("&gt;", ">", str_replace("&quot;", '"', str_replace("&lt;", "<", $at)));
+                        //      $file = fopen($GuardarEn."\\Attachment-".$this->valueXML($signedxml, $td."/cbc:ID/").".xml", "w");
                         $file = fopen($GuardarEn."\\{$filename}".".xml", "w");
                         fwrite($file, $at);
                         fclose($file);
@@ -263,31 +263,33 @@ class StateController extends Controller
                             }
                     }
                     else{
-                        $worker = Employee::where('identification_number',  '=', $this->getTag($signedxml, 'Trabajador', 0, 'NumeroDocumento'))->firstOrFail();
-                        $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
-                                                  ->where('employee_id', '=', $worker->identification_number)
-                                                  ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
-                                                  ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
-                                                  ->where('state_document_id', '=', 0)->get();
-                        if(count($payroll) > 0){
-                            $payroll[0]->state_document_id = 1;
-                            $payroll[0]->cune = $cufecude;
-                            $payroll[0]->save();
-                        }
-                        if(isset($request->sendmail) && (!$this->getTag($signedxml, 'EliminandoPredecesor', 0, 'CUNEPred'))){
-                            if($request->sendmail){
-                                $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
-                                                            ->where('employee_id', '=', $worker->identification_number)
-                                                            ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
-                                                            ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
-                                                            ->where('state_document_id', '=', 1)->get();
-                                if(count($payroll) > 0){
-                                    try{
-                                        Mail::to($worker->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
-                                        if($request->sendmailtome)
-                                            Mail::to($user->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
-                                    } catch (\Exception $m) {
-                                        \Log::debug($m->getMessage());
+                        $worker = Employee::where('identification_number',  '=', $this->getTag($signedxml, 'Trabajador', 0, 'NumeroDocumento'))->first();
+                        if($worker) {
+                            $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
+                                ->where('employee_id', '=', $worker->identification_number)
+                                ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
+                                ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
+                                ->where('state_document_id', '=', 0)->get();
+                            if(count($payroll) > 0){
+                                $payroll[0]->state_document_id = 1;
+                                $payroll[0]->cune = $cufecude;
+                                $payroll[0]->save();
+                            }
+                            if(isset($request->sendmail) && (!$this->getTag($signedxml, 'EliminandoPredecesor', 0, 'CUNEPred'))){
+                                if($request->sendmail){
+                                    $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
+                                        ->where('employee_id', '=', $worker->identification_number)
+                                        ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
+                                        ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
+                                        ->where('state_document_id', '=', 1)->get();
+                                    if(count($payroll) > 0){
+                                        try{
+                                            Mail::to($worker->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
+                                            if($request->sendmailtome)
+                                                Mail::to($user->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
+                                        } catch (\Exception $m) {
+                                            \Log::debug($m->getMessage());
+                                        }
                                     }
                                 }
                             }
@@ -327,7 +329,7 @@ class StateController extends Controller
                     else{
                         $signedxml = file_get_contents(storage_path("app/xml/{$company->id}/".$respuestadian->Envelope->Body->GetStatusZipResponse->GetStatusZipResult->DianResponse->XmlFileName.".xml"));
                     }
-//                    $xml->loadXML($signedxml);
+                    //  $xml->loadXML($signedxml);
                     if(strpos($signedxml, "</Invoice>") > 0)
                         $td = '/Invoice';
                     else
@@ -343,22 +345,22 @@ class StateController extends Controller
                                     if(strpos($signedxml, "</NominaIndividualDeAjuste>") > 0)
                                         $td = '/NominaIndividualDeAjuste';
 
-//                    if(isset($respuestadian->Envelope->Body->GetStatusZip;Response->GetStatusZipResult->DianResponse->XmlFileName->_attributes))
-//                        $xml = $this->readXML(storage_path("app/public/{$company->identification_number}/FES-".$invoicenumber));
-//                    else
-//                        $xml = $this->readXML(storage_path("app/xml/{$company->id}/".$respuestadian->Envelope->Body->GetStatusZipResponse->GetStatusZipResult->DianResponse->XmlFileName.".xml"));
+                    //  if(isset($respuestadian->Envelope->Body->GetStatusZip;Response->GetStatusZipResult->DianResponse->XmlFileName->_attributes))
+                    //      $xml = $this->readXML(storage_path("app/public/{$company->identification_number}/FES-".$invoicenumber));
+                    //  else
+                    //      $xml = $this->readXML(storage_path("app/xml/{$company->id}/".$respuestadian->Envelope->Body->GetStatusZipResponse->GetStatusZipResult->DianResponse->XmlFileName.".xml"));
 
-//                    return $this->ValueXML($signedxml, '/CreditNote/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme/cbc:Name/');
+                    //  return $this->ValueXML($signedxml, '/CreditNote/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme/cbc:Name/');
 
                     $filename = str_replace('ttr', 'ad', str_replace('pos', 'ad', str_replace('ads', 'ad', str_replace('dse', 'ad', str_replace('ni', 'ad', str_replace('nd', 'ad', str_replace('nc', 'ad', str_replace('fv', 'ad', $respuestadian->Envelope->Body->GetStatusZipResponse->GetStatusZipResult->DianResponse->XmlFileName))))))));
                     if($request->atacheddocument_name_prefix)
                         $filename = $request->atacheddocument_name_prefix.$filename;
 
                     $cufecude = $respuestadian->Envelope->Body->GetStatusZipResponse->GetStatusZipResult->DianResponse->XmlDocumentKey;
-//                    if($td == '/NominaIndividual' || $td == 'NominaIndividualDeAjuste')
-//                        $cufecude = $this->getTag($signedxml, 'InformacionGeneral', 0, 'CUNE');
-//                    else
-//                        $cufecude = $this->ValueXML($signedxml, $td."/cbc:UUID/");
+                    //  if($td == '/NominaIndividual' || $td == 'NominaIndividualDeAjuste')
+                    //      $cufecude = $this->getTag($signedxml, 'InformacionGeneral', 0, 'CUNE');
+                    //  else
+                    //      $cufecude = $this->ValueXML($signedxml, $td."/cbc:UUID/");
 
                     $appresponsexml = base64_decode($respuestadian->Envelope->Body->GetStatusZipResponse->GetStatusZipResult->DianResponse->XmlBase64Bytes);
                     $ar->loadXML($appresponsexml);
@@ -378,7 +380,7 @@ class StateController extends Controller
                             else
                                 $resolution = Resolution::where('prefix', NULL)->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
                         }
-//                        $resolution = Resolution::where('prefix', $this->ValueXML($signedxml, $td."/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme/cbc:ID/"))->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
+                    //      $resolution = Resolution::where('prefix', $this->ValueXML($signedxml, $td."/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme/cbc:ID/"))->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
                     else
                         if($td == '/NominaIndividual' || $td == '/NominaIndividualDeAjuste')
                             $resolution = Resolution::where('prefix', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))->firstOrFail();
@@ -388,7 +390,8 @@ class StateController extends Controller
                     $resolution->document_number = $document_number;
                       // Create XML AttachedDocument
                     $at = '';
-                    if($td != '/NominaIndividual' && $td != '/NominaIndividualDeAjuste'){
+                    if($td != '/NominaIndividual' && $td != '/NominaIndividualDeAjuste')
+                    {
                         if($this->valueXML($signedxml, $td."/cbc:ProfileID/") != 'DIAN 2.1: documento soporte en adquisiciones efectuadas a no obligados a facturar.' && $this->valueXML($signedxml, $td."/cbc:ProfileID/") != 'DIAN 2.1: Nota de ajuste al documento soporte en adquisiciones efectuadas a sujetos no obligados a expedir factura o documento equivalente')
                             $u = ['name' => $this->ValueXML($signedxml, $td."/cac:AccountingCustomerParty/cac:Party/cac:PartyName/cbc:Name/"),
                                   'email' => $this->ValueXML($signedxml, $td."/cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:ElectronicMail/"),
@@ -420,7 +423,7 @@ class StateController extends Controller
                         $signAttachedDocument->GuardarEn = storage_path("app/public/{$company->identification_number}/{$filename}.xml");
 
                         $at = $signAttachedDocument->sign($attacheddocument)->xml;
-//                        $at = str_replace("&gt;", ">", str_replace("&quot;", '"', str_replace("&lt;", "<", $at)));
+                        //      $at = str_replace("&gt;", ">", str_replace("&quot;", '"', str_replace("&lt;", "<", $at)));
                         $file = fopen(storage_path("app/public/{$company->identification_number}/{$filename}".".xml"), "w");
                         fwrite($file, $at);
                         fclose($file);
@@ -463,31 +466,33 @@ class StateController extends Controller
                             }
                     }
                     else{
-                        $worker = Employee::where('identification_number',  '=', $this->getTag($signedxml, 'Trabajador', 0, 'NumeroDocumento'))->firstOrFail();
-                        $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
-                                                  ->where('employee_id', '=', $worker->identification_number)
-                                                  ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
-                                                  ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
-                                                  ->where('state_document_id', '=', 0)->get();
-                        if(count($payroll) > 0){
-                            $payroll[0]->state_document_id = 1;
-                            $payroll[0]->cune = $cufecude;
-                            $payroll[0]->save();
-                        }
-                        if(isset($request->sendmail) && (!$this->getTag($signedxml, 'EliminandoPredecesor', 0, 'CUNEPred'))){
-                            if($request->sendmail){
-                                $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
-                                                            ->where('employee_id', '=', $worker->identification_number)
-                                                            ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
-                                                            ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
-                                                            ->where('state_document_id', '=', 1)->get();
-                                if(count($payroll) > 0){
-                                    try{
-                                        Mail::to($worker->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
-                                        if($request->sendmailtome)
-                                            Mail::to($user->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
-                                    } catch (\Exception $m) {
-                                        \Log::debug($m->getMessage());
+                        $worker = Employee::where('identification_number',  '=', $this->getTag($signedxml, 'Trabajador', 0, 'NumeroDocumento'))->first();
+                        if($worker) {
+                            $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
+                                ->where('employee_id', '=', $worker->identification_number)
+                                ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
+                                ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
+                                ->where('state_document_id', '=', 0)->get();
+                            if(count($payroll) > 0){
+                                $payroll[0]->state_document_id = 1;
+                                $payroll[0]->cune = $cufecude;
+                                $payroll[0]->save();
+                            }
+                            if(isset($request->sendmail) && (!$this->getTag($signedxml, 'EliminandoPredecesor', 0, 'CUNEPred'))){
+                                if($request->sendmail){
+                                    $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
+                                        ->where('employee_id', '=', $worker->identification_number)
+                                        ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
+                                        ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
+                                        ->where('state_document_id', '=', 1)->get();
+                                    if(count($payroll) > 0){
+                                        try{
+                                            Mail::to($worker->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
+                                            if($request->sendmailtome)
+                                                Mail::to($user->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
+                                        } catch (\Exception $m) {
+                                            \Log::debug($m->getMessage());
+                                        }
                                     }
                                 }
                             }
@@ -610,7 +615,7 @@ class StateController extends Controller
 
                     $cufecude = $respuestadian->Envelope->Body->GetStatusResponse->GetStatusResult->XmlDocumentKey;
                     $signedxml = file_get_contents(storage_path("app/xml/{$company->id}/".$respuestadian->Envelope->Body->GetStatusResponse->GetStatusResult->XmlFileName.".xml"));
-//                    $xml->loadXML($signedxml);
+                    //  $xml->loadXML($signedxml);
                     if(strpos($signedxml, "</Invoice>") > 0)
                         $td = '/Invoice';
                     else
@@ -644,7 +649,7 @@ class StateController extends Controller
                             else
                                 $resolution = Resolution::where('prefix', NULL)->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
                         }
-//                        $resolution = Resolution::where('prefix', $this->ValueXML($signedxml, $td."/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme/cbc:ID/"))->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
+                    //      $resolution = Resolution::where('prefix', $this->ValueXML($signedxml, $td."/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme/cbc:ID/"))->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
                     else
                         if($td == '/NominaIndividual' || $td == '/NominaIndividualDeAjuste')
                             $resolution = Resolution::where('prefix', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))->firstOrFail();
@@ -686,9 +691,9 @@ class StateController extends Controller
                         $signAttachedDocument->GuardarEn = $GuardarEn."\\{$filename}.xml";
 
                         $at = $signAttachedDocument->sign($attacheddocument)->xml;
-//                        $at = str_replace("&gt;", ">", str_replace("&quot;", '"', str_replace("&lt;", "<", $at)));
+                    //      $at = str_replace("&gt;", ">", str_replace("&quot;", '"', str_replace("&lt;", "<", $at)));
                         $file = fopen($GuardarEn."\\{$filename}".".xml", "w");
-//                        $file = fopen($GuardarEn."\\Attachment-".$this->valueXML($signedxml, $td."/cbc:ID/").".xml", "w");
+                    //      $file = fopen($GuardarEn."\\Attachment-".$this->valueXML($signedxml, $td."/cbc:ID/").".xml", "w");
                         fwrite($file, $at);
                         fclose($file);
                         if($this->valueXML($signedxml, $td."/cbc:ProfileID/") != 'DIAN 2.1: documento soporte en adquisiciones efectuadas a no obligados a facturar.' && $this->valueXML($signedxml, $td."/cbc:ProfileID/") != 'DIAN 2.1: Nota de ajuste al documento soporte en adquisiciones efectuadas a sujetos no obligados a expedir factura o documento equivalente')
@@ -738,30 +743,32 @@ class StateController extends Controller
                     }
                     else{
                         if(isset($request->sendmail) && (!$this->getTag($signedxml, 'EliminandoPredecesor', 0, 'CUNEPred'))){
-                            $worker = Employee::where('identification_number',  '=', $this->getTag($signedxml, 'Trabajador', 0, 'NumeroDocumento'))->firstOrFail();
-                            $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
-                                                        ->where('employee_id', '=', $worker->identification_number)
-                                                        ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
-                                                        ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
-                                                        ->where('state_document_id', '=', 0)->get();
-                            if(count($payroll) > 0){
-                                $payroll[0]->state_document_id = 1;
-                                $payroll[0]->cune = $cufecude;
-                                $payroll[0]->save();
-                            }
-                            if($request->sendmail){
+                            $worker = Employee::where('identification_number',  '=', $this->getTag($signedxml, 'Trabajador', 0, 'NumeroDocumento'))->first();
+                            if($worker){
                                 $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
-                                                            ->where('employee_id', '=', $worker->identification_number)
-                                                            ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
-                                                            ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
-                                                            ->where('state_document_id', '=', 1)->get();
+                                    ->where('employee_id', '=', $worker->identification_number)
+                                    ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
+                                    ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
+                                    ->where('state_document_id', '=', 0)->get();
                                 if(count($payroll) > 0){
-                                    try{
-                                        Mail::to($worker->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
-                                        if($request->sendmailtome)
-                                            Mail::to($user->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
-                                    } catch (\Exception $m) {
-                                        \Log::debug($m->getMessage());
+                                    $payroll[0]->state_document_id = 1;
+                                    $payroll[0]->cune = $cufecude;
+                                    $payroll[0]->save();
+                                }
+                                if($request->sendmail){
+                                    $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
+                                        ->where('employee_id', '=', $worker->identification_number)
+                                        ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
+                                        ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
+                                        ->where('state_document_id', '=', 1)->get();
+                                    if(count($payroll) > 0){
+                                        try{
+                                            Mail::to($worker->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
+                                            if($request->sendmailtome)
+                                                Mail::to($user->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
+                                        } catch (\Exception $m) {
+                                            \Log::debug($m->getMessage());
+                                        }
                                     }
                                 }
                             }
@@ -840,7 +847,7 @@ class StateController extends Controller
                                         if(strpos($signedxml, "</NominaIndividualDeAjuste>") > 0)
                                             $td = '/NominaIndividualDeAjuste';
 
-//                        $xml->loadXML($signedxml);
+                    //      $xml->loadXML($signedxml);
                         $appresponsexml = base64_decode($respuestadian->Envelope->Body->GetStatusResponse->GetStatusResult->XmlBase64Bytes);
                         $ar->loadXML($appresponsexml);
                         $fechavalidacion = $ar->documentElement->getElementsByTagName('IssueDate')->item(0)->nodeValue;
@@ -850,21 +857,21 @@ class StateController extends Controller
                         else
                             $document_number = $this->ValueXML($signedxml, $td."/cbc:ID/");
 
-//                        if($td == '/Invoice')
-//                            if(isset($this->getTag($signedxml, 'Prefix', 0)->nodeValue))
-//                                $resolution = Resolution::where('prefix', $this->getTag($signedxml, 'Prefix', 0)->nodeValue)->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
-//                            else{
-//                                if($this->getTag($signedxml, 'InvoiceTypeCode', 0)->nodeValue == 35)
-//                                    $resolution = Resolution::where('prefix', $this->ValueXML($signedxml, $td."/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme/cbc:ID/"))->firstOrFail();
-//                                else
-//                                    $resolution = Resolution::where('prefix', NULL)->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
-//                            }
-////                            $resolution = Resolution::where('prefix', $this->ValueXML($signedxml, $td."/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme/cbc:ID/"))->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
-//                        else
-//                            if($td == '/NominaIndividual' || $td == '/NominaIndividualDeAjuste')
-//                                $resolution = Resolution::where('prefix', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))->firstOrFail();
-//                            else
-//                                $resolution = Resolution::where('prefix', $this->ValueXML($signedxml, $td."/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme/cbc:ID/"))->firstOrFail();
+                    //      if($td == '/Invoice')
+                    //          if(isset($this->getTag($signedxml, 'Prefix', 0)->nodeValue))
+                    //              $resolution = Resolution::where('prefix', $this->getTag($signedxml, 'Prefix', 0)->nodeValue)->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
+                    //          else{
+                    //              if($this->getTag($signedxml, 'InvoiceTypeCode', 0)->nodeValue == 35)
+                    //                  $resolution = Resolution::where('prefix', $this->ValueXML($signedxml, $td."/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme/cbc:ID/"))->firstOrFail();
+                    //              else
+                    //                  $resolution = Resolution::where('prefix', NULL)->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
+                    //          }
+                    //          $resolution = Resolution::where('prefix', $this->ValueXML($signedxml, $td."/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme/cbc:ID/"))->where('resolution', $this->getTag($signedxml, 'InvoiceAuthorization', 0)->nodeValue)->firstOrFail();
+                    //      else
+                    //          if($td == '/NominaIndividual' || $td == '/NominaIndividualDeAjuste')
+                    //              $resolution = Resolution::where('prefix', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))->firstOrFail();
+                    //          else
+                    //              $resolution = Resolution::where('prefix', $this->ValueXML($signedxml, $td."/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme/cbc:ID/"))->firstOrFail();
 
                         $resolution = new Resolution();
                         $resolution->document_number = $document_number;
@@ -897,15 +904,15 @@ class StateController extends Controller
                             $customer = new user($u);
                             $customer->company = new Company($u);
                             $attacheddocument = $this->createXML(compact('user', 'company', 'customer', 'resolution', 'typeDocument', 'cufecude', 'signedxml', 'appresponsexml', 'fechavalidacion', 'horavalidacion', 'document_number'));
-//                            return $attacheddocument->saveXML();
+                    //          return $attacheddocument->saveXML();
                             // Signature XML
                             $signAttachedDocument = new SignAttachedDocument($company->certificate->path, $company->certificate->password);
                             $signAttachedDocument->GuardarEn = storage_path("app/public/{$company->identification_number}/{$filename}.xml");
 
                             $at = $signAttachedDocument->sign($attacheddocument)->xml;
-//                            $at = str_replace("&gt;", ">", str_replace("&quot;", '"', str_replace("&lt;", "<", $at)));
+                    //          $at = str_replace("&gt;", ">", str_replace("&quot;", '"', str_replace("&lt;", "<", $at)));
                             $file = fopen(storage_path("app/public/{$company->identification_number}/{$filename}".".xml"), "w");
-//                            $file = fopen(storage_path("app/public/{$company->identification_number}/Attachment-".$this->valueXML($signedxml, $td."/cbc:ID/").".xml"), "w");
+                    //          $file = fopen(storage_path("app/public/{$company->identification_number}/Attachment-".$this->valueXML($signedxml, $td."/cbc:ID/").".xml"), "w");
                             fwrite($file, $at);
                             fclose($file);
                             if($this->valueXML($signedxml, $td."/cbc:ProfileID/") != 'DIAN 2.1: documento soporte en adquisiciones efectuadas a no obligados a facturar.' && $this->valueXML($signedxml, $td."/cbc:ProfileID/") != 'DIAN 2.1: Nota de ajuste al documento soporte en adquisiciones efectuadas a sujetos no obligados a expedir factura o documento equivalente')
@@ -954,30 +961,32 @@ class StateController extends Controller
                         }
                         else{
                             if(isset($request->sendmail) && (!$this->getTag($signedxml, 'EliminandoPredecesor', 0, 'CUNEPred'))){
-                                $worker = Employee::where('identification_number',  '=', $this->getTag($signedxml, 'Trabajador', 0, 'NumeroDocumento'))->firstOrFail();
-                                $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
-                                                            ->where('employee_id', '=', $worker->identification_number)
-                                                            ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
-                                                            ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
-                                                            ->where('state_document_id', '=', 0)->get();
-                                if(count($payroll) > 0){
-                                    $payroll[0]->state_document_id = 1;
-                                    $payroll[0]->cune = $cufecude;
-                                    $payroll[0]->save();
-                                }
-                                if($request->sendmail){
+                                $worker = Employee::where('identification_number',  '=', $this->getTag($signedxml, 'Trabajador', 0, 'NumeroDocumento'))->first();
+                                if($worker){
                                     $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
-                                                                ->where('employee_id', '=', $worker->identification_number)
-                                                                ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
-                                                                ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
-                                                                ->where('state_document_id', '=', 1)->get();
+                                        ->where('employee_id', '=', $worker->identification_number)
+                                        ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
+                                        ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
+                                        ->where('state_document_id', '=', 0)->get();
                                     if(count($payroll) > 0){
-                                        try{
-                                            Mail::to($worker->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
-                                            if($request->sendmailtome)
-                                                Mail::to($user->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
-                                        } catch (\Exception $m) {
-                                            \Log::debug($m->getMessage());
+                                        $payroll[0]->state_document_id = 1;
+                                        $payroll[0]->cune = $cufecude;
+                                        $payroll[0]->save();
+                                    }
+                                    if($request->sendmail){
+                                        $payroll = DocumentPayroll::where('identification_number', '=', $company->identification_number)
+                                            ->where('employee_id', '=', $worker->identification_number)
+                                            ->where('prefix', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Prefijo'))
+                                            ->where('consecutive', '=', $this->getTag($signedxml, 'NumeroSecuenciaXML', 0, 'Consecutivo'))
+                                            ->where('state_document_id', '=', 1)->get();
+                                        if(count($payroll) > 0){
+                                            try{
+                                                Mail::to($worker->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
+                                                if($request->sendmailtome)
+                                                    Mail::to($user->email)->send(new PayrollMail($payroll, $worker, $company, FALSE, $filename, $request));
+                                            } catch (\Exception $m) {
+                                                \Log::debug($m->getMessage());
+                                            }
                                         }
                                     }
                                 }
