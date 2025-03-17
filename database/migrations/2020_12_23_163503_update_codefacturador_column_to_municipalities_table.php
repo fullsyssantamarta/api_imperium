@@ -1227,7 +1227,7 @@ class UpdateCodefacturadorColumnToMunicipalitiesTable extends Migration
         }
 
         // Log::info($municipalitiesNotFounds);
-        Log::info($departmentsNotFound);
+        //Log::info($departmentsNotFound);
         Department::where('id', 22)->update(['name' => 'Nariño']);
 	}
 
