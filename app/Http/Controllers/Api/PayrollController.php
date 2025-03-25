@@ -34,6 +34,84 @@ class PayrollController extends Controller
 {
     use DocumentTrait;
 
+      /**
+     * Preliminary view for payroll.
+     *
+     * @param \App\Http\Requests\Api\PayrollRequest $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function preeliminarview(PayrollRequest $request)
+    {
+        try {
+            // User y Company
+            $user = auth()->user();
+            $company = $user->company;
+
+            // Preparar datos básicos
+            $typeDocument = TypeDocument::findOrFail($request->type_document_id);
+            $request->resolution->number = $request->consecutive;
+
+            // Crear objetos usando operador ternario
+            $novelty = $request->novelty ? new Novelty($request->novelty) : null;
+            $period = $request->period ? new Period($request->period) : null;
+            $worker = $request->worker ? new Worker($request->worker) : null;
+            $payment = $request->payment ? new PayrollPayment($request->payment) : null;
+            $accrued = $request->accrued ? new Accrued($request->accrued) : null;
+            $deductions = $request->deductions ? new Deduction($request->deductions) : null;
+
+            // Payment Dates
+            $payment_dates = collect($request->payment_dates ?? [])->map(function($payment_date) {
+                return new PayrollPaymentDate($payment_date);
+            });
+
+            // Crear directorio si no existe
+            $base_path = storage_path("app/public/{$company->identification_number}");
+            if (!file_exists($base_path)) {
+                mkdir($base_path, 0777, true);
+            }
+
+            // Generar QR y PDF
+            $QRStr = $this->createPDFPayroll(
+                $user, 
+                $company, 
+                $novelty, 
+                $period, 
+                $worker, 
+                $request->resolution, 
+                $payment, 
+                $payment_dates, 
+                $typeDocument, 
+                $request->notes, 
+                $accrued, 
+                $deductions, 
+                $request, 
+                "", 
+                "PAYROLL"
+            );
+
+            $pdf_path = "{$base_path}/NIS-{$request->resolution->next_consecutive}.pdf";
+            
+            if (!file_exists($pdf_path)) {
+                throw new \Exception("Error generando el archivo PDF");
+            }
+
+            return [
+                'success' => true,
+                'message' => "Vista preliminar de nómina #{$request->resolution->next_consecutive} generada con éxito",
+                'urlpayrollpdf' => "NIS-{$request->resolution->next_consecutive}.pdf",
+                'base64payrollpdf' => base64_encode(file_get_contents($pdf_path)),
+                'resolution_number' => $request->resolution->next_consecutive
+            ];
+
+        } catch (\Exception $e) {
+            
+            return [
+                'success' => false,
+                'message' => "Error generando vista preliminar: " . $e->getMessage()
+            ];
+        }
+    }
     /**
      * Store.
      *

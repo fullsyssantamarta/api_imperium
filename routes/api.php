@@ -261,6 +261,7 @@ Route::middleware('auth:api')->group(function () {
 
         // Payroll
         Route::prefix('/payroll')->group(function () {
+            Route::post('/preeliminar-view', 'Api\PayrollController@preeliminarview');
             Route::post('/{testSetId}', 'Api\PayrollController@testSetStore');
             Route::post('/', 'Api\PayrollController@store');
             Route::get('/current_number/{type}/{ignore_state_document_id?}/{prefix?}', 'Api\PayrollController@currentNumber');
