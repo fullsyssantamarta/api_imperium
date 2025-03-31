@@ -48,6 +48,34 @@ class InvoiceExportController extends Controller
     {
         // User
         $user = auth()->user();
+
+        $requestData = $request->all();
+        
+        
+        if (isset($requestData['deliveryterms'])) {
+            
+            if (!isset($requestData['k_supplement'])) {
+                $requestData['k_supplement'] = [];
+            }
+            
+            // Si no viene FctConvCop, obtenerlo del TrmController
+            if (!isset($requestData['k_supplement']['FctConvCop'])) {
+                try {
+                    $trm = new TrmController();
+                    $trmValue = $trm->getCurrentTRM();
+                    $requestData['k_supplement']['FctConvCop'] = $trmValue;
+                }
+                catch(\Exception $e) {
+                    throw new \Exception('Error obteniendo TRM: ' . $e->getMessage());
+                }
+            }
+            else {
+            }
+        }
+
+        // Reemplazar el request original con los datos modificados
+        $request->merge($requestData);
+
         $smtp_parameters = collect($request->smtp_parameters);
         if(isset($request->smtp_parameters)){
             \Config::set('mail.host', $smtp_parameters->toArray()['host']);

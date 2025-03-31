@@ -49,6 +49,9 @@ Route::prefix('/ubl2.1')->group(function () {
     Route::prefix('/statuszip')->group(function () {
         Route::post('/', 'Api\StatusZipController@statuszip');
     });
+
+    Route::get('/currencies', 'Api\TrmController@getAllCurrencies');
+    Route::get('/trm', 'Api\TrmController@getHtmlTrm');
 });
 
 Route::middleware('auth:api')->group(function () {
