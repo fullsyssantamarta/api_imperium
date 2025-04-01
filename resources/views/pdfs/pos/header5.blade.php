@@ -53,7 +53,7 @@
                         $aseze = substr($request->seze, 0, strpos($request->seze, '-', 0));
                         $asociedad = substr($request->seze, strpos($request->seze, '-', 0) + 1);
                     ?>
-                    <p style="font-size: 6px">Regimen SEZE Año: {{$aseze}} Constitución Sociedad Año: {{$asociedad}}</p><br>
+                    <p style="font-size: 6px">Regimen ZESE Año: {{$aseze}} Constitución Sociedad Año: {{$asociedad}}</p><br>
                 @endif
                 <p style="font-size: 6px">Resolución de Facturación Electrónica No. {{$resolution->resolution}} de {{$resolution->resolution_date}}, Prefijo: {{$resolution->prefix}}, Rango {{$resolution->from}} Al {{$resolution->to}} - Vigencia Desde: {{$resolution->date_from}} Hasta: {{$resolution->date_to}}</p>
                 <p style="font-size: 6px">REPRESENTACION GRAFICA DE DOCUMENTO EQUIVALENTE ELECTRONICO DEL TIQUETE DE MAQUINA REGISTRADORA CON SISTEMA P.O.S.</p>

@@ -55,8 +55,8 @@ class sdCreditNoteRequest extends FormRequest
             // Prefijo del Nombre del AttachedDocument
             'atacheddocument_name_prefix' => 'nullable|string',
 
-            // Regimen SEZE
-            'seze' => 'nullable|string',  // Cadena indicando año de inicio regimen SEZE y año de formacion de sociedad separados por guion Ejemplo 2021-2017
+            // Regimen ZESE
+            'seze' => 'nullable|string',  // Cadena indicando año de inicio Regimen ZESE y año de formacion de sociedad separados por guion Ejemplo 2021-2017
 
             // Nota Encabezado y pie de pagina
             'foot_note' => 'nullable|string',

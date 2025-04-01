@@ -56,7 +56,7 @@
                     $aseze = substr($request->seze, 0, strpos($request->seze, '-', 0));
                     $asociedad = substr($request->seze, strpos($request->seze, '-', 0) + 1);
                 ?>
-                Regimen SEZE Año: {{$aseze}} Constitución Sociedad Año: {{$asociedad}}<br>
+                Regimen ZESE Año: {{$aseze}} Constitución Sociedad Año: {{$asociedad}}<br>
             @endif
             Resolución de Facturación Electrónica No. {{$resolution->resolution}} de {{$resolution->resolution_date}}<br>
             Prefijo: {{$resolution->prefix}}, Rango {{$resolution->from}} al {{$resolution->to}}<br>

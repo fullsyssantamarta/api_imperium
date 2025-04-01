@@ -70,7 +70,7 @@
                         $aseze = substr($request->seze, 0, strpos($request->seze, '-', 0));
                         $asociedad = substr($request->seze, strpos($request->seze, '-', 0) + 1);
                     ?>
-                    Regimen SEZE Año: {{$aseze}} Constitución Sociedad Año: {{$asociedad}}<br>
+                    Regimen ZESE Año: {{$aseze}} Constitución Sociedad Año: {{$asociedad}}<br>
                 @endif
                 REPRESENTACION GRAFICA DE COMPROBANTE DE NOMINA ELECTRONICA<br>
                 @if(isset($request->establishment_address))
