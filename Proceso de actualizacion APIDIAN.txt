@@ -27,11 +27,11 @@ Dentro del directorio del apidian2021 o apidian2022 o apidian2023 o apidian2O24:
 	d. git pull
 	e. git pull origin master
 	e. Si aparecen conflictos ejecutar el comando: git reset --hard origin/master
-	f. php artisan migrate --seed
-	g. composer clear-cache
-	h. composer self-update
-	i. rm composer.lock
-	j. composer install
+	f. composer clear-cache
+	g. composer self-update
+	h. rm composer.lock
+	i. composer install
+	j. php artisan migrate --seed
 	k. unzip storage.zip
 	l. chmod -R 777 storage
 	m. chmod -R 777 bootstrap/cache
