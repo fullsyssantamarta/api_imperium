@@ -70,6 +70,12 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/payment-forms', 'Api\PaymentController@getPaymentForms');
         Route::get('/items', 'Api\ItemController@records');
     });
+
+    Route::prefix('/rips')->group(function () {
+        Route::post('/configuration', 'Api\RipsConfigurationController@setConfiguration');
+        Route::post('/', 'Api\RipsController@processRips');
+    });
+
     // UBL 2.1
     Route::prefix('/ubl2.1')->group(function () {
         // Xml Document
