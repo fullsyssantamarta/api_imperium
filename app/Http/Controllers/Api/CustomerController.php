@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Customer;
 use Illuminate\Http\Request;
+use App\Custom\GetAdquirerRequest;
 
 class CustomerController extends Controller
 {
@@ -62,5 +63,38 @@ class CustomerController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function getAcquirer($document_type_identification_id, $document_number)
+    {
+        $response = $this->createXML($document_type_identification_id, $document_number);
+
+        $status = $response->Envelope->Body->GetAcquirerResponse->GetAcquirerResult->StatusCode;
+        $message = $response->Envelope->Body->GetAcquirerResponse->GetAcquirerResult->Message;
+        if($status === '404') {
+            return [
+                'success' => false,
+                'message' => $message,
+                'status' => $status
+            ];
+        }
+        return [
+            'success' => true,
+            'message' => $message,
+            'ResponseDian' => $response->Envelope->Body,
+            'status' => $status
+        ];
+    }
+
+    protected function createXML($document_type_identification_id, $document_number)
+    {
+        $company = auth()->user()->company;
+        $getAdquirerRequest = new GetAdquirerRequest($company->certificate->path, $company->certificate->password);
+        $getAdquirerRequest->identificationType = $document_type_identification_id;
+        $getAdquirerRequest->identificationNumber = $document_number;
+        $getAdquirerRequest->To = $company->software->url;
+        $respuestadian = $getAdquirerRequest->signToSend()->getResponseToObject();
+
+        return $respuestadian;
     }
 }
