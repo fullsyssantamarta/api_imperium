@@ -230,6 +230,7 @@ Route::middleware('auth:api')->group(function () {
         // Send email
         Route::prefix('/send-email')->group(function () {
             Route::post('/', 'Api\SendEmailController@SendEmail');
+            Route::post('/external', 'Api\SendEmailController@sendExternalDocument');
         });
 
         // envio de correo nomina - pro 2

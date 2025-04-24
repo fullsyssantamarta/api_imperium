@@ -13,12 +13,14 @@ use App\Employee;
 use App\Document;
 use App\DocumentPayroll;
 use App\Company;
+use Illuminate\Http\Request;
 use App\Http\Requests\Api\SendEmailRequest;
 use Illuminate\Support\Facades\Mail;
 use Exception;
 use App\Http\Requests\Api\SendPayrollEmailRequest;
 use App\Mail\DocumentPayrollEmail;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class SendEmailController extends Controller
 {
@@ -379,6 +381,80 @@ class SendEmailController extends Controller
 
         }
 
+    }
+
+    public function sendExternalDocument(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            $smtp_parameters = collect($request->smtp_parameters);
+            if(isset($request->smtp_parameters)){
+                \Config::set('mail.host', $smtp_parameters->toArray()['host']);
+                \Config::set('mail.port', $smtp_parameters->toArray()['port']);
+                \Config::set('mail.username', $smtp_parameters->toArray()['username']);
+                \Config::set('mail.password', $smtp_parameters->toArray()['password']);
+                \Config::set('mail.encryption', $smtp_parameters->toArray()['encryption']);
+            }
+            else
+                if($user->validate_mail_server()){
+                    \Config::set('mail.host', $user->mail_host);
+                    \Config::set('mail.port', $user->mail_port);
+                    \Config::set('mail.username', $user->mail_username);
+                    \Config::set('mail.password', $user->mail_password);
+                    \Config::set('mail.encryption', $user->mail_encryption);
+                }
+
+            $validate = Validator::make($request->all(), [
+                'email' => 'required|email',
+                'subject' => 'required|string|max:255',
+                'message' => 'nullable|string',
+                'document_base64' => 'required|string',
+                'filename' => 'required|string|max:255',
+                'document_type' => 'required|string|in:pdf,xml,zip'
+            ]);
+
+            if ($validate->fails()) {
+                return response([
+                    'success' => false,
+                    'message' => 'Error de validación',
+                    'errors' => $validate->errors()
+                ], 422);
+            }
+
+            $document = base64_decode($request->document_base64);
+            $messageText = $request->message ?: 'Adjunto encontrará el documento solicitado.';
+            
+            Mail::send('emails.external-document', [
+                'messageText' => $messageText
+            ], function($mail) use ($request, $document) {
+                $mail->subject($request->subject);
+                $mail->to($request->email);
+                $mail->attachData($document, $request->filename, [
+                    'mime' => $this->getMimeType($request->document_type)
+                ]);
+            });
+
+            return response([
+                'success' => true,
+                'message' => 'Correo enviado exitosamente'
+            ]);
+
+        } catch (\Exception $e) {
+            return response([
+                'success' => false,
+                'message' => 'Error al enviar el correo: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function getMimeType($type)
+    {
+        $mimeTypes = [
+            'pdf' => 'application/pdf',
+            'xml' => 'application/xml',
+            'zip' => 'application/zip'
+        ];
+        return $mimeTypes[$type] ?? 'application/octet-stream';
     }
 
 }
