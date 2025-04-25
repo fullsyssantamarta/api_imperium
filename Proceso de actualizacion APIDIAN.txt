@@ -41,7 +41,7 @@ Dentro del directorio del apidian2021 o apidian2022 o apidian2023 o apidian2O24:
 	q. ./urn_on.sh
 
 
-2... ACTUALIZAR APIDIAN2024
+2... ACTUALIZAR APIDIAN2025
 
 Dentro del directorio del apidian2025:
 
