@@ -43,7 +43,7 @@
                         <td style="padding: 0; width: 40%;">Email:</td>
                         <td style="padding: 0;">{{$customer->email}}</td>
                     </tr>
-                    @if(isset($paymentForm) && count($paymentForm) > 0)
+                    @if(!empty($paymentForm)&& $paymentForm->count() > 0)
                     <tr>
                         <td style="padding: 0; width: 40%;">Forma de Pago:</td>
                         <td style="padding: 0;">{{$paymentForm[0]->name}}</td>
