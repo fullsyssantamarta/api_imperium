@@ -21,7 +21,7 @@
     @endif
     <table style="font-size: 10px">
         <tr>
-            <td class="vertical-align-top" style="width: 60%;">
+            <td class="vertical-align-top" style="width: 40%;">
                 <table>
                     <tr>
                         <td>CC o NIT:</td>
@@ -132,12 +132,9 @@
                     @endif
                 </table>
             </td>
-        </tr>
-        <tr>
-            <td class="horizontal-align-right" style="width: 80%; text-align: right">
-                <img style="width: 100px;" src="{{$imageQr}}">
+            <td class="horizontal-align-right" style="width: 20%; text-align: right">
+                <img style="width: 150px;" src="{{$imageQr}}">
             </td>
-        </tr>
     </table>
     <br>
     @isset($healthfields)
