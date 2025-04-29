@@ -14,13 +14,11 @@ class UpdateMunicipalities extends Migration
      */
     public function up()
     {
-        DB::table('municipalities')->insert([
+        DB::table('municipalities')->insertOrIgnore([
             'department_id' => 21,
             'name' => 'Guamal',
             'code' => '50318',
-            'codefacturador' => 13242,
-            'created_at' => now(),
-            'updated_at' => now()
+            'codefacturador' => 13242
         ]);
     }
 
