@@ -15,7 +15,19 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'id_administrator', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption'
+        'name',
+        'email',
+        'password',
+        'id_administrator',
+        'mail_host',
+        'mail_port',
+        'mail_username',
+        'mail_password',
+        'mail_encryption',
+        'api_token',
+        'can_rips',
+        'can_health',
+        'status',
     ];
 
     /**
@@ -34,6 +46,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'status' => 'boolean',
     ];
 
     /**
@@ -42,6 +55,14 @@ class User extends Authenticatable
     public function company()
     {
         return $this->hasOne(Company::class);
+    }
+
+    /**
+     * Get the companies associated with the user.
+     */
+    public function companies()
+    {
+        return $this->belongsToMany(Company::class, 'company_user');
     }
 
     public function validate_mail_server()

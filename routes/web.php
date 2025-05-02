@@ -62,7 +62,7 @@ Route::get('/', 'HomeController@index')->name('home');
 
 Route::group(['middleware' => 'auth'], function() {
     Route::get('/home', 'HomeController@index')->name('home');
-    Route::get('/tools', 'HomeController@tools')->name('tools');    
+    Route::get('/tools', 'HomeController@tools')->name('tools');
     Route::get('/company/{company}', 'HomeController@company')->name('company');
     Route::get('/company/{company}/document/{cufe}', 'HomeController@getXml')->name('getXml');
     Route::get('/company/{company}/events', 'HomeController@events')->name('company.events');
@@ -70,6 +70,11 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/documents', 'HomeController@listDocuments')->name('listdocuments');
     Route::get('/taxes', 'HomeController@listTaxes')->name('listtaxes');
     Route::get('/listconfigurations', 'HomeController@listConfigurations')->name('listconfigurations');
+
+    // users for rips
+    Route::get('companies/{company}/users', 'CompanyUserController@index')->name('company.users.index');
+    Route::post('companies/{company}/users', 'CompanyUserController@store')->name('company.users.store');
+    Route::put('companies/{company}/users/{user}', 'CompanyUserController@update')->name('company.users.update');
 
     //configuration
     Route::get('/configuration', 'ConfigurationController@index')->name('configuration_index');

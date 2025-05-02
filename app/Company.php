@@ -350,4 +350,8 @@ class Company extends Model
         return $this->hasOne(RipsConfiguration::class, 'company_id');
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'company_user');
+    }
 }
