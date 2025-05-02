@@ -74,6 +74,10 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('/rips')->group(function () {
         Route::post('/configuration', 'Api\RipsConfigurationController@setConfiguration');
         Route::post('/', 'Api\RipsController@processRips');
+        Route::apiResource('/service-providers', 'Api\RipsServiceProviderController');
+        Route::get('patients/tables', 'Api\RipsPatientController@getTables');
+        Route::apiResource('/patients', 'Api\RipsPatientController');
+        Route::apiResource('/appointments', 'Api\RipsAppointmentController');
     });
 
     // UBL 2.1
