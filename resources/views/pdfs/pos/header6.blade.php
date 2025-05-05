@@ -83,9 +83,7 @@
                @endif
             </div>
         </td>
-    </tr>
-    <tr>
-        <td style="width: 80%; text-align: center;" class="vertical-align-top">
+        <td style="width: 0%; text-align: right; vertical-align: top;">
             <img  style="width: 136px; height: auto;" src="{{$imgLogo}}" alt="logo">
         </td>
     </tr>
