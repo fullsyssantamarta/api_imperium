@@ -6,15 +6,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Company;
 use App\User;
+use App\HealthTypeDocumentIdentification;
 
 class CompanyUserController extends Controller
 {
     public function index($companyId)
     {
         $company = Company::with('users')->findOrFail($companyId);
+        $document_types = HealthTypeDocumentIdentification::all();
         $users = $company->users;
 
-        return view('company.users', compact('company', 'users'));
+        return view('company.users', compact('company', 'users', 'document_types'));
     }
 
     public function store(Request $request, $companyId)
@@ -37,6 +39,8 @@ class CompanyUserController extends Controller
                 'can_rips' => $request->has('can_rips'),
                 'can_health' => $request->has('can_health'),
                 'api_token' => hash('sha256',  Str::random(80)),
+                'code_service_provider' => $request->code_service_provider,'document_type_id' => $request->document_type_id,
+                'document_number' => $request->document_number,
             ]);
 
             $company->users()->attach($user->id);
@@ -65,6 +69,9 @@ class CompanyUserController extends Controller
                 'password' => $request->password ? bcrypt($request->password) : $user->password,
                 'can_rips' => $request->has('can_rips'),
                 'can_health' => $request->has('can_health'),
+                'code_service_provider' => $request->code_service_provider,
+                'document_type_id' => $request->document_type_id,
+                'document_number' => $request->document_number,
             ]);
 
             return redirect()->back()->with('success', 'Usuario actualizado exitosamente.');

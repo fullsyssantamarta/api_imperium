@@ -10,11 +10,6 @@ use Carbon\Carbon;
 
 class RipsAppointmentController extends Controller
 {
-    private function getCompanyId()
-    {
-        return auth()->user()->company;
-    }
-
     private function getRandomColor()
     {
         $colors = [
@@ -37,8 +32,9 @@ class RipsAppointmentController extends Controller
         $search = $request->get('search');
         $month = $request->get('month');
         try {
-            $appointments = RipsAppointment::with(['patient', 'serviceProvider'])
+            $appointments = RipsAppointment::with(['patient', 'user'])
                 ->where('company_id', $company->id)
+                ->where('user_id', auth()->user()->id)
                 ->filter($search, $month)
                 ->paginate(20);
             return response()->json([
@@ -47,7 +43,7 @@ class RipsAppointmentController extends Controller
                     return [
                         'id' => $appointment->id,
                         'patient' => $appointment->patient->name.' '.$appointment->patient->last_name,
-                        'service_provider' => $appointment->serviceProvider->name,
+                        'user' => $appointment->user->name,
                         'date' => $appointment->date,
                         'time' => $appointment->time,
                         'color' => $this->getRandomColor(),
@@ -68,7 +64,7 @@ class RipsAppointmentController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'patient_id' => 'required|exists:rips_patients,id',
-                'service_provider_id' => 'required|exists:rips_service_providers,id',
+                'user_id' => 'required|exists:users,id',
                 'date' => [
                     'required',
                     'date_format:Y-m-d',
@@ -123,7 +119,9 @@ class RipsAppointmentController extends Controller
     public function show($id)
     {
         try {
-            $appointment = RipsAppointment::with(['patient', 'serviceProvider'])->findOrFail($id);
+            $appointment = RipsAppointment::where('user_id', auth()->user()->id)
+                ->with(['patient', 'user', 'documents'])
+                ->find($id);
             return response()->json([
                 'success' => true,
                 'data' => $appointment

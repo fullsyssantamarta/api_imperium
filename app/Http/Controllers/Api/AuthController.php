@@ -42,14 +42,15 @@ class AuthController extends Controller
             $activeCompany = $company;
         } else {
             // Caso 2: Usuario con relación many-to-many a `companies`
-            $selectedCompanyId = $request->get('company_id');
-            $activeCompany = $companies->firstWhere('id', $selectedCompanyId) ?? $companies->first();
+            $activeCompany = $companies->first();
+
+            // Validar permisos (can_rips o can_health)
+            if (!$user->can_rips && !$user->can_health) {
+                return response()->json(['error' => 'Usuario no tiene permisos para acceder a esta aplicación', 'code' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
+            }
         }
 
-        // Validar permisos (can_rips o can_health)
-        if (!$user->can_rips && !$user->can_health) {
-            return response()->json(['error' => 'Usuario no tiene permisos para acceder a esta aplicación', 'code' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
-        }
+
 
         // Construir la respuesta del usuario
         $userResponse = [
@@ -57,6 +58,10 @@ class AuthController extends Controller
             'name' => $user->name,
             'email' => $user->email,
             'api_token' => $user->api_token,
+            'can_rips' => $user->can_rips,
+            'can_health' => $user->can_health,
+            'code_service_provider' => $user->code_service_provider,
+            'is_parent_user' => !$companies->isEmpty(),
             'company' => [
                 "id" => $activeCompany->id,
                 "identification_number" => $activeCompany->identification_number,

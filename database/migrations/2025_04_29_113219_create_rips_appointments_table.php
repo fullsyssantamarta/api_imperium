@@ -17,14 +17,14 @@ class CreateRipsAppointmentsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('patient_id');
-            $table->unsignedBigInteger('service_provider_id');
+            $table->unsignedBigInteger('user_id')->comment('debe poseer codigo de prestador');
             $table->string('time');
             $table->date('date');
             $table->timestamps();
 
             $table->foreign('company_id')->references('id')->on('companies');
             $table->foreign('patient_id')->references('id')->on('rips_patients');
-            $table->foreign('service_provider_id')->references('id')->on('rips_service_providers');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

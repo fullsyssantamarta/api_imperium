@@ -9,10 +9,6 @@ use App\RipsServiceProvider;
 
 class RipsServiceProviderController extends Controller
 {
-    private function getCompanyId()
-    {
-        return auth()->user()->company;
-    }
     /**
      * Display a listing of the resource.
      *

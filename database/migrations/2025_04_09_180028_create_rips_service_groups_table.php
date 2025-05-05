@@ -25,7 +25,7 @@ class CreateRipsServiceGroupsTable extends Migration
             ['code' => '01', 'name' => 'Consulta externa'],
             ['code' => '02', 'name' => 'Apoyo diagnóstico y complementación  terapéutica'],
             ['code' => '03', 'name' => 'Internación'],
-            ['code' => '04', 'name' => 'Quirúrgico'],
+            ['code' => '04', 'name' => 'Quirúrgicos'],
             ['code' => '05', 'name' => 'Atención inmediata'],
         ]);
     }

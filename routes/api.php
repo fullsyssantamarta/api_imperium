@@ -78,6 +78,10 @@ Route::middleware('auth:api')->group(function () {
         Route::get('patients/tables', 'Api\RipsPatientController@getTables');
         Route::apiResource('/patients', 'Api\RipsPatientController');
         Route::apiResource('/appointments', 'Api\RipsAppointmentController');
+        Route::get('services/tables', 'Api\RipsServiceController@getTables');
+        Route::get('services/procedures', 'Api\RipsServiceController@getProcedureCodes');
+        Route::get('services/cies', 'Api\RipsServiceController@getCies');
+        Route::post('documents', 'Api\RipsDocumentController@store');
     });
 
     // UBL 2.1

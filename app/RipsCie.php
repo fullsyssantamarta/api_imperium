@@ -18,4 +18,14 @@ class RipsCie extends Model
         'created_at',
         'updated_at'
     ];
+
+    public function scopeFilter($query, $search)
+    {
+        if ($search) {
+            $query->where('code', 'like', "%$search%")
+                ->orWhere('name', 'like', "%$search%");
+        }
+
+        return $query;
+    }
 }

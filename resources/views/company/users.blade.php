@@ -28,6 +28,7 @@
                 <tr>
                     <th>Nombre</th>
                     <th>Correo</th>
+                    <th>Documento</th>
                     <th></th>
                 </tr>
             </thead>
@@ -36,14 +37,18 @@
                 <tr>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
+                    <td>{{ $user->document_type_id ? $user->document_type->name : '' }} {{ $user->document_number }}</td>
                     <td class="text-right">
                         <button class="btn btn-sm btn-warning"
                             data-toggle="modal" data-target="#userModal"
                             data-id="{{ $user->id }}"
                             data-name="{{ $user->name }}"
                             data-email="{{ $user->email }}"
+                            data-document_number="{{ $user->document_number }}"
+                            data-document_type_id="{{ $user->document_type_id }}"
                             data-can_rips="{{ $user->can_rips }}"
-                            data-can_health="{{ $user->can_health }}">Editar</button>
+                            data-can_health="{{ $user->can_health }}"
+                            data-code_service_provider="{{ $user->code_service_provider}}">Editar</button>
                     </td>
                 </tr>
                 @endforeach
@@ -53,7 +58,7 @@
 
     <!-- User Modal -->
     <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <form id="userForm" method="POST" action="{{ route('company.users.store', $company->id) }}">
                 @csrf
                 <input type="hidden" name="_method" id="formMethod" value="POST">
@@ -65,7 +70,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body row">
                         <!-- Mostrar errores de validación -->
                         @if ($errors->any())
                         <div class="alert alert-danger">
@@ -77,27 +82,48 @@
                         </div>
                         @endif
 
-                        <div class="form-group">
+                        <div class="form-group col-6">
+                            <label for="document_type_id">Tipo de documento</label>
+                            <select name="document_type_id" id="document_type_id" class="form-control" required>
+                                @foreach ($document_types as $documentType)
+                                <option value="{{ $documentType->id }}"
+                                    {{ old('document_type_id') == $documentType->id ? 'selected' : '' }}>
+                                    {{ $documentType->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group col-6">
+                            <label for="document_number">Número de documento</label>
+                            <input type="text" name="document_number" id="document_number" class="form-control" value="{{ old('document_number') }}" required>
+                        </div>
+
+                        <div class="form-group col-6">
                             <label for="name">Name</label>
                             <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group col-6">
                             <label for="email">Email</label>
                             <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group col-6">
                             <label for="password">Password</label>
                             <input type="password" name="password" id="password" class="form-control">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group col-6">
                             <label for="password_confirmation">Confirm Password</label>
                             <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group col-6">
+                            <label for="code_service_provider">Código de prestador de servicio</label>
+                            <input type="text" name="code_service_provider" id="code_service_provider" class="form-control" value="{{ old('code_service_provider') }}">
+                            <span class="text-muted"><small>Código de 12 digitos</small></span>
+                        </div>
+                        <div class="form-group col-6 mt-4">
                             <input type="checkbox" value="1" name="can_rips" id="can_rips" {{ old('can_rips') ? 'checked' : '' }}>
                             <label for="can_rips">Generar RIPS</label>
-                        </div>
-                        <div class="form-group">
+                            <br>
                             <input type="checkbox" value="1" name="can_health" id="can_health" {{ old('can_health') ? 'checked' : '' }}>
                             <label for="can_health">Generar Factura de Sector Salud</label>
                         </div>
@@ -129,12 +155,18 @@ $(document).ready(function () {
         var email = button.data('email') || '';
         var can_rips = button.data('can_rips') || false;
         var can_health = button.data('can_health') || false;
+        var code_service_provider = button.data('code_service_provider') || '';
+        var document_type_id = button.data('document_type_id') || '';
+        var document_number = button.data('document_number') || '';
 
         var modal = $(this);
-        modal.find('.modal-title').text(id ? 'Edit User' : 'Add User');
+        modal.find('.modal-title').text(id ? 'Editar Usuario' : 'Agregar Usuario');
         modal.find('#userId').val(id);
         modal.find('#name').val(name);
         modal.find('#email').val(email);
+        modal.find('#code_service_provider').val(code_service_provider);
+        modal.find('#document_type_id').val(document_type_id);
+        modal.find('#document_number').val(document_number);
 
         // Set checkboxes
         modal.find('#can_rips').prop('checked', can_rips);

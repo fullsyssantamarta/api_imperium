@@ -15,11 +15,6 @@ use App\Country;
 
 class RipsPatientController extends Controller
 {
-    private function getCompanyId()
-    {
-        return auth()->user()->company;
-    }
-
     public function index()
     {
         $company = $this->getCompanyId();
@@ -101,4 +96,55 @@ class RipsPatientController extends Controller
             ], 500);
         }
     }
+
+    public function show($id)
+    {
+        try {
+            $patient = RipsPatient::find($id);
+            return response()->json([
+                'success' => true,
+                'data' => $patient
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'type_document_identification_id' => 'required|exists:type_document_identifications,id',
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:rips_patients,email,' . $id,
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $patient = RipsPatient::findOrFail($id);
+            $patient->update($request->all());
+            return response()->json([
+                'success' => true,
+                'data' => $patient,
+                'message' => 'Patient updated successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating patient',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 }

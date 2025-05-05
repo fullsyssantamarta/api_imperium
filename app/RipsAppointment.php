@@ -9,7 +9,7 @@ class RipsAppointment extends Model
     protected $fillable = [
         'company_id',
         'patient_id',
-        'service_provider_id',
+        'user_id',
         'time',
         'date'
     ];
@@ -24,9 +24,14 @@ class RipsAppointment extends Model
         return $this->belongsTo(RipsPatient::class);
     }
 
-    public function serviceProvider()
+    public function user()
     {
-        return $this->belongsTo(RipsServiceProvider::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(RipsDocument::class, 'appointment_id');
     }
 
     public function scopeFilter($query, $search, $month = null)

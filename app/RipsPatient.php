@@ -19,6 +19,7 @@ class RipsPatient extends Model
         'municipality_id',
         'rips_zone_id',
         'incapacity',
+        'email',
     ];
 
     public function company()
