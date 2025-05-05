@@ -14,7 +14,7 @@ Estamos enfocados en crear herramientas y soluciones para desarrolladores de sof
      * [Video aquí](https://www.youtube.com/watch?v=rEgrHADjsCY)
      * [Comandos aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/Comandos%20Instalacion%20API%202024%20Linux%20Ubuntu%2020.txt?ref_type=heads)
   * Exclusivo para Ubuntu **20.04** | Entorno LAMP | ejecución de script.
-     * [Pasos y script aquí](https://gitlab.buho.la/-/snippets/29)
+     * [Pasos y script aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/snippets/35)
   * Linux | Entorno **Docker** | *Aporte de usuario de la comunidad*
      * [Descarga aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/api_docker.zip?ref_type=heads)
 
