@@ -20,7 +20,7 @@ class RipsConfigurationController extends Controller
         $configuration = $request->all();
 
         $user = auth()->user();
-        $company = $user->company;
+        $company = $this->getCompanyId();
 
         $config = RipsConfiguration::updateOrCreate(
             ['company_id' => $company->id],

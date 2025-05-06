@@ -82,6 +82,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('services/procedures', 'Api\RipsServiceController@getProcedureCodes');
         Route::get('services/cies', 'Api\RipsServiceController@getCies');
         Route::post('documents', 'Api\RipsDocumentController@store');
+        Route::post('documents/generate/{id}', 'Api\RipsDocumentController@generateRips');
     });
 
     // UBL 2.1

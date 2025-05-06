@@ -27,9 +27,8 @@ class RipsController extends Controller
         return $user->company;
     }
 
-    protected function get_token()
+    protected function get_token($company)
     {
-        $company = $this->getCompany();
         $ripsConfig = $company->ripsConfiguration;
         if (!$ripsConfig) {
             return [
@@ -49,14 +48,13 @@ class RipsController extends Controller
                         ]
                     ],
                     'clave' => $ripsConfig->password,
-                    'nit'   => '901355357',
+                    'nit'   => $company->identification_number,
                 ],
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
                 ],
             ]);
-            //'nit'   => $company->identification_number,
 
             $body = json_decode($response->getBody(), true);
 
@@ -110,16 +108,16 @@ class RipsController extends Controller
      */
     public function processRips(Request $request)
     {
-        $company = $this->getCompany();
-        $hasNumFactura = $request->filled('numFactura');
-        $urlToSend = $this->getUrl($company->ripsConfiguration->url, $hasNumFactura);
+        // $company = $this->getCompany();
+        // $hasNumFactura = $request->filled('numFactura');
+        // $urlToSend = $this->getUrl($company->ripsConfiguration->url, $hasNumFactura);
 
-        $xml = $this->findXml($company->identification_number, $request->input('numFactura'));
-        if (!$xml) {
-            throw new \Exception('No se encontró el XML de la factura.');
-        }
+        // $xml = $this->findXml($company->identification_number, $request->input('numFactura'));
+        // if (!$xml) {
+        //     throw new \Exception('No se encontró el XML de la factura.');
+        // }
 
-        dd($xml); // solo para debug
+        // dd($xml); // solo para debug
         // funciona
         // $get_token = $this->get_token();
         // if (!$get_token['success']) {
@@ -136,5 +134,51 @@ class RipsController extends Controller
             'success' => true,
             'message' => 'Rips procesados exitosamente',
         ]);
+    }
+
+    /**
+     * Procesa el envío de RIPS al servicio externo sin factura asociada.
+     *
+     * @param array $payload
+     * @param Company $company
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function processRipsWithoutInvoice($payload, $company)
+    {
+        $token = $this->get_token($company);
+
+        if (!$token['success']) {
+            return response()->json([
+                'success' => false,
+                'message' => $token['message'],
+            ], 401);
+        }
+
+        $urlToSend = $this->getUrl($company->ripsConfiguration->url);
+
+        \Log::info('json: '. json_encode($payload));
+        try {
+            $client = new Client(['verify' => false]);
+            $response = $client->post($urlToSend, [
+                'json' => $payload,
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                    'Authorization' => 'Bearer ' . $token['token'],
+                ],
+            ]);
+
+            $body = json_decode($response->getBody(), true);
+            \Log::info($response->getBody());
+
+            return response()->json($body, 200);
+        } catch (\Exception $e) {
+            \Log::error($e);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

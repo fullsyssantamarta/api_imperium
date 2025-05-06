@@ -14,10 +14,14 @@ class RipsDocument extends Model
         'note_number',
         'xml_filename',
         'services',
+        'request_api',
+        'response_api'
     ];
 
     protected $casts = [
         'services' => 'json',
+        'request_api' => 'json',
+        'response_api' => 'json',
     ];
 
     public function appointment()
