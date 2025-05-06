@@ -345,4 +345,13 @@ class Company extends Model
         return 'identification_number';
     }
 
+    public function ripsConfiguration()
+    {
+        return $this->hasOne(RipsConfiguration::class, 'company_id');
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'company_user');
+    }
 }

@@ -15,7 +15,22 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'id_administrator', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption'
+        'name',
+        'email',
+        'password',
+        'id_administrator',
+        'mail_host',
+        'mail_port',
+        'mail_username',
+        'mail_password',
+        'mail_encryption',
+        'api_token',
+        'can_rips',
+        'can_health',
+        'status',
+        'code_service_provider',
+        'document_number',
+        'document_type_id',
     ];
 
     /**
@@ -34,6 +49,9 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'status' => 'boolean',
+        'can_rips' => 'boolean',
+        'can_health' => 'boolean',
     ];
 
     /**
@@ -42,6 +60,14 @@ class User extends Authenticatable
     public function company()
     {
         return $this->hasOne(Company::class);
+    }
+
+    /**
+     * Get the companies associated with the user.
+     */
+    public function companies()
+    {
+        return $this->belongsToMany(Company::class, 'company_user');
     }
 
     public function validate_mail_server()
@@ -53,5 +79,10 @@ class User extends Authenticatable
             return false;
         else
           return false;
+    }
+
+    public function document_type()
+    {
+        return $this->belongsTo(HealthTypeDocumentIdentification::class, 'document_type_id');
     }
 }

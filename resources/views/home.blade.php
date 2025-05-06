@@ -27,6 +27,7 @@
                         <td>{{ $row->user->email }}</td>
                         <td>
                             <a class="btn btn-primary text-white btn-sm" href="{{ route('company', $row->identification_number)}}">Ver documentos</a>
+                            <a class="btn btn-primary text-white btn-sm" href="{{ route('company.users.index', $row->id)}}">Usuarios</a>
                         </td>
                     </tr>
                 @endforeach
