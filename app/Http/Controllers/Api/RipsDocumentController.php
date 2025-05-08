@@ -179,7 +179,7 @@ class RipsDocumentController extends Controller
                     ]
                 ]
             ],
-            'xmlFevFile' => ''
+            'xmlFevFile' => null
         ];
 
         return $payload;
