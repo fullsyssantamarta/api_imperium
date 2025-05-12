@@ -362,11 +362,26 @@ trait DocumentTrait
             else
                 $totalbase = $request->legal_monetary_totals['line_extension_amount'];
 
-            if($tipodoc == 'TTR' or $tipodoc == 'SRV' or $tipodoc == 'CIN')
+            if($tipodoc == 'SRV' or $tipodoc == 'CIN')
                 if($company->eqdocs_type_environment_id == 1)
                     return 'https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey='.$cufecude;
                 else
                     return 'https://catalogo-vpfe-hab.dian.gov.co/document/searchqr?documentkey='.$cufecude;
+
+            if ($tipodoc == 'TTR') {
+                $pdf = $this->initMPdf('ttr', $template_pdf);
+                $pdf->SetHTMLHeader(View::make("pdfs.".strtolower($tipodoc).".header".$template_pdf, compact("user", "company", "customer", "resolution", "date", "time", "paymentForm", "request", "cufecude", "imgLogo", "withHoldingTaxTotal", "notes", "healthfields", "firma_facturacion", "logo_empresa_emisora")));
+                $pdf->SetHTMLFooter(View::make("pdfs.".strtolower($tipodoc).".footer".$template_pdf, compact("user", "company", "customer", "resolution", "date", "time", "paymentForm", "request", "cufecude", "imgLogo", "withHoldingTaxTotal", "notes", "healthfields", "firma_facturacion", "logo_empresa_emisora")));
+                $pdf->WriteHTML(View::make("pdfs.".strtolower($tipodoc).".template".$template_pdf, compact("user", "company", "customer", "resolution", "date", "time", "paymentForm", "request", "cufecude", "imgLogo", "withHoldingTaxTotal", "notes", "healthfields", "firma_facturacion", "logo_empresa_emisora")), HTMLParserMode::HTML_BODY);
+                $filename = storage_path("app/public/{$company->identification_number}/TTR-{$resolution->next_consecutive}.pdf");
+                // dd($filename);
+
+                if ($company->eqdocs_type_environment_id == 1) {
+                    $QRStr = 'https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey=' . $cufecude;
+                } else {
+                    $QRStr = 'https://catalogo-vpfe-hab.dian.gov.co/document/searchqr?documentkey=' . $cufecude;
+                }
+            }
 
             if($tipodoc == "INVOICE" || $tipodoc == "POS"){
                 if($company->type_environment_id == 2){
