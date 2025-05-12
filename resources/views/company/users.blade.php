@@ -15,9 +15,6 @@
                     {{ $company->identification_number }}-{{ $company->dv }}
                 </small>
             </div>
-            <div class="col text-right">
-                <button class="btn btn-primary mb-0" data-toggle="modal" data-target="#userModal">Añadir usuario</button>
-            </div>
         </div>
     </div>
 
@@ -29,7 +26,7 @@
                     <th>Nombre</th>
                     <th>Correo</th>
                     <th>Documento</th>
-                    <th></th>
+                    <th class="text-right"><button class="btn btn-primary mb-0 btn-sm" data-toggle="modal" data-target="#userModal">Añadir usuario</button></th>
                 </tr>
             </thead>
             <tbody>
@@ -54,6 +51,12 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+
+    <div class="row">
+        <div class="col-12 d-flex justify-content-end pr-4">
+            {{ $users->links() }}
+        </div>
     </div>
 
     <!-- User Modal -->

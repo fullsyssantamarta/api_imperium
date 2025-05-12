@@ -1618,6 +1618,7 @@ trait DocumentTrait
                     'timeout' => 10,
                     'connect_timeout' => 10,
                     'read_timeout' => 10,
+                    'verify' => false
                 ]);
                 // Si el código de estado es 200, la DIAN está disponible
                 return $response->getStatusCode() == 200;

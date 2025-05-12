@@ -14,7 +14,7 @@ class CompanyUserController extends Controller
     {
         $company = Company::with('users')->findOrFail($companyId);
         $document_types = HealthTypeDocumentIdentification::all();
-        $users = $company->users;
+        $users = $company->users()->paginate(15);
 
         return view('company.users', compact('company', 'users', 'document_types'));
     }
