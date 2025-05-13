@@ -17,18 +17,26 @@ class AddFieldCodeRipsToTypeDocumentIdentification extends Migration
             $table->string('code_rips', 2)->nullable()->after('code');
         });
 
-        // Actualizar los registros con los códigos RIPS
-        DB::table('type_document_identifications')->updateOrInsert(['id' => 1], ['code_rips' => 'RC']);
-        DB::table('type_document_identifications')->updateOrInsert(['id' => 2], ['code_rips' => 'TI']);
-        DB::table('type_document_identifications')->updateOrInsert(['id' => 3], ['code_rips' => 'CC']);
-        DB::table('type_document_identifications')->updateOrInsert(['id' => 4], ['code_rips' => 'CN']);
-        DB::table('type_document_identifications')->updateOrInsert(['id' => 5], ['code_rips' => 'CE']);
-        DB::table('type_document_identifications')->updateOrInsert(['id' => 6], ['code_rips' => 'NI']);
-        DB::table('type_document_identifications')->updateOrInsert(['id' => 7], ['code_rips' => 'PA']);
-        DB::table('type_document_identifications')->updateOrInsert(['id' => 8], ['code_rips' => 'DE']);
-        DB::table('type_document_identifications')->updateOrInsert(['id' => 9], ['code_rips' => 'NI']);
-        DB::table('type_document_identifications')->updateOrInsert(['id' => 11], ['code_rips' => 'PE']);
-        DB::table('type_document_identifications')->updateOrInsert(['id' => 12], ['code_rips' => 'PT']);
+        $data = [
+            ['id' => 1, 'name' => 'Registro civil', 'code' => '11', 'code_rips' => 'RC'],
+            ['id' => 2, 'name' => 'Tarjeta de identidad', 'code' => '12', 'code_rips' => 'TI'],
+            ['id' => 3, 'name' => 'Cédula de ciudadanía', 'code' => '13', 'code_rips' => 'CC'],
+            ['id' => 4, 'name' => 'Tarjeta de extranjería', 'code' => '21', 'code_rips' => 'CN'],
+            ['id' => 5, 'name' => 'Cédula de extranjería', 'code' => '22', 'code_rips' => 'CE'],
+            ['id' => 6, 'name' => 'NIT', 'code' => '31', 'code_rips' => 'NI'],
+            ['id' => 7, 'name' => 'Pasaporte', 'code' => '41', 'code_rips' => 'PA'],
+            ['id' => 8, 'name' => 'Documento de identificación extranjero', 'code' => '42', 'code_rips' => 'DE'],
+            ['id' => 9, 'name' => 'NIT de otro país', 'code' => '50', 'code_rips' => 'NI'],
+            ['id' => 11, 'name' => 'PEP (Permiso Especial de Permanencia)', 'code' => '47', 'code_rips' => 'PE'],
+            ['id' => 12, 'name' => 'PPT (Permiso Protección Temporal)', 'code' => '48', 'code_rips' => 'PT'],
+        ];
+
+        foreach ($data as $item) {
+            DB::table('type_document_identifications')->updateOrInsert(
+                ['id' => $item['id']],
+                $item
+            );
+        }
     }
 
     /**
