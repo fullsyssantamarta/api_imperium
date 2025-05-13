@@ -501,7 +501,7 @@ td, th {
                 </table>
             </div>
 
-            <div class="col-sm-5">
+            <div class="col-sm-4">
                 <table>
                     <tr>
                         <td>Forma de Pago:</td>
@@ -541,8 +541,16 @@ td, th {
                 </table>
             </div>
 
-            <div class="col-sm-2">
-                {{-- <img style="width: 95px;" src="{{$imageQr}}"> --}}
+            <div class="col-sm-4">
+                <table class="table table-bordered table-condensed table-striped table-responsive">
+                    <tr>
+                        <td>Modo de transporte: {{ $request['transportation_information']['transport_mode'] }}</td>
+                        <td>Placa: {{ $request['transportation_information']['plate_number'] }}</td>
+                        <td>Transporte: {{ $request['transportation_information']['transport_mean'] }}</td>
+                        <td>Origen: {{ $request['transportation_information']['origin_place'] }}</td>
+                        <td>Destino: {{ $request['transportation_information']['destination_place'] }}</td>
+                    </tr>
+                </table>
             </div>
         </div>
         <br/>

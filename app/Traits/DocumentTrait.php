@@ -373,7 +373,7 @@ trait DocumentTrait
                 $pdf->SetHTMLHeader(View::make("pdfs.".strtolower($tipodoc).".header".$template_pdf, compact("user", "company", "customer", "resolution", "date", "time", "paymentForm", "request", "cufecude", "imgLogo", "withHoldingTaxTotal", "notes", "healthfields", "firma_facturacion", "logo_empresa_emisora")));
                 $pdf->SetHTMLFooter(View::make("pdfs.".strtolower($tipodoc).".footer".$template_pdf, compact("user", "company", "customer", "resolution", "date", "time", "paymentForm", "request", "cufecude", "imgLogo", "withHoldingTaxTotal", "notes", "healthfields", "firma_facturacion", "logo_empresa_emisora")));
                 $pdf->WriteHTML(View::make("pdfs.".strtolower($tipodoc).".template".$template_pdf, compact("user", "company", "customer", "resolution", "date", "time", "paymentForm", "request", "cufecude", "imgLogo", "withHoldingTaxTotal", "notes", "healthfields", "firma_facturacion", "logo_empresa_emisora")), HTMLParserMode::HTML_BODY);
-                $filename = storage_path("app/public/{$company->identification_number}/TTR-{$resolution->next_consecutive}.pdf");
+                $filename = storage_path("app/public/{$company->identification_number}/TTRS-{$resolution->next_consecutive}.pdf");
                 // dd($filename);
 
                 if ($company->eqdocs_type_environment_id == 1) {

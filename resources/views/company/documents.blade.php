@@ -221,7 +221,7 @@ $(document).ready(function() {
             alert('Error al copiar token');
         });
     };
-    
+
     // Variable global para almacenar los datos
     window.transformedData = []; // Cambiamos a window.transformedData para acceso global
 
@@ -279,7 +279,7 @@ $(document).ready(function() {
                     raw: false,
                     dateNF: 'yyyy-mm-dd'
                 });
-                
+
                 if (jsonData.length === 0) {
                     alert('El archivo Excel está vacío');
                     return;
@@ -334,7 +334,7 @@ $(document).ready(function() {
                     const totals = data.lines.reduce((acc, line) => {
                         const lineAmount = parseFloat(line.line_extension_amount);
                         const taxAmount = parseFloat(line.tax_totals[0].tax_amount);
-                        
+
                         return {
                             line_extension_amount: acc.line_extension_amount + lineAmount,
                             tax_amount: acc.tax_amount + taxAmount,
@@ -404,7 +404,7 @@ $(document).ready(function() {
 
                 // Asignar los datos transformados a la variable
                 window.transformedData = transformedData;
-                
+
                 $('#apiResults').text('Datos preparados. ' + window.transformedData.length + ' facturas listas para procesar.');
                 console.log('Facturas preparadas:', window.transformedData.length);
             } catch (error) {
@@ -435,7 +435,7 @@ $(document).ready(function() {
         const progressBar = $('#progressBar');
         const progressBarInner = progressBar.find('.progress-bar');
         const resultsContainer = $('#apiResults');
-        
+
         // Deshabilitar botón procesar
         $processButton.prop('disabled', true);
         progressBar.removeClass('d-none');
@@ -444,7 +444,7 @@ $(document).ready(function() {
         for (let i = 0; i < window.transformedData.length; i++) {
             const invoice = window.transformedData[i];
             const progress = ((i + 1) / window.transformedData.length * 100).toFixed(2);
-            
+
             progressBarInner.css('width', progress + '%')
                           .text(progress + '%');
 
@@ -467,7 +467,7 @@ $(document).ready(function() {
                 const responseData = await response.json();
                 const statusCode = responseData.ResponseDian?.Envelope?.Body?.SendBillSyncResponse?.SendBillSyncResult?.StatusCode;
                 const errorMessage = responseData.ResponseDian?.Envelope?.Body?.SendBillSyncResponse?.SendBillSyncResult?.ErrorMessage?.string;
-                
+
                 const isSuccess = statusCode === "00";
                 results.push({
                     invoice: invoice.number,
@@ -533,7 +533,7 @@ $(document).ready(function() {
         // Ocultar barra de progreso
         progressBar.addClass('d-none');
         $finishButton.removeClass('d-none'); // Mostrar botón finalizar
-        
+
         // Agregar mensaje de completado
         resultsContainer.prepend(`
             <div class="alert alert-info">
@@ -547,9 +547,9 @@ $(document).ready(function() {
 
     function formatDate(dateValue) {
         if (!dateValue) return null;
-        
+
         console.log('Fecha original:', dateValue); // Para debug
-        
+
         // Si la fecha viene como string en formato DD/MM/YYYY
         if (typeof dateValue === 'string' && dateValue.includes('/')) {
             const parts = dateValue.split('/');
@@ -557,24 +557,24 @@ $(document).ready(function() {
                 return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
             }
         }
-        
+
         // Si es una fecha de Excel (número)
         if (!isNaN(dateValue) && typeof dateValue === 'number') {
             const date = new Date((dateValue - 25569) * 86400 * 1000);
             console.log('Fecha convertida de Excel:', date); // Para debug
             return date.toISOString().split('T')[0];
         }
-        
+
         // Si es una fecha ya formateada YYYY-MM-DD
         if (typeof dateValue === 'string' && dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
             return dateValue;
         }
-        
+
         // Si es un objeto Date
         if (dateValue instanceof Date) {
             return dateValue.toISOString().split('T')[0];
         }
-        
+
         console.log('No se pudo procesar la fecha:', dateValue); // Para debug
         return dateValue;
     }
