@@ -1162,16 +1162,26 @@ trait DocumentTrait
         $date = now();
         $prefix = (is_null($typeDocumentID)) ? $resolution->type_document->prefix : TypeDocument::findOrFail($typeDocumentID)->prefix;
 
-        $send = $company->send()->firstOrCreate([
-            'year' => $date->format('Y'),
-            'type_document_id' => $typeDocumentID ?? $resolution->type_document_id,
-        ]);
+        try {
+            return DB::transaction(function() use ($company, $date, $typeDocumentID, $resolution, $prefix, $extension) {
+                
+                $send = $company->send()->lockForUpdate()->firstOrCreate([
+                    'year' => $date->format('Y'),
+                    'type_document_id' => $typeDocumentID ?? $resolution->type_document_id,
+                ]);
 
-        $name = "{$prefix}{$this->stuffedString($company->identification_number)}{$this->ppp}{$date->format('y')}{$this->stuffedString($send->next_consecutive ?? 1, 8)}{$extension}";
+                $current = $send->next_consecutive ?? 1;
+                
+                $send->next_consecutive = $current + 1;
+                $send->save();
 
-        $send->increment('next_consecutive');
+                return "{$prefix}{$this->stuffedString($company->identification_number)}{$this->ppp}{$date->format('y')}{$this->stuffedString($current, 8)}{$extension}";
+            });
 
-        return $name;
+        } catch (\Exception $e) {
+            \Log::error("Error en getFileName: " . $e->getMessage());
+            throw new \Exception("Error generando nombre de archivo: " . $e->getMessage());
+        }
     }
 
     /**
