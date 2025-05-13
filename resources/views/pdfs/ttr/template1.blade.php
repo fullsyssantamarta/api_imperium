@@ -103,11 +103,14 @@
             </td>
             <!-- Cuarta Columna -->
             <td class="vertical-align-top" style="width: 35%; text-align: center">
-                <table>
+                <table class="">
                     <tr>
-                        {{-- <td><img style="width: 120px;" src="{{$imageQr}}"></td> --}}
+                        <td>Modo de transporte: {{ $request['transportation_information']['transport_mode'] }}</td>
+                        <td>Placa: {{ $request['transportation_information']['plate_number'] }}</td>
+                        <td>Transporte: {{ $request['transportation_information']['transport_mean'] }}</td>
+                        <td>Origen: {{ $request['transportation_information']['origin_place'] }}</td>
+                        <td>Destino: {{ $request['transportation_information']['destination_place'] }}</td>
                     </tr>
-                    <!-- Puedes agregar más filas aquí si es necesario -->
                 </table>
             </td>
         </tr>

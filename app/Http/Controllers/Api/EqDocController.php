@@ -158,7 +158,6 @@ class EqDocController extends Controller
         $invoice_doc->version_ubl_id = 1;
         $invoice_doc->ambient_id = 1;
         $invoice_doc->identification_number = $company->identification_number;
-//        $invoice_doc->save();
 
         // Type document
         $typeDocument = TypeDocument::findOrFail($request->type_document_id);
@@ -215,9 +214,6 @@ class EqDocController extends Controller
             $idcurrency = null;
             $calculationrate = null;
             $calculationratedate = null;
-//            $idcurrency = TypeCurrency::findOrFail($invoice_doc->currency_id);
-//            $calculationrate = 1;
-//            $calculationratedate = Carbon::now()->format('Y-m-d');
         }
 
         // Resolution
@@ -285,11 +281,7 @@ class EqDocController extends Controller
 
         // Retenciones globales
         $withHoldingTaxTotal = collect();
-//        $withHoldingTaxTotalCount = 0;
-//        $holdingTaxTotal = $request->holding_tax_total;
         foreach($request->with_holding_tax_total ?? [] as $item) {
-//            $withHoldingTaxTotalCount++;
-//            $holdingTaxTotal = $request->holding_tax_total;
             $withHoldingTaxTotal->push(new TaxTotal($item));
         }
 
@@ -316,7 +308,6 @@ class EqDocController extends Controller
 
         // Create XML
         $invoice = $this->createXML(compact('user', 'company', 'customer', 'taxTotals', 'withHoldingTaxTotal', 'resolution', 'paymentForm', 'typeDocument', 'invoiceLines', 'allowanceCharges', 'legalMonetaryTotals', 'date', 'time', 'notes', 'typeoperation', 'orderreference', 'prepaidpayment', 'prepaidpayments', 'delivery', 'deliveryparty', 'request', 'idcurrency', 'calculationrate', 'calculationratedate', 'healthfields'));
-//return $invoice->saveXML();
         // Register Customer
         if(env('APPLY_SEND_CUSTOMER_CREDENTIALS', TRUE))
             $this->registerCustomer($customer, $request->sendmail);
@@ -327,7 +318,6 @@ class EqDocController extends Controller
         $signInvoice = new SignInvoice($company->certificate->path, $company->certificate->password);
         $signInvoice->softwareID = $company->software->identifier_eqdocs;
         $signInvoice->pin = $company->software->pin_eqdocs;
-//        $signInvoice->technicalKey = $resolution->technical_key;
 
         if ($request->GuardarEn){
             if (!is_dir($request->GuardarEn)) {
@@ -388,7 +378,6 @@ class EqDocController extends Controller
         $filename = '';
         $respuestadian = '';
         $typeDocument = TypeDocument::findOrFail(7);
-//        $xml = new \DOMDocument;
         $ar = new \DOMDocument;
         if ($request->GuardarEn){
             try{
@@ -408,7 +397,6 @@ class EqDocController extends Controller
                     $invoice_doc->cufe = $cufecude;
                     $invoice_doc->save();
                     $signedxml = file_get_contents(storage_path("app/xml/{$company->id}/".$respuestadian->Envelope->Body->SendBillSyncResponse->SendBillSyncResult->XmlFileName.".xml"));
-//                    $xml->loadXML($signedxml);
                     if(strpos($signedxml, "</Invoice>") > 0)
                         $td = '/Invoice';
                     else
@@ -429,9 +417,7 @@ class EqDocController extends Controller
                     $signAttachedDocument->GuardarEn = $GuardarEn."\\{$filename}.xml";
 
                     $at = $signAttachedDocument->sign($attacheddocument)->xml;
-//                    $at = str_replace("&gt;", ">", str_replace("&quot;", '"', str_replace("&lt;", "<", $at)));
                     $file = fopen($GuardarEn."\\{$filename}".".xml", "w");
-//                    $file = fopen($GuardarEn."\\Attachment-".$this->valueXML($signedxml, $td."/cbc:ID/").".xml", "w");
                     fwrite($file, $at);
                     fclose($file);
                     if(isset($request->annexes))
@@ -472,6 +458,10 @@ class EqDocController extends Controller
             } catch (\Exception $e) {
                 return $e->getMessage().' '.preg_replace("/[\r\n|\n|\r]+/", "", json_encode($respuestadian));
             }
+
+            $invoice_doc->response_dian = json_encode($respuestadian);
+            $invoice_doc->save();
+
             return [
                 'message' => "{$typeDocument->name} #{$resolution->next_consecutive} generada con éxito",
                 'send_email_success' => (null !== $invoice && $request->sendmail == true) ?? $invoice[0]->send_email_success == 1,
@@ -510,7 +500,6 @@ class EqDocController extends Controller
                     $invoice_doc->cufe = $cufecude;
                     $invoice_doc->save();
                     $signedxml = file_get_contents(storage_path("app/xml/{$company->id}/".$respuestadian->Envelope->Body->SendBillSyncResponse->SendBillSyncResult->XmlFileName.".xml"));
-//                    $xml->loadXML($signedxml);
                     if(strpos($signedxml, "</Invoice>") > 0)
                         $td = '/Invoice';
                     else
@@ -531,9 +520,7 @@ class EqDocController extends Controller
                     $signAttachedDocument->GuardarEn = storage_path("app/public/{$company->identification_number}/{$filename}.xml");
 
                     $at = $signAttachedDocument->sign($attacheddocument)->xml;
-//                    $at = str_replace("&gt;", ">", str_replace("&quot;", '"', str_replace("&lt;", "<", $at)));
                     $file = fopen(storage_path("app/public/{$company->identification_number}/{$filename}".".xml"), "w");
-//                    $file = fopen(storage_path("app/public/{$company->identification_number}/Attachment-".$this->valueXML($signedxml, $td."/cbc:ID/").".xml"), "w");
                     fwrite($file, $at);
                     fclose($file);
                     if(isset($request->annexes))
@@ -574,6 +561,9 @@ class EqDocController extends Controller
             } catch (\Exception $e) {
                 return $e->getMessage().' '.preg_replace("/[\r\n|\n|\r]+/", "", json_encode($respuestadian));
             }
+
+            $invoice_doc->response_dian = json_encode($respuestadian);
+            $invoice_doc->save();
             return [
                 'message' => "{$typeDocument->name} #{$resolution->next_consecutive} generada con éxito",
                 'send_email_success' => (null !== $invoice && $request->sendmail == true) ?? $invoice[0]->send_email_success == 1,

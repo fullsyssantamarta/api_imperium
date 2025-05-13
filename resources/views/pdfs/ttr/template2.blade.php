@@ -136,7 +136,28 @@
                 </table>
             </td>
             <td class="vertical-align-top" style="width: 30%; text-align: right">
-                {{-- <img style="width: 150px;" src="{{$imageQr}}"> --}}
+                <table class="">
+                    <tr>
+                        <td>Modo de transporte:</td>
+                        <td> {{ $request['transportation_information']['transport_mode'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Placa:</td>
+                        <td>{{ $request['transportation_information']['plate_number'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Transporte:</td>
+                        <td>{{ $request['transportation_information']['transport_mean'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Origen:</td>
+                        <td>{{ $request['transportation_information']['origin_place'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Destino:</td>
+                        <td>{{ $request['transportation_information']['destination_place'] }}</td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
