@@ -2,6 +2,9 @@
 @section('content')
 <header class="page-header">
     <h2>Listado de Empresas</h2>
+    <div class="right-wrapper text-end">
+        <a href="{{ route('configuration_admin') }}" class="btn btn-primary btn-sm text-white mt-2 mr-2">Nueva empresa</a>
+    </div>
 </header>
 
 <div class="card border">

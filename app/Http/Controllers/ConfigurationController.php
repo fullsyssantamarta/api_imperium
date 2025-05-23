@@ -11,6 +11,7 @@ use App\Country;
 use App\Department;
 use App\Municipality;
 use App\User;
+use App\TypeLiability;
 use App\Http\Resources\CompaniesCollection;
 
 
@@ -29,10 +30,10 @@ class ConfigurationController extends Controller
 
 
     public function index()
-    {   
+    {
        // $list =  new CompaniesCollection(User::all());
         //return json_encode($list);
-        return view('configurations.index') ; 
+        return view('configurations.index') ;
     }
 
     public function configuration_admin()
@@ -59,8 +60,9 @@ class ConfigurationController extends Controller
         $ids_department = $department->pluck('id');
         $municipality = Municipality::whereIn('department_id', $ids_department)->get();
         $type_document = TypeDocument::all();
+        $type_liability = TypeLiability::all();
 
 
-        return compact( 'type_document_identification','type_organization', 'type_regime', 'department', 'municipality', 'type_document');
+        return compact( 'type_document_identification','type_organization', 'type_regime', 'department', 'municipality', 'type_document', 'type_liability');
     }
 }
