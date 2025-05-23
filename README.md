@@ -8,11 +8,11 @@ Estamos enfocados en crear herramientas y soluciones para desarrolladores de sof
 
 - ###  Despliegue en local (Windows)
   * Video de instalación. [Aquí](https://www.youtube.com/watch?v=9Ds2DR3QLGY)
-  * [Pasos aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/Comandos%20Instalacion%20API%202024%20Windows.txt)
+  * [Pasos aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/Comandos%20Instalacion%20API%202025%20Windows.txt)
 - ### Despliegue en linux
   *  Exclusivo para Ubuntu **20.04** | entorno LAMP | ejecucion de comandos de forma manual.
      * [Video aquí](https://www.youtube.com/watch?v=rEgrHADjsCY)
-     * [Comandos aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/Comandos%20Instalacion%20API%202024%20Linux%20Ubuntu%2020.txt?ref_type=heads)
+     * [Comandos aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/Comandos%20Instalacion%20API%202025%20Linux%20Ubuntu%2020.txt?ref_type=heads)
   * Exclusivo para Ubuntu **20.04** | Entorno LAMP | ejecución de script.
      * [Pasos y script aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/snippets/35)
   * Linux | Entorno **Docker** | *Aporte de usuario de la comunidad*
