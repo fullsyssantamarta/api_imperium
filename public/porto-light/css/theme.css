@@ -2276,9 +2276,9 @@ html.sidebar-right-opened .page-header .sidebar-right-toggle i:before {
 
 /* Page Header - Mobile */
 @media only screen and (max-width: 767px) {
-	.page-header {
+	/* .page-header {
 		padding-right: 80px;
-	}
+	} */
 
 	.page-header .breadcrumbs {
 		display: none;
@@ -8205,6 +8205,7 @@ html.dark .dropzone:hover .dz-default span {
 /* Forms */
 form label {
 	font-weight: normal;
+	margin-bottom: 0px !important;
 }
 
 textarea {
@@ -8450,7 +8451,7 @@ label.error {
 }
 
 .form-group:last-child, .form-group:last-of-type {
-	margin-bottom: 0;
+	margin-bottom: 0.5rem;
 }
 
 /* Form - Bordered */
@@ -11809,7 +11810,7 @@ body .ui-pnotify.icon-nb .notification .ui-pnotify-icon > span {
 	height: 88px;
 	overflow: hidden;
 	position: absolute;
-	right: -3px; 
+	right: -3px;
 	top: -5px;
 	width: 85px;
 }
