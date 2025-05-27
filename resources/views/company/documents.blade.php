@@ -166,7 +166,7 @@
                 <h5 class="modal-title mr-3" id="excelModalLabel">
                     <i class="fas fa-upload mr-2"></i>Subida Masiva de Facturas
                 </h5>
-                <a href="{{ asset('co-documents-batch.xlsx') }}" class="btn btn-sm">
+                <a href="{{ asset('xlsx/co-documents-batch.xlsx') }}" class="btn btn-sm btn-outline-primary">
                     <i class="fas fa-download mr-1"></i>Descargar Plantilla
                 </a>
                 <button type="button" class="close ml-auto" data-dismiss="modal" aria-label="Close">
