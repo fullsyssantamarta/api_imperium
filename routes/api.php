@@ -90,6 +90,13 @@ Route::middleware('auth:api')->group(function () {
         Route::post('documents/generate/{id}', 'Api\RipsDocumentController@generateRips');
     });
 
+    Route::prefix('/whatsapp-config')->group(function () {
+        Route::put('/', 'Api\WhatsappConfigController@store');
+        Route::get('/', 'Api\WhatsappConfigController@show');
+        Route::post('/send-message', 'Api\WhatsappConfigController@sendMessage');
+        Route::post('/send-message-pdf', 'Api\WhatsappConfigController@sendMessageWithPDF');
+    });
+
     // UBL 2.1
     Route::prefix('/ubl2.1')->group(function () {
         // Xml Document

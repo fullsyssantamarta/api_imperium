@@ -741,7 +741,29 @@ class InvoiceController extends Controller
             $invoice_doc->cufe = $generateCufe;
             $invoice_doc->save();
         }
-
+        $whatsappResponse = null;
+        if ($success && 
+            isset($request->send_whatsapp) && 
+            $request->send_whatsapp === true && 
+            isset($respuestadian->Envelope->Body->SendBillSyncResponse->SendBillSyncResult->StatusCode) && 
+            $respuestadian->Envelope->Body->SendBillSyncResponse->SendBillSyncResult->StatusCode === "00") {
+            
+            $pdfPath = storage_path("app/public/{$company->identification_number}/FES-{$resolution->next_consecutive}.pdf");
+            
+            $whatsappController = new WhatsappConfigController();
+            $whatsappRequest = new Request([
+                'number' => $request->customer['phone'] ?? $request->number,
+                'message' => "Factura #{$resolution->prefix}{$resolution->next_consecutive}",
+                'file' => base64_encode(file_get_contents($pdfPath)),
+                'filename' => "factura_{$resolution->prefix}{$resolution->next_consecutive}.pdf",
+                'send_whatsapp' => true
+            ]);
+            
+            $whatsappRequest->headers->set('Authorization', 'Bearer ' . $request->bearerToken());
+            
+            $whatsappResponse = $whatsappController->sendMessageWithPDF($whatsappRequest);
+            $whatsappResponse = json_decode(json_encode($whatsappResponse->getData()), true);
+        }
         $response = [
             'success' => $success,
             'message' => $message,
@@ -755,6 +777,7 @@ class InvoiceController extends Controller
             'certificate_days_left' => $certificate_days_left,
             'resolution_days_left' => $this->days_between_dates(Carbon::now()->format('Y-m-d'), $resolution->date_to),
             'ResponseDian' => $respuestadian,
+            'whatsapp_response' => $whatsappResponse,
             'invoicexml'=>base64_encode(file_get_contents(storage_path("app/public/{$company->identification_number}/FES-{$resolution->next_consecutive}.xml"))),
             'zipinvoicexml'=>base64_encode(file_get_contents(storage_path("app/public/{$company->identification_number}/FES-{$resolution->next_consecutive}.zip"))),
             'unsignedinvoicexml'=>base64_encode(file_get_contents(storage_path("app/public/{$company->identification_number}/FE-{$resolution->next_consecutive}.xml"))),
