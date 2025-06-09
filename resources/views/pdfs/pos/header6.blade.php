@@ -18,7 +18,7 @@
         </td>
     </tr>
     <tr>
-        <td style="width: 100%; padding: 0 1rem;" class="text-center vertical-align-top">
+        <td style="width: 80%; padding: 0 1rem;" class="text-center vertical-align-top">
             <div id="empresa-header">
                 <strong>{{$user->name}}</strong><br>
                 @if(isset($request->establishment_name) && $request->establishment_name != 'Oficina Principal')
@@ -83,8 +83,8 @@
                @endif
             </div>
         </td>
-        <td style="width: 0%; text-align: right; vertical-align: top;">
-            <img  style="width: 136px; height: auto;" src="{{$imgLogo}}" alt="logo">
+        <td style="width: 20%; text-align: right; vertical-align: top;">
+            <img style="width: 136px; height: auto;" src="{{$imgLogo}}" alt="logo">
         </td>
     </tr>
 </table>
