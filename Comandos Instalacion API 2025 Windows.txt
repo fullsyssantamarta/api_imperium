@@ -19,6 +19,7 @@ cd apidian2025
 cp .env.example .env
 #[Nota] Abra el archivo .env y verifique la cadena de conexión a la base de datos, son las variables con prefijos DB_
 
+composer self-update
 composer install
 php artisan key:generate
 php artisan migrate --seed
