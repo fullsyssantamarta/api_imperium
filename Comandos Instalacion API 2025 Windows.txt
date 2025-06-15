@@ -30,4 +30,6 @@ chmod -R 777 vendor/mpdf/mpdf
 php artisan storage:link
 urn_on.bat
 
-
+php artisan config:clear
+php artisan cache:clear
+php artisan config:cache
