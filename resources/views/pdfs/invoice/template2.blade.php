@@ -568,7 +568,30 @@
             </p>
         </div>
     </div>
-
+    @if(isset($request['bank_accounts']) && count($request['bank_accounts']) > 0)
+        <br>
+        <table class="table" style="width: 100%; font-size: 11px; border: 1px solid #ccc;">
+            <thead>
+                <tr>
+                    <th colspan="2" class="text-center" style="background: #f3f3f3;"><strong>Cuentas bancarias para pago</strong></th>
+                </tr>
+                <tr>
+                    <th>Banco</th>
+                    <th>Número de Cuenta</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($request['bank_accounts'] as $cuenta)
+                    <tr>
+                        <td>{{$cuenta['bank_description']}}</td>
+                        <td>{{$cuenta['number']}}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        El pago debe realizarse únicamente a la cuenta bancaria indicada, no asumimos responsabilidad por consignaciones a otras cuentas.
+        <br>
+    @endif
     @if(isset($notes))
         <div class="summarys">
             <div class="text-word" id="note">
