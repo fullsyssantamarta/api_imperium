@@ -82,7 +82,7 @@
                     <cac:PowerOfAttorney>
                        <cac:AgentParty>
                           <cac:PartyIdentification>
-                             <cbc:ID schemeAgencyID="195" shemeAgencyName="CO, DIAN (Dirección de Impuestos y Aduanas Nacionales)" schemeID="{{preg_replace("/[\r\n|\n|\r]+/", "", $invoiceLine->agentparty_dv)}}" schemeName="31">{{preg_replace("/[\r\n|\n|\r]+/", "", $invoiceLine->agentparty)}}</cbc:ID>
+                             <cbc:ID schemeAgencyID="195" schemeAgencyName="CO, DIAN (Dirección de Impuestos y Aduanas Nacionales)" schemeID="{{preg_replace("/[\r\n|\n|\r]+/", "", $invoiceLine->agentparty_dv)}}" schemeName="31">{{preg_replace("/[\r\n|\n|\r]+/", "", $invoiceLine->agentparty)}}</cbc:ID>
                           </cac:PartyIdentification>
                        </cac:AgentParty>
                     </cac:PowerOfAttorney>
