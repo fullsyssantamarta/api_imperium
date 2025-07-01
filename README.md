@@ -19,7 +19,7 @@ Estamos enfocados en crear herramientas y soluciones para desarrolladores de sof
      * [Descarga aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/api_docker.zip?ref_type=heads)
 
 - ### Despliegue con Docker
-  * Ubuntu 20.04 y 22.04 | sólo API | sin dominio | proceso manual
+  * Ubuntu 20.04 , 22.04 y 24.04 | sólo API | sin dominio | proceso manual
      * [Pasos aquí](https://gitlab.buho.la/-/snippets/31)
 
 ## 2. Actualización
