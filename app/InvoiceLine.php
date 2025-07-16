@@ -21,7 +21,7 @@ class InvoiceLine extends Model
      * @var array
      */
     protected $fillable = [
-        'unit_measure_id', 'type_item_identification_id', 'reference_price_id', 'type_generation_transmition_id', 'start_date', 'invoiced_quantity', 'line_extension_amount', 'free_of_charge_indicator', 'notes', 'description', 'agentparty', 'agentparty_dv', 'brandname', 'modelname', 'code', 'price_amount', 'base_quantity', 'allowance_charges', 'tax_totals', 'unit_measure_consignment_id', 'value_consignment', 'quantity_consignment', 'internal_consignment_number', 'RNDC_consignment_number', 'is_RNDC', 'seller_code', 'seller_code_extended',
+        'unit_measure_id', 'type_item_identification_id', 'reference_price_id', 'type_generation_transmition_id', 'start_date', 'invoiced_quantity', 'line_extension_amount', 'free_of_charge_indicator', 'notes', 'description', 'agentparty', 'agentparty_dv', 'brandname', 'modelname', 'code', 'price_amount', 'base_quantity', 'allowance_charges', 'tax_totals', 'unit_measure_consignment_id', 'value_consignment', 'quantity_consignment', 'internal_consignment_number', 'RNDC_consignment_number', 'is_RNDC', 'seller_code', 'seller_code_extended','purchase_order_number',
     ];
 
     /**

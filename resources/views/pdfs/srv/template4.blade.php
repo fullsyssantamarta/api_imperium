@@ -21,7 +21,7 @@
     @endif
     <table style="font-size: 10px">
         <tr>
-            <td class="vertical-align-top" style="width: 40%;">
+            <td class="vertical-align-top" style="width: 60%;">
                 <table>
                     <tr>
                         <td>CC o NIT:</td>
@@ -132,10 +132,145 @@
                     @endif
                 </table>
             </td>
-            <td class="horizontal-align-right" style="width: 20%; text-align: right">
-                <img style="width: 150px;" src="{{$imageQr}}">
+        </tr>
+        <tr>
+            <td class="horizontal-align-right" style="width: 80%; text-align: right">
+                <img style="width: 100px;" src="{{$imageQr}}">
             </td>
+        </tr>
     </table>
+        @if(isset($tipodoc) && $tipodoc == 'SRV')
+    <h4 style="margin-bottom: 0.5rem;">Información del Servicio</h4>
+    <table style="width: 100%; font-size: 12px; margin-bottom: 10px;">
+        @if(isset($request['servicio']))
+        <tr>
+            <td><strong>Nombre del Servicio:</strong></td>
+            <td>{{ $request['servicio'] }}</td>
+        </tr>
+        @endif
+        @if(isset($request['fecha_servicio']))
+        <tr>
+            <td><strong>Fecha de prestación:</strong></td>
+            <td>{{ $request['fecha_servicio'] }}</td>
+        </tr>
+        @endif
+        @if(isset($request['responsable']))
+        <tr>
+            <td><strong>Responsable:</strong></td>
+            <td>{{ $request['responsable'] }}</td>
+        </tr>
+        @endif
+        @if(isset($request['observaciones']))
+        <tr>
+            <td><strong>Observaciones:</strong></td>
+            <td>{{ $request['observaciones'] }}</td>
+        </tr>
+        @endif
+        @if(isset($request['order_reference']['id_order']))
+        <tr>
+            <td><strong>Número de Pedido:</strong></td>
+            <td>{{ $request['order_reference']['id_order'] }}</td>
+        </tr>
+        @endif
+        @if(isset($request['order_reference']['issue_date_order']))
+        <tr>
+            <td><strong>Fecha de Pedido:</strong></td>
+            <td>{{ $request['order_reference']['issue_date_order'] }}</td>
+        </tr>
+        @endif
+        @if(isset($request['number_account']))
+        <tr>
+            <td><strong>Número de Cuenta:</strong></td>
+            <td>{{ $request['number_account'] }}</td>
+        </tr>
+        @endif
+        @if(isset($request['sales_assistant']))
+        <tr>
+            <td><strong>Asesor Comercial:</strong></td>
+            <td>{{ $request['sales_assistant'] }}</td>
+        </tr>
+        @endif
+        @if(isset($request['web_site']))
+        <tr>
+            <td><strong>Sitio Web:</strong></td>
+            <td>{{ $request['web_site'] }}</td>
+        </tr>
+        @endif
+        @if(isset($request['dynamic_field']))
+        @foreach($request['dynamic_field'] as $field)
+        <tr>
+            <td><strong>{{ $field['name'] ?? '' }}:</strong></td>
+            <td>{{ $field['value'] ?? '' }}</td>
+        </tr>
+        @endforeach
+        @endif
+    </table>
+@endif
+    @if(isset($request['spd']) && is_array($request['spd']))
+    <h4 style="margin-bottom: 0.5rem;">Detalle Servicios Públicos Domiciliarios</h4>
+    @foreach($request['spd'] as $idx => $spd)
+        <table style="width: 100%; font-size: 10px; margin-bottom: 10px; border: 1px solid #ccc;">
+            <tr>
+                <td colspan="4"><strong>Servicio #{{ $idx + 1 }}</strong></td>
+            </tr>
+            @if(isset($spd['agency_information']))
+                <tr>
+                    <td><strong>Oficina de Recaudo:</strong></td>
+                    <td>{{ $spd['agency_information']['office_lending_company'] ?? '' }}</td>
+                    <td><strong>N° Contrato:</strong></td>
+                    <td>{{ $spd['agency_information']['contract_number'] ?? '' }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Fecha Emisión:</strong></td>
+                    <td>{{ $spd['agency_information']['issue_date'] ?? '' }}</td>
+                    <td><strong>Nota:</strong></td>
+                    <td>{{ $spd['agency_information']['note'] ?? '' }}</td>
+                </tr>
+            @endif
+            @if(isset($spd['subscriber_consumption']))
+                <tr>
+                    <td><strong>Ciclo Facturación:</strong></td>
+                    <td>{{ $spd['subscriber_consumption']['duration_of_the_billing_cycle'] ?? '' }}</td>
+                    <td><strong>Consumo Totalizado:</strong></td>
+                    <td>{{ $spd['subscriber_consumption']['total_metered_quantity'] ?? '' }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Valor Consumo:</strong></td>
+                    <td>{{ $spd['subscriber_consumption']['consumption_payable_amount'] ?? '' }}</td>
+                    <td><strong>Precio x Cantidad:</strong></td>
+                    <td>{{ $spd['subscriber_consumption']['consumption_price_quantity'] ?? '' }}</td>
+                </tr>
+                @if(isset($spd['subscriber_consumption']['utiliy_meter']))
+                    <tr>
+                        <td><strong>Medidor:</strong></td>
+                        <td>{{ $spd['subscriber_consumption']['utiliy_meter']['meter_number'] ?? '' }}</td>
+                        <td><strong>Lectura Anterior:</strong></td>
+                        <td>{{ $spd['subscriber_consumption']['utiliy_meter']['previous_meter_reading_date'] ?? '' }} - {{ $spd['subscriber_consumption']['utiliy_meter']['previous_meter_quantity'] ?? '' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lectura Actual:</strong></td>
+                        <td>{{ $spd['subscriber_consumption']['utiliy_meter']['latest_meter_reading_date'] ?? '' }} - {{ $spd['subscriber_consumption']['utiliy_meter']['latest_meter_quantity'] ?? '' }}</td>
+                        <td><strong>Método Lectura:</strong></td>
+                        <td>{{ $spd['subscriber_consumption']['utiliy_meter']['meter_reading_method'] ?? '' }}</td>
+                    </tr>
+                @endif
+                @if(isset($spd['subscriber_consumption']['payment_agreements']))
+                    <tr>
+                        <td colspan="4"><strong>Acuerdos de Pago:</strong></td>
+                    </tr>
+                    @foreach($spd['subscriber_consumption']['payment_agreements'] as $acuerdo)
+                        <tr>
+                            <td>Contrato: {{ $acuerdo['contract_number'] ?? '' }}</td>
+                            <td>Servicio: {{ $acuerdo['good_service_name'] ?? '' }}</td>
+                            <td>Descripción: {{ $acuerdo['description'] ?? '' }}</td>
+                            <td>Valor Cuota: {{ $acuerdo['fee_value_to_pay'] ?? '' }}</td>
+                        </tr>
+                    @endforeach
+                @endif
+            @endif
+        </table>
+    @endforeach
+@endif
     @isset($healthfields)
         <table class="table" style="width: 100%;">
             <thead>
@@ -175,6 +310,7 @@
                 @endforeach
             </tbody>
         </table>
+        <br>
     @endisset
     <table class="table" style="width: 100%;font-size: 8px">
         <thead>
@@ -206,7 +342,9 @@
                         <td class="text-right">{{number_format($item['price_amount'], 2)}}</td>
                         <td class="text-right">{{number_format($item['tax_totals'][0]['tax_amount'], 2)}}</td>
                         @if(isset($item['allowance_charges']))
-                            <?php $TotalDescuentosEnLineas = $TotalDescuentosEnLineas + $item['allowance_charges'][0]['amount'] ?>
+                            <?php \Log::debug($item);
+                                  $TotalDescuentosEnLineas = $TotalDescuentosEnLineas + $item['allowance_charges'][0]['amount']
+                            ?>
                             <td class="text-right">{{number_format($item['allowance_charges'][0]['amount'], 2)}}</td>
                         @else
                             <td class="text-right">{{number_format("0", 2)}}</td>

@@ -364,9 +364,9 @@ trait DocumentTrait
 
             if($tipodoc == 'SRV' or $tipodoc == 'CIN')
                 if($company->eqdocs_type_environment_id == 1)
-                    return 'https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey='.$cufecude;
+                    $QRStr = 'https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey='.$cufecude;
                 else
-                    return 'https://catalogo-vpfe-hab.dian.gov.co/document/searchqr?documentkey='.$cufecude;
+                    $QRStr = 'https://catalogo-vpfe-hab.dian.gov.co/document/searchqr?documentkey='.$cufecude;
 
             if ($tipodoc == 'TTR') {
                 $pdf = $this->initMPdf('ttr', $template_pdf);
@@ -381,6 +381,28 @@ trait DocumentTrait
                 } else {
                     $QRStr = 'https://catalogo-vpfe-hab.dian.gov.co/document/searchqr?documentkey=' . $cufecude;
                 }
+            }
+            if($tipodoc == 'SRV' || $tipodoc == 'CIN') {
+                $qrBase64 = base64_encode(QrCode::format('png')
+                    ->errorCorrection('Q')
+                    ->size(220)
+                    ->margin(0)
+                    ->generate($QRStr)
+                );
+                $imageQr = "data:image/png;base64, ".$qrBase64;
+
+                $pdf = $this->initMPdf('srv', $template_pdf);
+                $pdf->SetHTMLHeader(View::make("pdfs.".strtolower($tipodoc).".header".$template_pdf, compact("user", "company", "customer", "resolution", "date", "time", "paymentForm", "request", "cufecude", "imageQr", "imgLogo", "withHoldingTaxTotal", "notes", "healthfields", "firma_facturacion", "logo_empresa_emisora")));
+                $pdf->SetHTMLFooter(View::make("pdfs.".strtolower($tipodoc).".footer".$template_pdf, compact("user", "company", "customer", "resolution", "date", "time", "paymentForm", "request", "cufecude", "imageQr", "imgLogo", "withHoldingTaxTotal", "notes", "healthfields", "firma_facturacion", "logo_empresa_emisora")));
+                $pdf->WriteHTML(View::make("pdfs.".strtolower($tipodoc).".template".$template_pdf, compact("user", "company", "customer", "resolution", "date", "time", "paymentForm", "request", "cufecude", "imageQr", "imgLogo", "withHoldingTaxTotal", "notes", "healthfields", "firma_facturacion", "logo_empresa_emisora")), HTMLParserMode::HTML_BODY);
+                $filename = storage_path("app/public/{$company->identification_number}/SRVS-{$resolution->next_consecutive}.pdf");
+                $pdf->Output($filename);
+                if (file_exists($filename)) {
+                    \Log::info("PDF generado correctamente: " . $filename);
+                } else {
+                    \Log::error("No se pudo generar el PDF: " . $filename);
+                }
+                return $QRStr;
             }
 
             if($tipodoc == "INVOICE" || $tipodoc == "POS"){
