@@ -276,7 +276,7 @@ class EqDocRequest extends FormRequest
 //            'customer.phone' => 'required_unless:customer.identification_number,222222222222|string|max:20',
             'customer.address' => 'nullable|string',
 //            'customer.address' => 'required_unless:customer.identification_number,222222222222|string',
-            'customer.email' => 'required_unless:customer.identification_number,222222222222|string|email',
+            'customer.email' => 'nullable|string|email',
 //            'customer.merchant_registration' => 'required|string',
             'customer.merchant_registration' => 'nullable|string',
 
