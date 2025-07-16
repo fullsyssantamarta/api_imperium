@@ -35,7 +35,12 @@ class MiscelaneousController extends Controller
 
         try{
             if($request->type_document_id == 9 || $request->type_document_id == 10){
-                $document = DocumentPayroll::where('identification_number', $company->identification_number)->where('type_document_id', $request->type_document_id)->where('state_document_id', 1)->where('prefix', $resolution->prefix)->get()->sortByDesc('consecutive')->first();
+                $document = DocumentPayroll::where('identification_number', $company->identification_number)
+                    ->where('type_document_id', $request->type_document_id)
+                    ->where('state_document_id', 1)
+                    ->where('prefix', $resolution->prefix)
+                    ->orderByRaw('CAST(consecutive AS UNSIGNED) DESC')
+                    ->first();
                 return [
                     'success' => true,
                     'type_document_id' => $request->type_document_id,
@@ -44,7 +49,12 @@ class MiscelaneousController extends Controller
                 ];
             }
             else{
-                $document = Document::where('identification_number', $company->identification_number)->where('type_document_id', $request->type_document_id)->where('state_document_id', 1)->where('prefix', $resolution->prefix)->get()->sortByDesc('number')->first();
+                $document = Document::where('identification_number', $company->identification_number)
+                    ->where('type_document_id', $request->type_document_id)
+                    ->where('state_document_id', 1)
+                    ->where('prefix', $resolution->prefix)
+                    ->orderByRaw('CAST(number AS UNSIGNED) DESC')
+                    ->first();
                 return [
                     'success' => true,
                     'type_document_id' => $request->type_document_id,

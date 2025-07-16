@@ -203,7 +203,7 @@ class InvoiceRequest extends FormRequest
 //            'customer.phone' => 'required_unless:customer.identification_number,222222222222|string|max:20',
             'customer.address' => 'nullable|string',
 //            'customer.address' => 'required_unless:customer.identification_number,222222222222|string',
-            'customer.email' => 'required_unless:customer.identification_number,222222222222|string|email',
+            'customer.email' => 'nullable|email',
 //            'customer.merchant_registration' => 'required|string',
             'customer.merchant_registration' => 'nullable|string',
 
@@ -377,6 +377,7 @@ class InvoiceRequest extends FormRequest
             'invoice_lines.*.type_item_identification_id' => 'required|exists:type_item_identifications,id',
             'invoice_lines.*.price_amount' => 'required|numeric',
             'invoice_lines.*.base_quantity' => 'required|numeric',
+            'invoice_lines.*.purchase_order_number' => 'nullable|string|max:50',
         ];
     }
 
