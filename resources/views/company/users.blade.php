@@ -45,7 +45,8 @@
                             data-document_type_id="{{ $user->document_type_id }}"
                             data-can_rips="{{ $user->can_rips }}"
                             data-can_health="{{ $user->can_health }}"
-                            data-code_service_provider="{{ $user->code_service_provider}}">Editar</button>
+                            data-code_service_provider="{{ $user->code_service_provider}}"
+                            data-url_fevrips="{{ $user->url_fevrips }}">Editar</button>
                     </td>
                 </tr>
                 @endforeach
@@ -74,17 +75,6 @@
                         </button>
                     </div>
                     <div class="modal-body row">
-                        <!-- Mostrar errores de validación -->
-                        @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        @endif
-
                         <div class="form-group col-6">
                             <label for="document_type_id">Tipo de documento</label>
                             <select name="document_type_id" id="document_type_id" class="form-control" required>
@@ -95,35 +85,63 @@
                                 </option>
                                 @endforeach
                             </select>
+                            @if ($errors->has('document_type_id'))
+                                <span class="text-danger">{{ $errors->first('document_type_id') }}</span>
+                            @endif
                         </div>
 
                         <div class="form-group col-6">
                             <label for="document_number">Número de documento</label>
                             <input type="text" name="document_number" id="document_number" class="form-control" value="{{ old('document_number') }}" required>
+                            @if ($errors->has('document_number'))
+                                <span class="text-danger">{{ $errors->first('document_number') }}</span>
+                            @endif
                         </div>
 
                         <div class="form-group col-6">
                             <label for="name">Name</label>
                             <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
+                            @if ($errors->has('name'))
+                                <span class="text-danger">{{ $errors->first('name') }}</span>
+                            @endif
                         </div>
                         <div class="form-group col-6">
                             <label for="email">Email</label>
                             <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required>
+                            @if ($errors->has('email'))
+                                <span class="text-danger">{{ $errors->first('email') }}</span>
+                            @endif
                         </div>
                         <div class="form-group col-6">
                             <label for="password">Password</label>
                             <input type="password" name="password" id="password" class="form-control">
+                            @if ($errors->has('password'))
+                                <span class="text-danger">{{ $errors->first('password') }}</span>
+                            @endif
                         </div>
                         <div class="form-group col-6">
                             <label for="password_confirmation">Confirm Password</label>
                             <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
+                            @if ($errors->has('password_confirmation'))
+                                <span class="text-danger">{{ $errors->first('password_confirmation') }}</span>
+                            @endif
                         </div>
                         <div class="form-group col-6">
                             <label for="code_service_provider">Código de prestador de servicio</label>
                             <input type="text" name="code_service_provider" id="code_service_provider" class="form-control" value="{{ old('code_service_provider') }}">
                             <span class="text-muted"><small>Código de 12 digitos</small></span>
+                            @if ($errors->has('code_service_provider'))
+                                <span class="text-danger">{{ $errors->first('code_service_provider') }}</span>
+                            @endif
                         </div>
-                        <div class="form-group col-6 mt-4">
+                        <div class="form-group col-6">
+                            <label for="url_fevrips">URL Validador fev-rips</label>
+                            <input type="text" name="url_fevrips" id="url_fevrips" class="form-control" value="{{ old('url_fevrips') }}">
+                            @if ($errors->has('url_fevrips'))
+                                <span class="text-danger">{{ $errors->first('url_fevrips') }}</span>
+                            @endif
+                        </div>
+                        <div class="form-group col-6 mt-2">
                             <input type="checkbox" value="1" name="can_rips" id="can_rips" {{ old('can_rips') ? 'checked' : '' }}>
                             <label for="can_rips">Generar RIPS</label>
                             <br>
@@ -161,15 +179,17 @@ $(document).ready(function () {
         var code_service_provider = button.data('code_service_provider') || '';
         var document_type_id = button.data('document_type_id') || '';
         var document_number = button.data('document_number') || '';
+        var url_fevrips = button.data('url_fevrips') || '';
 
         var modal = $(this);
-        modal.find('.modal-title').text(id ? 'Editar Usuario' : 'Agregar Usuario');
+        modal.find('.modal-title').text(id ? 'Editar Usuario RIPS' : 'Agregar Usuario RIPS');
         modal.find('#userId').val(id);
         modal.find('#name').val(name);
         modal.find('#email').val(email);
         modal.find('#code_service_provider').val(code_service_provider);
         modal.find('#document_type_id').val(document_type_id);
         modal.find('#document_number').val(document_number);
+        modal.find('#url_fevrips').val(url_fevrips);
 
         // Set checkboxes
         modal.find('#can_rips').prop('checked', can_rips);

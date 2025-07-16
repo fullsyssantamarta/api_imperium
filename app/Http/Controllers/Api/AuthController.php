@@ -61,6 +61,7 @@ class AuthController extends Controller
             'can_rips' => $user->can_rips,
             'can_health' => $user->can_health,
             'code_service_provider' => $user->code_service_provider,
+            'url_fevrips' => $user->url_fevrips,
             'is_parent_user' => !$companies->isEmpty(),
             'company' => [
                 "id" => $activeCompany->id,

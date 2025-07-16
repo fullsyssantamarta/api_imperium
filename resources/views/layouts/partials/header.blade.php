@@ -40,6 +40,7 @@
                 </a>
                 <div class="dropdown-menu">
                     <ul class="list-unstyled mb-2">
+                        @if(Auth::user()->id != 1)
                         <li>
                             {{--<a role="menuitem" href="#"><i class="fas fa-user"></i> Perfil</a>--}}
                             <a role="menuitem" href="#" id="default-primary">
@@ -48,6 +49,7 @@
                             </a>
                         </li>
                         <li class="divider"></li>
+                        @endif
                         <li>
                             {{--<a role="menuitem" href="#"><i class="fas fa-user"></i> Perfil</a>--}}
                             <a role="menuitem" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

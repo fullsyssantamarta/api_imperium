@@ -27,6 +27,7 @@ class CompanyUserController extends Controller
             'password' => 'required|string|min:6|confirmed',
             'can_rips' => 'nullable|boolean',
             'can_health' => 'nullable|boolean',
+            'url_fevrips' => 'nullable|url',
         ]);
 
         try {
@@ -41,6 +42,7 @@ class CompanyUserController extends Controller
                 'api_token' => hash('sha256',  Str::random(80)),
                 'code_service_provider' => $request->code_service_provider,'document_type_id' => $request->document_type_id,
                 'document_number' => $request->document_number,
+                'url_fevrips' => $request->url_fevrips,
             ]);
 
             $company->users()->attach($user->id);
@@ -59,6 +61,7 @@ class CompanyUserController extends Controller
             'password' => 'nullable|string|min:6|confirmed',
             'can_rips' => 'nullable|boolean',
             'can_health' => 'nullable|boolean',
+            'url_fevrips' => 'nullable|url',
         ]);
 
         try {
@@ -72,6 +75,7 @@ class CompanyUserController extends Controller
                 'code_service_provider' => $request->code_service_provider,
                 'document_type_id' => $request->document_type_id,
                 'document_number' => $request->document_number,
+                'url_fevrips' => $request->url_fevrips,
             ]);
 
             return redirect()->back()->with('success', 'Usuario actualizado exitosamente.');

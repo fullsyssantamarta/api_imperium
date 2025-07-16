@@ -31,6 +31,7 @@ class User extends Authenticatable
         'code_service_provider',
         'document_number',
         'document_type_id',
+        'url_fevrips',
     ];
 
     /**
