@@ -610,7 +610,10 @@
             @endif
         </div>
     </div>
-
+@if(
+    (isset($request->disable_confirmation_text) && !$request->disable_confirmation_text)
+    || (isset($firma_facturacion) && !is_null($firma_facturacion))
+)
     <div class="summary" >
         <div class="text-word" id="note">
             @if(isset($request->disable_confirmation_text))
@@ -636,5 +639,6 @@
             </table>
         @endif
     </div>
+@endif
 </body>
 </html>
