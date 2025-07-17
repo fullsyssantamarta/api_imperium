@@ -153,12 +153,24 @@
         </table>
         <br>
     @endisset
+    <?php
+        $showPurchaseOrderColumn = false;
+        foreach($request['invoice_lines'] as $line) {
+            if(isset($line['purchase_order_number']) && $line['purchase_order_number']) {
+                $showPurchaseOrderColumn = true;
+                break;
+            }
+        }
+    ?>
     <table class="table" style="margin-top:-12px;width: 100%;">
         <thead>
             <tr>
                 <th class="text-center">#</th>
                 <th class="text-center">Código</th>
                 <th class="text-center">Descripción</th>
+                @if($showPurchaseOrderColumn)
+                    <th class="text-center">Orden de compra</th>
+                @endif
                 <th class="text-center">Cantidad</th>
                 <th class="text-center">UM</th>
                 <th class="text-center">Val. Unit</th>
@@ -202,6 +214,13 @@
                             @else
                                 {{$item['description']}}
                             @endif
+                        @if($showPurchaseOrderColumn)
+                            <td>
+                                @if(isset($item['purchase_order_number']) && $item['purchase_order_number'])
+                                    {{$item['purchase_order_number']}}
+                                @endif
+                            </td>
+                        @endif
                         </td>
                         <td class="text-right">{{number_format($item['invoiced_quantity'], 2)}}</td>
                         <td class="text-right">{{$um->findOrFail($item['unit_measure_id'])['name']}}</td>
