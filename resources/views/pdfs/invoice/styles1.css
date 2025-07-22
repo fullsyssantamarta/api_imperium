@@ -53,8 +53,9 @@ table {
 
 body {
     font-family: Roboto, sans-serif;
-    font-size: 10px;
+    font-size: 8px; /* Reducido para A5 */
     font-weight: 400;
+    line-height: 1.1; /* Más compacto */
 }
 
 strong {
@@ -382,16 +383,17 @@ header {
 
 #empresa-header {
     text-align: center;
-    font-size: 14px;
+    font-size: 10px; /* Reducido */
 }
 
 #empresa-header1 {
     text-align: center;
-    font-size: 8px;
+    font-size: 7px; /* Reducido */
 }
 
 .text-right {
     text-align: right !important;
+    font-size: 8px; /* Reducido */
 }
 
 td,
@@ -404,9 +406,9 @@ th {
 
 .table td,
 .table th {
-    font-size: 10px;
+    font-size: 8px; /* Reducido para A5 */
     font-weight: 400;
-    padding: 2px 1px;
+    padding: 1px 1px; /* Menos padding */
     border: 1px solid rgb(222, 226, 230);
     border-collapse: collapse;
     vertical-align: top;
@@ -424,7 +426,9 @@ th {
 }
 .text-center {
     text-align: center;
+    font-size: 8px; /* Reducido */
 }
 .vertical-align-top {
     vertical-align: top;
+    font-size: 8px; /* Reducido */
 }

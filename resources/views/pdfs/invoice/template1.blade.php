@@ -6,11 +6,11 @@
 </head> --}}
 
 <body>
-    <table style="font-size: 10px; width: 100%; margin-top:-20px;">
+    <table style="font-size: 8px; width: 100%; margin-top:-10px;">
         <tr>
             <!-- Primera Columna -->
-            <td class="vertical-align-top" style="width: 25%;">
-                <table>
+            <td class="vertical-align-top" style="width: 22%;">
+                <table style="font-size: 7px;">
                     <tr>
                         <td>CC o NIT:</td>
                         <td>{{$customer->company->identification_number}}-{{$request->customer['dv'] ?? NULL}}</td>
@@ -37,8 +37,8 @@
             </td>
 
             <!-- Segunda Columna -->
-            <td class="vertical-align-top" style="width: 25%; padding-left: 1rem">
-                <table>
+            <td class="vertical-align-top" style="width: 22%; padding-left: 0.5rem">
+                <table style="font-size: 7px;">
                     <tr>
                         <td>Obligación:</td>
                         <td>{{$customer->company->type_liability->name}}</td>
@@ -71,8 +71,8 @@
             </td>
 
             <!-- Tercera Columna -->
-            <td class="vertical-align-top" style="width: 25%; padding-left: 1rem">
-                <table>
+            <td class="vertical-align-top" style="width: 22%; padding-left: 0.5rem">
+                <table style="font-size: 7px;">
                     <tr>
                         <td>Teléfono:</td>
                         <td>{{$customer->company->phone}}</td>
@@ -102,10 +102,10 @@
                 </table>
             </td>
             <!-- Cuarta Columna -->
-            <td class="vertical-align-top" style="width: 35%; text-align: center">
+            <td class="vertical-align-top" style="width: 34%; text-align: center">
                 <table>
                     <tr>
-                        <td><img style="width: 120px;" src="{{$imageQr}}"></td>
+                        <td><img style="width: 80px;" src="{{$imageQr}}"></td>
                     </tr>
                     <!-- Puedes agregar más filas aquí si es necesario -->
                 </table>
@@ -162,22 +162,22 @@
             }
         }
     ?>
-    <table class="table" style="margin-top:-12px;width: 100%;">
+    <table class="table" style="margin-top:-8px;width: 100%;">
         <thead>
             <tr>
-                <th class="text-center">#</th>
-                <th class="text-center">Código</th>
-                <th class="text-center">Descripción</th>
+                <th class="text-center" style="font-size:7px;">#</th>
+                <th class="text-center" style="font-size:7px;">Código</th>
+                <th class="text-center" style="font-size:7px;">Descripción</th>
                 @if($showPurchaseOrderColumn)
-                    <th class="text-center">Orden de compra</th>
+                    <th class="text-center" style="font-size:7px;">Orden de compra</th>
                 @endif
-                <th class="text-center">Cantidad</th>
-                <th class="text-center">UM</th>
-                <th class="text-center">Val. Unit</th>
-                <th class="text-center">IVA/IC</th>
-                <th class="text-center">Dcto</th>
-                <th class="text-center">%</th>
-                <th class="text-center">Val. Item</th>
+                <th class="text-center" style="font-size:7px;">Cantidad</th>
+                <th class="text-center" style="font-size:7px;">UM</th>
+                <th class="text-center" style="font-size:7px;">Val. Unit</th>
+                <th class="text-center" style="font-size:7px;">IVA/IC</th>
+                <th class="text-center" style="font-size:7px;">Dcto</th>
+                <th class="text-center" style="font-size:7px;">%</th>
+                <th class="text-center" style="font-size:7px;">Val. Item</th>
             </tr>
         </thead>
         <tbody>
@@ -273,15 +273,15 @@
     <table class="table" style="width: 100%">
         <thead>
             <tr>
-                <th class="text-center">Impuestos</th>
-                <th class="text-center">Retenciones</th>
-                <th class="text-center">Totales</th>
+                <th class="text-center" style="font-size:7px;">Impuestos</th>
+                <th class="text-center" style="font-size:7px;">Retenciones</th>
+                <th class="text-center" style="font-size:7px;">Totales</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td style="width: 40%;">
-                    <table class="table" style="width: 100%">
+                    <table class="table" style="width: 100%; font-size:7px;">
                         <thead>
                             <tr>
                                 <th class="text-center">Tipo</th>
@@ -310,7 +310,7 @@
                     </table>
                 </td>
                 <td style="width: 30%;">
-                    <table class="table" style="width: 100%">
+                    <table class="table" style="width: 100%; font-size:7px;">
                         <thead>
                             <tr>
                                 <th class="text-center">Tipo</th>
@@ -337,7 +337,7 @@
                     </table>
                 </td>
                 <td style="width: 30%;">
-                    <table class="table" style="width: 100%">
+                    <table class="table" style="width: 100%; font-size:7px;">
                         <thead>
                             <tr>
                                 <th class="text-center">Concepto</th>
@@ -434,9 +434,9 @@
     </table>
 
     @inject('Varios', 'App\Custom\NumberSpellOut')
-    <div class="text-right" style="margin-top: -25px;">
+    <div class="text-right" style="margin-top: -15px;">
         <div>
-            <p style="font-size: 12pt">
+            <p style="font-size: 9pt">
                 @php
                     // Inicializamos con payable_amount
                     $totalAmount = $request->legal_monetary_totals['payable_amount'];
@@ -461,19 +461,16 @@
             </p>
         </div>
     </div>
-
     @if(isset($notes))
-    <div style="margin-top:-10px; border: 1px solid grey; border-radius: 1px; padding: 1px;">
+    <div style="margin-top:-8px; border: 1px solid grey; border-radius: 1px; padding: 1px; font-size:7px;">
         <div id="note">
             <p><strong>NOTAS:</strong>{{$notes}}</p>
         </div>
     </div>
     @endif
-
     @if(isset($request->head_note))
-    <p style="margin-top:1px;text-align: center;"><strong>{{$request->head_note}}</strong></p>
+    <p style="margin-top:1px;text-align: center; font-size:7px;"><strong>{{$request->head_note}}</strong></p>
     @endif
-
 {{--
 <div class="summary" >
     <div class="text-word" id="note">
@@ -502,14 +499,5 @@
 </div>
 
 --}}
-
-<div>
-    <hr style="margin-top: -10px;">
-    <p style="font-size: 10px;margin-top: -9px;" id='mi-texto'>Factura No: {{$resolution->prefix}} - {{$request->number}} - Fecha y Hora de Generación: {{$date}} - {{$time}}<br> CUFE: <strong>{{$cufecude}}</strong></p>
-    @isset($request->foot_note)
-        <p style="font-size: 9px;" id='mi-texto-1'><strong>{{$request->foot_note}}</strong></p>
-    @endisset
-</div>
-
 </body>
 </html>

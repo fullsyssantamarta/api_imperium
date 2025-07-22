@@ -885,11 +885,12 @@ trait DocumentTrait
 
          if($template == 1){
 
-            $format_print = 'A4';
-            $margin_top = '28';
+            $format_print = [148, 210];
+            $margin_top = '25';
             $margin_left = '5';
             $margin_right = '5';
-            $margin_bottom = '12';
+            $margin_bottom = '10';
+            $orientation = 'L';
 
          }elseif($template == 2)  {
 
@@ -934,6 +935,7 @@ trait DocumentTrait
                 'margin_header' => 5,
                 'margin_footer' => 2,
                 'format' => isset($format_print) ? $format_print : null ,  // Esta es la línea que se añade para definir el tamaño del papel
+                'orientation' => isset($orientation) ? $orientation : 'P',
             ]);
         }
         else{
