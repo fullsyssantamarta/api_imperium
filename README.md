@@ -17,10 +17,11 @@ Estamos enfocados en crear herramientas y soluciones para desarrolladores de sof
      * [Pasos y script aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/snippets/35)
   * Linux | Entorno **Docker** | *Aporte de usuario de la comunidad*
      * [Descarga aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/api_docker.zip?ref_type=heads)
-
 - ### Despliegue con Docker
   * Ubuntu 20.04 , 22.04 y 24.04 | sólo API | sin dominio | proceso manual
      * [Pasos aquí](https://gitlab.buho.la/-/snippets/31)
+- ### CPanel
+  * [Ver manual aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/snippets/37#requisitos)
 
 ## 2. Actualización
 
@@ -40,10 +41,11 @@ Estamos enfocados en crear herramientas y soluciones para desarrolladores de sof
 ## 5.- Configuración / Habilitación / Producción API
 * Ver video explicativo [Aquí](https://www.youtube.com/watch?v=TSF2nHN4W1I)
 
-
 ## 6.- Cómo pasar a producción
 * Ver video explicativo [Aquí](https://www.youtube.com/watch?v=gBtd4XqwWtg)
 
+## APP
+* Aplicación movil en formato web [visitar URL](https://facturalatam.com/app/)
 
 ## Extras
 
