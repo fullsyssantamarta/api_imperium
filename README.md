@@ -8,31 +8,31 @@ Estamos enfocados en crear herramientas y soluciones para desarrolladores de sof
 
 - ###  Despliegue en local (Windows)
   * Video de instalación. [Aquí](https://www.youtube.com/watch?v=9Ds2DR3QLGY)
-  * [Pasos aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/Comandos%20Instalacion%20API%202025%20Windows.txt)
+  * [Pasos aquí](https://git.buho.la/facturalatam/co-apidian2025/-/blob/master/Comandos%20Instalacion%20API%202025%20Windows.txt)
 - ### Despliegue en linux
   *  Exclusivo para Ubuntu **20.04** | entorno LAMP | ejecucion de comandos de forma manual.
      * [Video aquí](https://www.youtube.com/watch?v=rEgrHADjsCY)
-     * [Comandos aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/Comandos%20Instalacion%20API%202025%20Linux%20Ubuntu%2020.txt?ref_type=heads)
+     * [Comandos aquí](https://git.buho.la/facturalatam/co-apidian2025/-/blob/master/Comandos%20Instalacion%20API%202025%20Linux%20Ubuntu%2020.txt?ref_type=heads)
   * Exclusivo para Ubuntu **20.04** | Entorno LAMP | ejecución de script.
-     * [Pasos y script aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/snippets/35)
+     * [Pasos y script aquí](https://git.buho.la/facturalatam/co-apidian2025/-/snippets/35)
   * Linux | Entorno **Docker** | *Aporte de usuario de la comunidad*
-     * [Descarga aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/api_docker.zip?ref_type=heads)
+     * [Descarga aquí](https://git.buho.la/facturalatam/co-apidian2025/-/blob/master/api_docker.zip?ref_type=heads)
 - ### Despliegue con Docker
   * Ubuntu 20.04 , 22.04 y 24.04 | sólo API | sin dominio | proceso manual
-     * [Pasos aquí](https://gitlab.buho.la/-/snippets/31)
+     * [Pasos aquí](https://git.buho.la/-/snippets/31)
 - ### CPanel
-  * [Ver manual aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/snippets/37#requisitos)
+  * [Ver manual aquí](https://git.buho.la/facturalatam/co-apidian2025/-/snippets/37#requisitos)
 
 ## 2. Actualización
 
 - Actualizar repositorio de gitlab de una versión antigua a la actual. [Video aquí](https://www.youtube.com/watch?v=6lwLKQCYvNY)
-- Comandos para actualizar repositorio **Pto. 1** y comandos para actualizar **Pto.2**. [Aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/Proceso%20de%20actualizacion%20APIDIAN.txt?ref_type=heads)
+- Comandos para actualizar repositorio **Pto. 1** y comandos para actualizar **Pto.2**. [Aquí](https://git.buho.la/facturalatam/co-apidian2025/-/blob/master/Proceso%20de%20actualizacion%20APIDIAN.txt?ref_type=heads)
 
 ## 3. Ejemplos para la API / Collection POSTMAN
 
 - Descargar Postman [Aquí](https://www.postman.com/downloads/)
 - Ver ejemplos en sitio web. [Aquí](https://documenter.getpostman.com/view/1431398/2sAY4uCido)
-- Descargar colección para importar en Postman (*actualizaciones menos constantes*). [Aquí](https://gitlab.buho.la/facturalatam/co-apidian2025/-/blob/master/ApiDianV2.1.postman_collection.json?ref_type=heads)
+- Descargar colección para importar en Postman (*actualizaciones menos constantes*). [Aquí](https://git.buho.la/facturalatam/co-apidian2025/-/blob/master/ApiDianV2.1.postman_collection.json?ref_type=heads)
 
 ## 4. Proceso de habilitación DIAN Validación Previa UBL 2.1
 
