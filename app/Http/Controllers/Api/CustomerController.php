@@ -69,6 +69,25 @@ class CustomerController extends Controller
     {
         $response = $this->createXML($document_type_identification_id, $document_number);
 
+        try {
+            if (isset($response->Envelope->Body->Fault)) {
+                $fault = $response->Envelope->Body->Fault;
+                $faultString = isset($fault->Reason->Text) ? (string)$fault->Reason->Text['_value'] : 'Unknown error';
+                $faultCode = isset($fault->Code->Value) ? (string)$fault->Code->Value : 'Unknown code';
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Dian Error: ' . $faultString,
+                    'code' => $faultCode
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error processing Dian response',
+                'error' => $e->getMessage()
+            ], 500);
+        }
         $status = $response->Envelope->Body->GetAcquirerResponse->GetAcquirerResult->StatusCode;
         $message = $response->Envelope->Body->GetAcquirerResponse->GetAcquirerResult->Message;
         if($status === '404') {

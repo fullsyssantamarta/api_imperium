@@ -100,4 +100,6 @@ a2ensite api.conf
 a2enmod rewrite
 service apache2 restart
 cd /var/www/html/apidian
-php artisan config:cache && php artisan config:clear && php artisan cache:clear
+php artisan config:clear
+php artisan cache:clear
+php artisan config:cache
