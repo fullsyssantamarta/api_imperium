@@ -277,16 +277,19 @@
                                 <td class="text-right" style="background-color: rgb(194, 241, 194);">{{number_format($item['allowance_charges'][0]['amount'] / $trmValue, 2)}}</td>
                             @endif
                         @else
+                            <td class="text-right">0.00</td>
                             @if(isset($request['deliveryterms']))
                                 <td class="text-right" style="background-color: rgb(194, 241, 194);">0.00</td>
                             @endif
                         @endif
                         <td class="text-right">
+                            <td class="text-right">
                             @if(isset($item['allowance_charges']) && floatval($item['allowance_charges'][0]['base_amount']) != 0)
                                 {{ number_format(($item['allowance_charges'][0]['amount'] * 100) / $item['allowance_charges'][0]['base_amount'], 2) }}
                             @else
                                 0.00
                             @endif
+                            </td>
                         </td>
                         <td class="text-right">{{number_format($item['invoiced_quantity'] * $item['price_amount'], 2)}}</td>
                         @if(isset($request['deliveryterms']))
@@ -334,6 +337,7 @@
                                 <td class="text-right" style="background-color: rgb(194, 241, 194);">{{number_format($item['allowance_charges'][0]['amount'] / $trmValue, 2)}}</td>
                             @endif
                         @else
+                            <td class="text-right">0.00</td>
                             @if(isset($request['deliveryterms']))
                                 <td class="text-right" style="background-color: rgb(194, 241, 194);">0.00</td>
                             @endif
@@ -344,7 +348,7 @@
                             @else
                                 0.00
                             @endif
-                        </td>
+                            </td>
                         <td class="text-right">{{number_format($item['line_extension_amount'], 2)}}</td>
                         @if(isset($request['deliveryterms']))
                             <td class="text-right" style="background-color: rgb(194, 241, 194);">{{number_format($item['line_extension_amount'] / $trmValue, 2)}}</td>
@@ -549,6 +553,16 @@
                             </tr>
 
                             <tr>
+                                <?php
+                                    $TotalRetenciones = 0;
+                                    if (isset($withHoldingTaxTotal)) {
+                                        foreach ($withHoldingTaxTotal as $item) {
+                                            if ($item['tax_id'] != 6) {
+                                                $TotalRetenciones += $item['tax_amount'];
+                                            }
+                                        }
+                                    }
+                                ?>
                                 <td>Total a Pagar</td>
                                 <td class="text-right">{{number_format($request->legal_monetary_totals['payable_amount'] + ($request->previous_balance ?? 0) - $TotalRetenciones, 2)}}</td>
                                 @if(isset($request['deliveryterms']))
