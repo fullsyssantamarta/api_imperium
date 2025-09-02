@@ -681,6 +681,15 @@
                     <td class="text-right">{{number_format($request['deductions']['voluntary_pension'], 2)}}</td>
                 </tr>
             @endif
+            @if(isset($request['deductions']['fondosp_deduction_SP']) && $request['deductions']['fondosp_deduction_SP'] > 0)
+                <?php $ItemNro = $ItemNro + 1; ?>
+                <tr>
+                    <td>{{$ItemNro}}</td>
+                    <td>FONDO DE SOLIDARIDAD EMPLEADO</td>
+                    <td></td>
+                    <td class="text-right">{{number_format($request['deductions']['fondosp_deduction_SP'], 2)}}</td>
+                </tr>
+            @endif
             @if(isset($request['deductions']['withholding_at_source']))
                 <?php $ItemNro = $ItemNro + 1; ?>
                 <tr>
