@@ -399,7 +399,15 @@
                                         @if(isset($request['deliveryterms']))
                                             <td class="text-right" style="background-color: rgb(194, 241, 194);">{{number_format($item['taxable_amount'] / $trmValue, 2)}}</td>
                                         @endif
-                                        <td class="text-right">{{number_format($item['percent'], 2)}}%</td>
+                                        <td class="text-right">
+                                            @if(isset($item['percent']))
+                                                {{ number_format($item['percent'], 2) }}%
+                                            @elseif(isset($item['per_unit_amount']) && isset($item['base_unit_measure']))
+                                                {{ number_format($item['per_unit_amount'], 2) }} x {{ number_format($item['base_unit_measure'], 2) }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
                                         <td class="text-right">{{number_format($item['tax_amount'], 2)}}</td>
                                         @if(isset($request['deliveryterms']))
                                             <td class="text-right" style="background-color: rgb(194, 241, 194);">{{number_format($item['tax_amount'] / $trmValue, 2)}}</td>
@@ -440,7 +448,15 @@
                                         @if(isset($request['deliveryterms']))
                                             <td class="text-right" style="background-color: rgb(194, 241, 194);">{{number_format($item['taxable_amount'] / $trmValue, 2)}}</td>
                                         @endif
-                                        <td class="text-right">{{number_format($item['percent'], 2)}}%</td>
+                                        <td class="text-right">
+                                            @if(isset($item['percent']))
+                                                {{ number_format($item['percent'], 2) }}%
+                                            @elseif(isset($item['per_unit_amount']) && isset($item['base_unit_measure']))
+                                                {{ number_format($item['per_unit_amount'], 2) }} x {{ number_format($item['base_unit_measure'], 2) }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
                                         <td class="text-right">{{number_format($item['tax_amount'], 2)}}</td>
                                         @if(isset($request['deliveryterms']))
                                             <td class="text-right" style="background-color: rgb(194, 241, 194);">{{number_format($item['tax_amount'] / $trmValue, 2)}}</td>

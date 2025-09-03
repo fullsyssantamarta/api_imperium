@@ -388,7 +388,16 @@
                             @foreach($request->tax_totals as $item)
                                 <?php $TotalImpuestos += $item['tax_amount']; ?>
                                 @inject('tax', 'App\Tax')
-                                <div>{{$tax->findOrFail($item['tax_id'])['name']}} {{number_format($item['percent'], 2)}}%: {{number_format($item['tax_amount'], 2)}}</div>
+                                <div>{{$tax->findOrFail($item['tax_id'])['name']}} 
+                                    @if(isset($item['percent']))
+                                        {{ number_format($item['percent'], 2) }}%
+                                    @elseif(isset($item['per_unit_amount']) && isset($item['base_unit_measure']))
+                                        {{ number_format($item['per_unit_amount'], 2) }} x {{ number_format($item['base_unit_measure'], 2) }}
+                                    @else
+                                        -
+                                    @endif:
+                                    {{number_format($item['tax_amount'], 2)}}
+                                </div>
                             @endforeach
                         @endif
                     </td>
