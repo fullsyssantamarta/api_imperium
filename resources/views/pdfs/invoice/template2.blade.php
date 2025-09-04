@@ -569,16 +569,6 @@
                             </tr>
 
                             <tr>
-                                <?php
-                                    $TotalRetenciones = 0;
-                                    if (isset($withHoldingTaxTotal)) {
-                                        foreach ($withHoldingTaxTotal as $item) {
-                                            if ($item['tax_id'] != 6) {
-                                                $TotalRetenciones += $item['tax_amount'];
-                                            }
-                                        }
-                                    }
-                                ?>
                                 <td>Total a Pagar</td>
                                 <td class="text-right">{{number_format($request->legal_monetary_totals['payable_amount'] + ($request->previous_balance ?? 0) - $TotalRetenciones, 2)}}</td>
                                 @if(isset($request['deliveryterms']))
