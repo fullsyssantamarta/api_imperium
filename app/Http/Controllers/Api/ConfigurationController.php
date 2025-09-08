@@ -84,13 +84,28 @@ class ConfigurationController extends Controller
         return compact('health_coverages');
     }
 
-    public function table_resolutions($identification_number, $type_document_id = null){
+    public function table_resolutions(Request $request, $identification_number = null, $type_document_id = null){
         $company = auth()->user()->company;
         $environment_id = $company->type_environment_id;
+
+        // Prioridad 1: Parámetros de URL (compatibilidad hacia atrás)
+        if ($identification_number === null) {
+            $identification_number = $request->query('identification_number');
+        }
+        if ($type_document_id === null) {
+            $type_document_id = $request->query('type_document_id');
+        }
+
         try{
-            $companyId = Company::where('identification_number', $identification_number)
-                                ->firstOrFail()
-                                ->id;
+            // Si se proporciona identification_number, buscar esa empresa específica
+            // Si no, usar la empresa del usuario autenticado
+            if ($identification_number) {
+                $targetCompany = Company::where('identification_number', $identification_number)->firstOrFail();
+                $companyId = $targetCompany->id;
+            } else {
+                $companyId = $company->id;
+            }
+
             $resolutions = Resolution::where('company_id', $companyId)
                 ->where('type_environment_id', $environment_id)
                 ->filterByDocumentType($type_document_id)
@@ -102,7 +117,6 @@ class ConfigurationController extends Controller
             return compact('resolutions');
         }
     }
-
 
     public function emailconfig()
     {
