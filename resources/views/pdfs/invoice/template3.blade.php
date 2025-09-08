@@ -475,16 +475,6 @@
                 </tr>
 
                 <tr>
-                    <?php
-                        $TotalRetenciones = 0;
-                        if (isset($withHoldingTaxTotal)) {
-                            foreach ($withHoldingTaxTotal as $item) {
-                                if ($item['tax_id'] != 6) {
-                                    $TotalRetenciones += $item['tax_amount'];
-                                }
-                            }
-                        }
-                    ?>
                     <td><b>Total a Pagar</b></td>
                     @if(isset($request->tarifaica))
                         @if(isset($request->legal_monetary_totals['allowance_total_amount']))

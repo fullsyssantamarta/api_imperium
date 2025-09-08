@@ -22,7 +22,7 @@ class AllowanceCharge extends Model
      * @var array
      */
     protected $fillable = [
-        'discount_id', 'charge_indicator', 'allowance_charge_reason', 'multiplier_factor_numeric', 'amount', 'base_amount',
+        'discount_id', 'type_discount_id', 'charge_indicator', 'allowance_charge_reason', 'multiplier_factor_numeric', 'amount', 'base_amount',
     ];
 
     /**
@@ -42,6 +42,11 @@ class AllowanceCharge extends Model
         return $this->belongsTo(Discount::class);
     }
 
+    public function type_discount()
+    {
+        return $this->belongsTo(TypeDiscount::class);
+    }
+    
     /**
      * Get the charge indicator.
      *

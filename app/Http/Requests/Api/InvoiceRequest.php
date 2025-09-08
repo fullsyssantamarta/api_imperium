@@ -292,7 +292,8 @@ class InvoiceRequest extends FormRequest
             // Allowance charges
             'allowance_charges' => 'nullable|array',
             'allowance_charges.*.charge_indicator' => 'nullable|required_with:allowance_charges|boolean',
-            'allowance_charges.*.discount_id' => 'nullable|required_if:allowance_charges.*.charge_indicator,false|exists:discounts,id',
+            'allowance_charges.*.discount_id' => 'nullable|required_without:allowance_charges.*.type_discount_id|exists:discounts,id',
+            'allowance_charges.*.type_discount_id' => 'nullable|required_without:allowance_charges.*.discount_id|exists:type_discounts,id',
             'allowance_charges.*.allowance_charge_reason' => 'nullable|required_with:allowance_charges|string',
             'allowance_charges.*.amount' => 'nullable|required_with:allowance_charges|numeric',
             'allowance_charges.*.base_amount' => 'nullable|required_with:allowance_charges|numeric',
