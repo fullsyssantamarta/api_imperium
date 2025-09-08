@@ -92,10 +92,7 @@ class ConfigurationController extends Controller
                                 ->firstOrFail()
                                 ->id;
             $resolutions = Resolution::where('company_id', $companyId)
-                ->where(function($query) use ($environment_id) {
-                    $query->where('type_environment_id', $environment_id)
-                          ->orWhereNull('type_environment_id');
-                })
+                ->where('type_environment_id', $environment_id)
                 ->filterByDocumentType($type_document_id)
                 ->get();
 
