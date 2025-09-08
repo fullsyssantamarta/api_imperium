@@ -21,7 +21,16 @@ class Resolution extends Model
      * @var array
      */
     protected $fillable = [
-        'type_document_id', 'prefix', 'resolution', 'resolution_date', 'technical_key', 'from', 'to', 'date_from', 'date_to',
+        'type_document_id',
+        'prefix',
+        'resolution',
+        'resolution_date',
+        'technical_key',
+        'from',
+        'to',
+        'date_from',
+        'date_to',
+        'type_environment_id',
     ];
 
     /**

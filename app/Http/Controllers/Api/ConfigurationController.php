@@ -86,11 +86,18 @@ class ConfigurationController extends Controller
 
     public function table_resolutions($identification_number, $type_document_id = null){
         $company = auth()->user()->company;
+        $environment_id = $company->type_environment_id;
         try{
             $companyId = Company::where('identification_number', $identification_number)
                                 ->firstOrFail()
                                 ->id;
-            $resolutions = Resolution::where('company_id', $companyId)->filterByDocumentType($type_document_id)->get();
+            $resolutions = Resolution::where('company_id', $companyId)
+                ->where(function($query) use ($environment_id) {
+                    $query->where('type_environment_id', $environment_id)
+                          ->orWhereNull('type_environment_id');
+                })
+                ->filterByDocumentType($type_document_id)
+                ->get();
 
             return compact('resolutions');
         } catch (Exception $e) {
@@ -660,6 +667,7 @@ class ConfigurationController extends Controller
                 'to' => $request->to,
                 'date_from' => $request->date_from,
                 'date_to' => $request->date_to,
+                'type_environment_id' => auth()->user()->company->type_environment_id,
             ]);
 
             DB::commit();
