@@ -12,7 +12,6 @@
 
 // UBL 2.1
 Route::prefix('/ubl2.1')->group(function () {
-    Route::get('/emailconfig', 'Api\ConfigurationController@emailconfig');
 
     // Configuration
     Route::prefix('/config')->middleware(['check.api.register'])->group(function () {
@@ -103,6 +102,9 @@ Route::middleware('auth:api')->group(function () {
         Route::prefix('/xml')->group(function () {
 	        Route::post('/document/{trackId}/{GuardarEn?}', 'Api\XmlDocumentController@document');
         });
+        
+        // Configuration email
+        Route::get('/emailconfig', 'Api\ConfigurationController@emailconfig');
 
         // Plan info
         Route::get('/plan/infoplanuser', 'Api\ConfigurationController@infoPlanUser');

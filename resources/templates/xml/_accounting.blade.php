@@ -10,7 +10,11 @@
             </cac:PartyIdentification>
         @endif
         <cac:PartyName>
-            <cbc:Name>{{preg_replace("/[\r\n|\n|\r]+/", "", $user->name)}}</cbc:Name>
+            @if(!isset($supplier) && !empty($request['establishment_name']))
+                <cbc:Name>{{ preg_replace("/[\r\n|\n|\r]+/", "", $user->name) }}</cbc:Name>
+            @else
+                <cbc:Name>{{ preg_replace("/[\r\n|\n|\r]+/", "", $request['establishment_name'] ?? $user->name) }}</cbc:Name>
+            @endif
         </cac:PartyName>
         @php
             $hasAddressData =
@@ -26,22 +30,27 @@
                 !empty($user->company->country->name);
         @endphp
         @if($hasAddressData || isset($supplier))
+        @inject('municipality', 'App\Municipality')
             <cac:PhysicalLocation>
                 @if(!isset($supplier) && $typeDocument->id == '24')
                     <cbc:LocationTypeCode listID="01">{{preg_replace("/[\r\n|\n|\r]+/", "", $request['stratum_id'])}}</cbc:LocationTypeCode>
                 @endif
                 <cac:Address>
                     @if(isset($supplier))
-                        <cbc:ID>{{preg_replace("/[\r\n|\n|\r]+/", "", $user->company->municipality->code)}}</cbc:ID>
-                        <cbc:CityName>{{preg_replace("/[\r\n|\n|\r]+/", "", trim($user->company->municipality->name))}}</cbc:CityName>
+                        <cbc:ID>{{preg_replace("/[\r\n|\n|\r]+/", "", $municipality->find($request['establishment_municipality'])->code ?? $user->company->municipality->code)}}</cbc:ID>
+                        <cbc:CityName>{{preg_replace("/[\r\n|\n|\r]+/", "", $municipality->find($request['establishment_municipality'])->name ?? $user->company->municipality->name)}}</cbc:CityName>
                         @if(isset($user->postal_zone_code))
                             <cbc:PostalZone>{{preg_replace("/[\r\n|\n|\r]+/", "", $user->postal_zone_code)}}</cbc:PostalZone>
                         @endif
                         @if($typeDocument->id == 15)
                             <cbc:PostalZone>{{preg_replace("/[\r\n|\n|\r]+/", "", $request['postal_zone_code'])}}</cbc:PostalZone>
                         @endif
-                        <cbc:CountrySubentity>{{preg_replace("/[\r\n|\n|\r]+/", "", trim($user->company->municipality->department->name))}}</cbc:CountrySubentity>
-                        <cbc:CountrySubentityCode>{{preg_replace("/[\r\n|\n|\r]+/", "", $user->company->municipality->department->code)}}</cbc:CountrySubentityCode>
+                        <cbc:CountrySubentity>{{ preg_replace("/[\r\n|\n|\r]+/", "", trim(isset($request['establishment_municipality']) && $municipality->find($request['establishment_municipality']) 
+                                                ? $municipality->find($request['establishment_municipality'])->department->name 
+                                                : $user->company->municipality->department->name))}}</cbc:CountrySubentity>
+                        <cbc:CountrySubentityCode>{{ preg_replace("/[\r\n|\n|\r]+/", "", isset($request['establishment_municipality']) && $municipality->find($request['establishment_municipality']) 
+                                                ? $municipality->find($request['establishment_municipality'])->department->code 
+                                                : $user->company->municipality->department->code)}}</cbc:CountrySubentityCode>
                     @else
                         @if($user->company->country->id == 46)
                             <cbc:ID>{{preg_replace("/[\r\n|\n|\r]+/", "", $user->company->municipality->code)}}</cbc:ID>
@@ -62,7 +71,7 @@
                         @endif
                     @endif
                     <cac:AddressLine>
-                        <cbc:Line>{{preg_replace("/[\r\n|\n|\r]+/", "", $user->company->address)}}</cbc:Line>
+                        <cbc:Line>{{preg_replace("/[\r\n|\n|\r]+/", "",$request['establishment_address'] ?? $user->company->address)}}</cbc:Line>
                     </cac:AddressLine>
                     <cac:Country>
                         <cbc:IdentificationCode>{{preg_replace("/[\r\n|\n|\r]+/", "", $user->company->country->code)}}</cbc:IdentificationCode>
@@ -127,11 +136,28 @@
                 <cbc:Name>{{preg_replace("/[\r\n|\n|\r]+/", "", $user->company->merchant_registration)}}</cbc:Name>
             </cac:CorporateRegistrationScheme>
         </cac:PartyLegalEntity>
-        <cac:Contact>
-            @if($user->company->identification_number != "222222222222")
-                <cbc:Telephone>{{preg_replace("/[\r\n|\n|\r]+/", "", $user->company->phone)}}</cbc:Telephone>
-                <cbc:ElectronicMail>{{preg_replace("/[\r\n|\n|\r]+/", "", $user->email)}}</cbc:ElectronicMail>
+        @if($user->company->identification_number != "222222222222")
+            @if(!isset($supplier))
+                @php
+                    $hasPhone = isset($request['customer']['phone']) && !empty($request['customer']['phone']);
+                    $hasEmail = isset($request['customer']['email']) && !empty($request['customer']['email']);
+                @endphp
+                @if($hasPhone || $hasEmail)
+                    <cac:Contact>
+                        @if($hasPhone)
+                            <cbc:Telephone>{{ preg_replace("/[\r\n|\n|\r]+/", "", $request['customer']['phone']) }}</cbc:Telephone>
+                        @endif
+                        @if($hasEmail)
+                            <cbc:ElectronicMail>{{ preg_replace("/[\r\n|\n|\r]+/", "", $request['customer']['email']) }}</cbc:ElectronicMail>
+                        @endif
+                    </cac:Contact>
+                @endif
+            @else
+                <cac:Contact>
+                    <cbc:Telephone>{{preg_replace("/[\r\n|\n|\r]+/", "", $request['establishment_phone'] ?? $user->company->phone)}}</cbc:Telephone>
+                    <cbc:ElectronicMail>{{preg_replace("/[\r\n|\n|\r]+/", "", $request['establishment_email'] ?? $user->email)}}</cbc:ElectronicMail>
+                </cac:Contact>
             @endif
-        </cac:Contact>
+        @endif
     </cac:Party>
 </cac:{{$node}}>

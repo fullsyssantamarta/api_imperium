@@ -100,17 +100,42 @@ class ConfigurationController extends Controller
     }
 
 
-    public function emailconfig()
+    public function emailconfig(Request $request)
     {
+        // Autenticación por token
+        $token = $request->bearerToken();
+        $user = \App\User::where('api_token', $token)->first();
+
+        if ($user) {
+            if (
+                !empty($user->mail_host) &&
+                !empty($user->mail_port) &&
+                !empty($user->mail_username) &&
+                !empty($user->mail_password) &&
+                !empty($user->mail_encryption)
+            ) {
+                return [
+                    'message' => 'Configuración de envíos de e-mail personalizada para la empresa.',
+                    'success' => true,
+                    'MAIL_DRIVER' => config('mail.driver'),
+                    'MAIL_HOST' => $user->mail_host,
+                    'MAIL_PORT' => $user->mail_port,
+                    'MAIL_USERNAME' => $user->mail_username,
+                    'MAIL_PASSWORD' => '********',
+                    'MAIL_ENCRYPTION' => $user->mail_encryption,
+                ];
+            }
+        }
+
         return [
-            'message' => 'Configuracion de envios de e-mail',
+            'message' => 'No tiene configuración personalizada para esta empresa. Se está usando la configuración general.',
             'success' => true,
-            'MAIL_DRIVER' => env('MAIL_DRIVER'),
-            'MAIL_HOST' => env('MAIL_HOST'),
-            'MAIL_PORT' => env('MAIL_PORT'),
-            'MAIL_USERNAME' => env('MAIL_USERNAME'),
-            'MAIL_PASSWORD' => env('MAIL_PASSWORD'),
-            'MAIL_ENCRYPTION' => env('MAIL_ENCRYPTION'),
+            'MAIL_DRIVER' => config('mail.driver'),
+            'MAIL_HOST' => config('mail.host'),
+            'MAIL_PORT' => config('mail.port'),
+            'MAIL_USERNAME' => config('mail.username'),
+            'MAIL_PASSWORD' => '********',
+            'MAIL_ENCRYPTION' => config('mail.encryption'),
         ];
     }
 
