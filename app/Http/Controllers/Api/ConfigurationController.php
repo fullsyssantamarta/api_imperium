@@ -84,13 +84,32 @@ class ConfigurationController extends Controller
         return compact('health_coverages');
     }
 
-    public function table_resolutions($identification_number, $type_document_id = null){
+    public function table_resolutions(Request $request, $identification_number = null, $type_document_id = null){
         $company = auth()->user()->company;
+        $environment_id = $company->type_environment_id;
+
+        // Prioridad 1: Parámetros de URL (compatibilidad hacia atrás)
+        if ($identification_number === null) {
+            $identification_number = $request->query('identification_number');
+        }
+        if ($type_document_id === null) {
+            $type_document_id = $request->query('type_document_id');
+        }
+
         try{
-            $companyId = Company::where('identification_number', $identification_number)
-                                ->firstOrFail()
-                                ->id;
-            $resolutions = Resolution::where('company_id', $companyId)->filterByDocumentType($type_document_id)->get();
+            // Si se proporciona identification_number, buscar esa empresa específica
+            // Si no, usar la empresa del usuario autenticado
+            if ($identification_number) {
+                $targetCompany = Company::where('identification_number', $identification_number)->firstOrFail();
+                $companyId = $targetCompany->id;
+            } else {
+                $companyId = $company->id;
+            }
+
+            $resolutions = Resolution::where('company_id', $companyId)
+                ->where('type_environment_id', $environment_id)
+                ->filterByDocumentType($type_document_id)
+                ->get();
 
             return compact('resolutions');
         } catch (Exception $e) {
@@ -685,6 +704,7 @@ class ConfigurationController extends Controller
                 'to' => $request->to,
                 'date_from' => $request->date_from,
                 'date_to' => $request->date_to,
+                'type_environment_id' => auth()->user()->company->type_environment_id,
             ]);
 
             DB::commit();
