@@ -425,3 +425,6 @@ th {
 .vertical-align-top {
     vertical-align: top;
 }
+.tabla-items th, .tabla-items td {
+    font-size: 50px;
+}

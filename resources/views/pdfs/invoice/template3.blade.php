@@ -316,7 +316,7 @@
                             <td>
                                 @if(isset($item['notes']))
                                     {{$item['description']}}
-                                    <p style="font-size: 9px">{{$item['notes']}}</p>
+                                    <p style="font-style: italic; font-size: 90%">{{$item['notes']}}</p>
                                 @else
                                     {{$item['description']}}
                                 @endif
