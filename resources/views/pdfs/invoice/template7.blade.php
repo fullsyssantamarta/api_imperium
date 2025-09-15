@@ -362,8 +362,8 @@
 
     {{-- QR y CUFE --}}
     <div class="text-center" style="margin: 8px 0;">
-        <img style="width: 50%;" src="{{$imageQr}}">
         <div class="desc-9" style="font-size: 8px;"><strong>CUFE:</strong> {{$cufecude}}</div>
+        <img style="width: 50%;" src="{{$imageQr}}">
     </div>
 
     {{-- Notas --}}

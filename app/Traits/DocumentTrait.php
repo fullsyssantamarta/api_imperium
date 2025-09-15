@@ -464,10 +464,11 @@ trait DocumentTrait
                     if($tipodoc == 'POS')
                         $pdf = $this->initMPdf('pos', $template_pdf);
                     else
-                        $pdf = $this->initMPdf('invoice', $template_pdf);
+                        $temp_template_pdf = (isset($request->is_tirilla2) && $request->is_tirilla2) ? 7 : $template_pdf;
+                        $pdf = $this->initMPdf('invoice', $temp_template_pdf);
                     $pdf->SetHTMLHeader(View::make("pdfs.".strtolower($tipodoc).".header".$template_pdf, compact("user", "company", "customer", "resolution", "date", "time", "paymentForm", "request", "cufecude", "imageQr", "imgLogo", "withHoldingTaxTotal", "notes", "healthfields", "firma_facturacion", "logo_empresa_emisora")));
                     $pdf->SetHTMLFooter(View::make("pdfs.".strtolower($tipodoc).".footer".$template_pdf, compact("user", "company", "customer", "resolution", "date", "time", "paymentForm", "request", "cufecude", "imageQr", "imgLogo", "withHoldingTaxTotal", "notes", "healthfields", "firma_facturacion", "logo_empresa_emisora")));
-                    $pdf->WriteHTML(View::make("pdfs.".strtolower($tipodoc).".template".$template_pdf, compact("user", "company", "customer", "resolution", "date", "time", "paymentForm", "request", "cufecude", "imageQr", "imgLogo", "withHoldingTaxTotal", "notes", "healthfields", "firma_facturacion", "logo_empresa_emisora")), HTMLParserMode::HTML_BODY);
+                    $pdf->WriteHTML(View::make("pdfs.".strtolower($tipodoc).".template".$temp_template_pdf, compact("user", "company", "customer", "resolution", "date", "time", "paymentForm", "request", "cufecude", "imageQr", "imgLogo", "withHoldingTaxTotal", "notes", "healthfields", "firma_facturacion", "logo_empresa_emisora")), HTMLParserMode::HTML_BODY);
                 }
                 else{
                     if($tipodoc == 'POS')
@@ -900,7 +901,7 @@ trait DocumentTrait
             $margin_right = '10';
             $margin_bottom = '12';
 
-         } elseif($template == 3)  {
+         } elseif($template == 3 || $template == 7)  {
 
 
             $margin_top = '2';
