@@ -217,7 +217,12 @@
                         <td class="desc-9">{{ $item['code'] ?? '' }}</td>
                         <td class="desc-9 text-center">{{ isset($item['invoiced_quantity']) ? number_format($item['invoiced_quantity'], 2) : '' }}</td>
                         <td class="desc-9 text-center">
-                            {{ $item['unit_measure_id'] ?? ($item['unit_measure'] ?? '') }}
+                            @inject('um', 'App\UnitMeasure')
+                            @if(isset($item['unit_measure_id']))
+                                {{ $um->findOrFail($item['unit_measure_id'])['name'] }}
+                            @else
+                                {{ $item['unit_measure'] ?? '' }}
+                            @endif
                         </td>
                         <td class="desc-9">
                             {{ $item['description'] ?? '' }}
@@ -361,8 +366,8 @@
     @endif
 
     {{-- QR y CUFE --}}
-    <div class="text-center" style="margin: 8px 0;">
-        <div class="desc-9" style="font-size: 8px;"><strong>CUFE:</strong> {{$cufecude}}</div>
+    <div class="text-center" style="margin: 5px 0;">
+        <div class="desc-9" style="font-size: 6px;"><strong>CUFE:</strong> {{$cufecude}}</div>
         <img style="width: 50%;" src="{{$imageQr}}">
     </div>
 
