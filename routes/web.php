@@ -76,6 +76,10 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('companies/{company}/users', 'CompanyUserController@store')->name('company.users.store');
     Route::put('companies/{company}/users/{user}', 'CompanyUserController@update')->name('company.users.update');
 
+    // emails
+    Route::get('companies/{company}/configuration/email', 'CompanyUserController@emailIndex')->name('company.email.index');
+    Route::post('companies/{company}/configuration/email', 'CompanyUserController@emailStore')->name('company.email.store');
+
     //configuration
     Route::get('/configuration', 'ConfigurationController@index')->name('configuration_index');
     Route::get('/configuration_admin', 'ConfigurationController@configuration_admin')->name('configuration_admin');

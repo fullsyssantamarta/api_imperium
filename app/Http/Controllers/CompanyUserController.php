@@ -83,4 +83,50 @@ class CompanyUserController extends Controller
             return redirect()->back()->with('error', 'Ocurrió un error al actualizar el usuario.');
         }
     }
+
+    public function emailIndex($companyId)
+    {
+        $company = Company::with('user')->findOrFail($companyId);
+        $user = $company->user;
+
+        // Obtener configuración actual
+        $emailConfig = [
+            'mail_host' => $user->mail_host ?: config('mail.host'),
+            'mail_port' => $user->mail_port ?: config('mail.port'),
+            'mail_username' => $user->mail_username ?: config('mail.username'),
+            'mail_password' => $user->mail_password ? '********' : '',
+            'mail_encryption' => $user->mail_encryption ?: config('mail.encryption'),
+            'has_custom_config' => !empty($user->mail_host)
+        ];
+
+        return view('company.email', compact('company', 'emailConfig'));
+    }
+
+    public function emailStore(Request $request, $companyId)
+    {
+        $request->validate([
+            'mail_host' => 'required|string',
+            'mail_port' => 'required|integer',
+            'mail_username' => 'required|string',
+            'mail_password' => 'required|string',
+            'mail_encryption' => 'required|string|in:tls,ssl',
+        ]);
+
+        try {
+            $company = Company::findOrFail($companyId);
+            $user = $company->user;
+
+            $user->update([
+                'mail_host' => $request->mail_host,
+                'mail_port' => $request->mail_port,
+                'mail_username' => $request->mail_username,
+                'mail_password' => $request->mail_password,
+                'mail_encryption' => $request->mail_encryption,
+            ]);
+
+            return redirect()->back()->with('success', 'Configuración de correo actualizada exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Ocurrió un error al actualizar la configuración de correo.');
+        }
+    }
 }

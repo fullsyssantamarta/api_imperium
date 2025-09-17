@@ -17,7 +17,7 @@
                     <th>Documentos generados</th>
                     <th>Nombre de usuario</th>
                     <th>Correo de usuario</th>
-                    <th>Acciones</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -29,8 +29,16 @@
                         <td>{{ $row->user->name }}</td>
                         <td>{{ $row->user->email }}</td>
                         <td>
-                            <a class="btn btn-primary text-white btn-sm" href="{{ route('company', $row->identification_number)}}">Ver documentos</a>
-                            <a class="btn btn-primary text-white btn-sm" href="{{ route('company.users.index', $row->id)}}">Usuarios</a>
+                            <div class="dropdown">
+                                <button class="btn btn-primary text-white btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Acciones
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item text-secondary" href="{{ route('company', $row->identification_number)}}">Ver documentos</a>
+                                    <a class="dropdown-item text-secondary" href="{{ route('company.users.index', $row->id)}}">Usuarios</a>
+                                    <a class="dropdown-item text-secondary" href="{{ route('company.email.index', $row->id)}}">Configurar Correo</a>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
