@@ -35,8 +35,9 @@
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <a class="dropdown-item text-secondary" href="{{ route('company', $row->identification_number)}}">Ver documentos</a>
-                                    <a class="dropdown-item text-secondary" href="{{ route('company.users.index', $row->id)}}">Usuarios</a>
+                                    <a class="dropdown-item text-secondary" href="{{ route('company.users.index', $row->id)}}">Usuarios RIPS</a>
                                     <a class="dropdown-item text-secondary" href="{{ route('company.email.index', $row->id)}}">Configurar Correo</a>
+                                    <a class="dropdown-item text-secondary" href="#" data-toggle="modal" data-target="#accessModal">Acceso a la App</a>
                                 </div>
                             </div>
                         </td>
@@ -46,4 +47,69 @@
         </table>
     </div>
 </div>
+
+<!-- Modal de Acceso a la App -->
+<div class="modal fade" id="accessModal" tabindex="-1" role="dialog" aria-labelledby="accessModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="accessModalLabel">
+                    Accede a la App
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-info-circle text-info" style="font-size: 3rem;"></i>
+                </div>
+
+                <h4 class="mb-4 text-dark">Formas de Acceso Disponibles</h4>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card border-primary h-100">
+                            <div class="card-body">
+                                <i class="fas fa-user-tie text-primary mb-3" style="font-size: 2rem;"></i>
+                                <h5 class="card-title text-primary">Usuario Principal</h5>
+                                <p class="card-text text-muted">
+                                    Utiliza el usuario principal de la empresa para acceder a la aplicación web y generar documentos electrónicos.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card border-success h-100">
+                            <div class="card-body">
+                                <i class="fas fa-users text-success mb-3" style="font-size: 2rem;"></i>
+                                <h5 class="card-title text-success">Usuarios RIPS</h5>
+                                <p class="card-text text-muted">
+                                    Ingresa con usuarios adicionales configurados para gestión de RIPS.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <a href="https://facturalatam.com/app" target="_blank" class="btn btn-lg px-5 py-3 text-white" style="background: linear-gradient(45deg, #007bff, #0056b3); border: none; border-radius: 50px; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); transition: all 0.3s ease;">
+                        <i class="fas fa-rocket mr-3" style="font-size: 1.2rem;"></i>
+                        <span style="font-size: 1.1rem; font-weight: bold;">INGRESAR A LA APP</span>
+                        <i class="fas fa-external-link-alt ml-3"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-lg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4) !important;
+}
+</style>
+
 @endsection
