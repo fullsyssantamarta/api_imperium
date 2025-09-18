@@ -39,11 +39,11 @@ class CustomerController extends Controller
                 'phone' => 'nullable|string|max:20',
                 'address' => 'nullable|string|max:500',
                 'email' => 'nullable|email|max:255',
-                'password' => 'required|string|min:6',
+                // 'password' => 'required|string|min:6',
                 'companies_id' => 'required|exists:companies,id'
             ]);
 
-            $validatedData['password'] = bcrypt($validatedData['password']);
+            $validatedData['password'] = bcrypt($validatedData['identification_number']);
             $customer = Customer::create($validatedData);
 
             return response()->json([

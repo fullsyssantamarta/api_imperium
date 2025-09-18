@@ -9,7 +9,7 @@
 
 <div class="card border">
     <div class="table-responsive">
-        <table class="table table-striped table-hover">
+        <table class="table table-striped table-hover" style="min-height: 150px">
             <thead class="thead-light">
                 <tr>
                     <th>ID</th>
@@ -30,10 +30,10 @@
                         <td>{{ $row->user->email }}</td>
                         <td>
                             <div class="dropdown">
-                                <button class="btn btn-primary text-white btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button class="btn btn-primary text-white btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                     Acciones
                                 </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <div class="dropdown-menu dropdown-menu-left" aria-labelledby="dropdownMenuButton">
                                     <a class="dropdown-item text-secondary" href="{{ route('company', $row->identification_number)}}">Ver documentos</a>
                                     <a class="dropdown-item text-secondary" href="{{ route('company.users.index', $row->id)}}">Usuarios RIPS</a>
                                     <a class="dropdown-item text-secondary" href="{{ route('company.email.index', $row->id)}}">Configurar Correo</a>
@@ -44,6 +44,13 @@
                     </tr>
                 @endforeach
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="6" class="text-center">
+                        <span class="text-muted">Cantidad de empresas registradas: {{ $companies->count() }}</span>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>
