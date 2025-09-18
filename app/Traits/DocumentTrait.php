@@ -323,6 +323,9 @@ trait DocumentTrait
         $template_json = false;
         $template_pdf = $company->graphic_representation_template;
 
+        if (empty($request->invoice_template) && $template_pdf == 3) {
+            $template_json = true;
+        }
         if (!empty($request->invoice_template)) {
             if (password_verify($company->identification_number, $request->template_token)) {
                 $template_pdf = $request->invoice_template;
