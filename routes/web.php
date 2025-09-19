@@ -80,6 +80,10 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('companies/{company}/configuration/email', 'CompanyUserController@emailIndex')->name('company.email.index');
     Route::post('companies/{company}/configuration/email', 'CompanyUserController@emailStore')->name('company.email.store');
 
+    // resoluciones
+    Route::get('companies/{company}/configuration/resolutions', 'ResolutionController@index')->name('company.resolutions.index');
+    Route::patch('companies/{company}/configuration/resolutions/{resolutionId}', 'ResolutionController@updateEnvironment')->name('company.resolutions.update');
+
     //configuration
     Route::get('/configuration', 'ConfigurationController@index')->name('configuration_index');
     Route::get('/configuration_admin', 'ConfigurationController@configuration_admin')->name('configuration_admin');

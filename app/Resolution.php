@@ -89,6 +89,11 @@ class Resolution extends Model
         return $this->belongsTo(TypeDocument::class);
     }
 
+    public function type_environment()
+    {
+        return $this->belongsTo(TypeEnvironment::class);
+    }
+
     public function scopeFilterByDocumentType($query, $id)
     {
         if(!$id) {
