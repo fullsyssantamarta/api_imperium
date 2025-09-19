@@ -32,13 +32,13 @@
                     <th>Inicio</th>
                     <th>Fin</th>
                     <th>Clave Técnica</th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($resolutions as $resolution)
                 @php
                     $environtment = 'N/A';
+                    $has_environtment = true;
                     switch ($resolution->type_environment_id) {
                         case '2':
                             $environtment = 'Habilitación';
@@ -48,11 +48,22 @@
                             break;
                         default:
                             $environtment = 'N/A';
+                            $has_environtment = false;
                             break;
                     }
                 @endphp
                 <tr>
-                    <td>{{ $environtment }}</td>
+                    <td>
+                        @if($has_environtment)
+                            {{ $environtment }}
+                        @else
+                            <form action="{{ route('company.resolutions.update', ['resolution' => $resolution->id, 'company' => $company->identification_number]) }}" method="POST" style="display: inline;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn btn-xs btn-warning">Actualizar</button>
+                            </form>
+                        @endif
+                    </td>
                     <td>{{ $resolution->prefix }}</td>
                     <td>{{ $resolution->number }}</td>
                     <td>{{ $resolution->type_document->name }}</td>
@@ -61,13 +72,6 @@
                     <td>{{ $resolution->date_from }}</td>
                     <td>{{ $resolution->date_to }}</td>
                     <td>{{ $resolution->technical_key }}</td>
-                    <td class="text-right">
-                        <form action="{{ route('company.resolutions.update', ['resolution' => $resolution->id, 'company' => $company->identification_number]) }}" method="POST" style="display: inline;">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit" class="btn btn-sm btn-warning">Actualizar</button>
-                        </form>
-                    </td>
                 </tr>
                 @endforeach
             </tbody>
