@@ -13,14 +13,24 @@ class CustomerController extends Controller
     {
         try {
             $companyId = auth()->user()->company->id;
+            $search = request()->query('search');
 
-            $customers = Customer::Where('companies_id', $companyId)
-                            ->select('identification_number', 'dv', 'name', 'phone', 'address', 'email','companies_id')
-                            ->paginate(20);
+            $query = Customer::where('companies_id', $companyId)
+                ->select('identification_number', 'dv', 'name', 'phone', 'address', 'email', 'companies_id');
+
+            if ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('identification_number', 'like', "%$search%")
+                      ->orWhere('name', 'like', "%$search%");
+                });
+            }
+
+            $customers = $query->paginate(20);
+
             return response()->json([
                 'success' => true,
                 'data' => $customers
-            ],200);
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
