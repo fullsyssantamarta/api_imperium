@@ -82,6 +82,8 @@ Route::group(['middleware' => 'auth'], function() {
 
     // resoluciones
     Route::get('companies/{company}/configuration/resolutions', 'ResolutionController@index')->name('company.resolutions.index');
+    Route::post('companies/{company}/configuration/resolutions', 'ResolutionController@store')->name('company.resolutions.store');
+    Route::put('companies/{company}/configuration/resolutions/{resolutionId}', 'ResolutionController@update')->name('company.resolutions.edit');
     Route::patch('companies/{company}/configuration/resolutions/{resolutionId}', 'ResolutionController@updateEnvironment')->name('company.resolutions.update');
 
     //configuration
