@@ -35,6 +35,10 @@ class InvoiceRequest extends FormRequest
             else
                 $this->resolution = auth()->user()->company->resolutions->where('type_document_id', $this->type_document_id)->where('resolution', $this->resolution_number)->where('prefix', $this->prefix)->first();
         }
+        $date_from = optional($this->resolution)->date_from;
+        $date_to = optional($this->resolution)->date_to;
+        if (is_array($date_from)) $date_from = null;
+        if (is_array($date_to)) $date_to = null;
         return [
             // Adicionales Facturador
             'ivaresponsable' => 'nullable|string',
@@ -134,7 +138,7 @@ class InvoiceRequest extends FormRequest
             'number' => 'required|integer|between:'.optional($this->resolution)->from.','.optional($this->resolution)->to,
 
             // Date time
-            'date' => 'nullable|date_format:Y-m-d|after_or_equal:'.optional($this->resolution)->date_from.'|before_or_equal:'.optional($this->resolution)->date_to,
+            'date' => 'nullable|date_format:Y-m-d'. ($date_from ? '|after_or_equal:' . $date_from : ''). ($date_to ? '|before_or_equal:' . $date_to : ''),
             'time' => 'nullable|date_format:H:i:s',
 
             // Notes

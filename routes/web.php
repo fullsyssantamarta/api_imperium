@@ -84,6 +84,11 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('companies/{company}/configuration/resolutions', 'ResolutionController@index')->name('company.resolutions.index');
     Route::patch('companies/{company}/configuration/resolutions/{resolutionId}', 'ResolutionController@updateEnvironment')->name('company.resolutions.update');
 
+    // production
+    Route::get('companies/{company}/production', 'ProductionController@index')->name('company.production.index');
+    Route::post('companies/{company}/production', 'ProductionController@process')->name('company.production.process');
+    Route::post('/company/{company}/consultar-resoluciones', 'ProductionController@consultarResoluciones')->name('company.consultar.resoluciones');
+
     //configuration
     Route::get('/configuration', 'ConfigurationController@index')->name('configuration_index');
     Route::get('/configuration_admin', 'ConfigurationController@configuration_admin')->name('configuration_admin');
