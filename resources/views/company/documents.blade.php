@@ -8,6 +8,20 @@
         </button>
     </div>
 </header>
+
+@php
+    $payload_for_consecutive = null;
+    if($resolution_credit_note) {
+        $payload_for_consecutive = [
+            "type_document_id" => 4,
+            "prefix" => $resolution_credit_note->prefix,
+        ];
+    }
+
+    // dd($resolution_credit_note);
+@endphp
+
+
 <div class="card border">
     <div class="table-responsive card-body p-0">
         <table class="table table-sm table-striped table-hover">
@@ -15,9 +29,10 @@
                 <tr>
                     <th>#</th>
                     <th>Acciones</th>
+                    <th>DIAN</th>
                     <th>Descargas</th>
                     <th>Ambiente</th>
-                    <th>DIAN</th>
+                    <th>Válido</th>
                     <th>Fecha</th>
                     <th>Número</th>
                     <th>Cliente</th>
@@ -31,6 +46,26 @@
                 @foreach ($documents as $row)
                     <tr class="table-light">
                         <td>{{ $loop->iteration }}</td>
+                        <td>
+                            @if($row->type_document_id == 1 && $row->response_dian && $resolution_credit_note)
+                                @php
+                                    $isValidResponse = false;
+                                    if ($row->response_dian) {
+                                        $decodedResponse = json_decode($row->response_dian, true);
+                                        $isValidResponse = isset($decodedResponse['Envelope']['Body']['SendBillSyncResponse']['SendBillSyncResult']['IsValid'])
+                                            && $decodedResponse['Envelope']['Body']['SendBillSyncResponse']['SendBillSyncResult']['IsValid'] === 'true';
+                                    }
+                                @endphp
+                                @if($isValidResponse)
+                                    <button type="button" class="btn btn-info btn-xs btn-credit-note mt-0"
+                                        data-id="{{ $row->id }}"
+                                        data-cufe="{{ $row->cufe }}"
+                                        data-request-api="{{ $row->request_api }}">
+                                        Nota de crédito
+                                    </button>
+                                @endif
+                            @endif
+                        </td>
                         <td>
                             @if($row->response_dian)
                                 <button type="button" class="btn btn-primary btn-xs modalApiResponse"
@@ -89,6 +124,7 @@
                 @endforeach
             </tbody>
         </table>
+        {{-- {{ dd($documents) }} --}}
     </div>
     <div class="card-footer d-flex justify-content-center">
         {{ $documents->links() }}
@@ -258,6 +294,159 @@ $(document).ready(function() {
         $('#verificarInput').val(id);
         $('#changeStateModal').modal('show');
     });
+
+    // Manejar clic en botón "Nota de crédito"
+    $(document).on('click', '.btn-credit-note', function() {
+        var documentId = $(this).data('id');
+        var $button = $(this);
+
+        // Deshabilitar botón mientras se procesa
+        $button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Procesando...');
+
+        // Buscar la fila correspondiente para obtener los datos del documento
+        var $row = $button.closest('tr');
+        var documentData = {
+            id: documentId,
+            prefix: $row.find('td:nth-child(8)').text().match(/^([A-Z]+)/)?.[1] || '', // Extraer prefijo del número
+            number: $row.find('td:nth-child(8)').text().match(/\d+/)?.[0] || '', // Extraer número
+            cufe: $button.data('cufe'),
+            date_issue: $row.find('td:nth-child(7)').text().split(' ')[0], // Extraer solo la fecha sin la hora
+            request_api: $button.data('request-api')
+        };
+
+        processCreditNote(documentData, $button);
+    });
+
+    // Función para procesar la nota de crédito
+    async function processCreditNote(documentData, $button) {
+        try {
+            const token = '{{ $token_company }}';
+            const payloadConsecutive = @json($payload_for_consecutive);
+
+            if (!payloadConsecutive) {
+                throw new Error('No se encontró resolución para notas de crédito');
+            }
+
+            // 1. Consultar next-consecutive
+            const consecutiveResponse = await fetch('/api/ubl2.1/next-consecutive', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(payloadConsecutive)
+            });
+
+            if (!consecutiveResponse.ok) {
+                throw new Error('Error al obtener el consecutivo');
+            }
+
+            const consecutiveData = await consecutiveResponse.json();
+            const nextNumber = consecutiveData.number; // Convertir a string para prueba
+
+            // 2. Armar el JSON para la nota de crédito
+            console.log('Datos request_api:', documentData.request_api);
+            console.log('Tipo de request_api:', typeof documentData.request_api);
+
+            const originalData = documentData.request_api; // Ya viene como objeto, no parsear
+            const now = new Date();
+            // Ajustar a zona horaria de Colombia (GMT-5)
+            const colombiaTime = new Date(now.getTime() - (5 * 60 * 60 * 1000));
+            const currentDate = colombiaTime.toISOString().split('T')[0];
+            const currentTime = colombiaTime.toTimeString().split(' ')[0];
+
+            const creditNoteData = {
+                billing_reference: {
+                    number: documentData.prefix + documentData.number,
+                    uuid: documentData.cufe,
+                    issue_date: documentData.date_issue
+                },
+                resolution_number: '{{ $resolution_credit_note->resolution_number ?? "" }}',
+                discrepancyresponsecode: 2,
+                discrepancyresponsedescription: "NOTA DE CREDITO GENERADA AUTOMATICAMENTE",
+                notes: "NOTA DE CREDITO",
+                prefix: payloadConsecutive.prefix,
+                number: nextNumber,
+                type_document_id: 4,
+                date: currentDate,
+                time: currentTime,
+                sendmail: originalData.sendmail || false,
+                sendmailtome: originalData.sendmailtome || false,
+                seze: "2021-2017",
+                head_note: originalData.head_note || '',
+                foot_note: originalData.foot_note || '',
+                customer: originalData.customer,
+                tax_totals: originalData.tax_totals,
+                legal_monetary_totals: originalData.legal_monetary_totals,
+                credit_note_lines: originalData.invoice_lines.map(line => ({
+                    unit_measure_id: line.unit_measure_id,
+                    invoiced_quantity: line.invoiced_quantity,
+                    line_extension_amount: line.line_extension_amount,
+                    free_of_charge_indicator: line.free_of_charge_indicator,
+                    tax_totals: line.tax_totals,
+                    description: line.description,
+                    notes: line.notes || '',
+                    code: line.code,
+                    type_item_identification_id: line.type_item_identification_id,
+                    price_amount: line.price_amount,
+                    base_quantity: line.base_quantity
+                }))
+            };
+            console.log('Datos de la nota de crédito a enviar:', creditNoteData);
+            // 3. Enviar la nota de crédito
+            const creditNoteResponse = await fetch('/api/ubl2.1/credit-note', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(creditNoteData)
+            });
+
+            const creditNoteResult = await creditNoteResponse.json();
+
+            // 4. Verificar el resultado y mostrar notificación
+            const statusCode = creditNoteResult.ResponseDian?.Envelope?.Body?.SendBillSyncResponse?.SendBillSyncResult?.StatusCode;
+
+            if (statusCode === "00") {
+                new PNotify({
+                    text: 'Nota de crédito creada exitosamente',
+                    type: 'success',
+                    addclass: 'notification-success',
+                    delay: 3000
+                });
+
+                // Recargar la página después de un momento
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+            } else {
+                const errorMessage = creditNoteResult.ResponseDian?.Envelope?.Body?.SendBillSyncResponse?.SendBillSyncResult?.ErrorMessage?.string || 'Error desconocido';
+
+                new PNotify({
+                    text: 'Error al crear la nota de crédito: ' + errorMessage,
+                    type: 'error',
+                    addclass: 'notification-danger',
+                    delay: 5000
+                });
+            }
+
+        } catch (error) {
+            console.error('Error procesando nota de crédito:', error);
+            new PNotify({
+                text: 'Error al procesar la nota de crédito: ' + error.message,
+                type: 'error',
+                addclass: 'notification-danger',
+                delay: 5000
+            });
+        } finally {
+            // Restaurar el botón
+            $button.prop('disabled', false).html('Nota de crédito');
+        }
+    }
+
     // Manejo de Excel a JSON
     $('#excelFile').on('change', function(e) {
         const file = e.target.files[0];

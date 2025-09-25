@@ -41,6 +41,7 @@ class ResolutionController extends Controller
             $isSimpleType = $typeDocument && in_array($typeDocument->code, $simpleCodes);
 
             $rules = [
+                'resolution' => 'required|string|max:255',
                 'type_document_id' => 'required|exists:type_documents,id',
                 'prefix' => 'required|string|max:4',
                 'from' => 'required|integer|min:1',
@@ -48,6 +49,9 @@ class ResolutionController extends Controller
             ];
 
             $messages = [
+                'resolution.required' => 'El número de resolución es obligatorio.',
+                'resolution_date.required' => 'La fecha de resolución es obligatoria.',
+                'resolution_date.date' => 'La fecha de resolución debe ser una fecha válida.',
                 'type_document_id.required' => 'El tipo de documento es obligatorio.',
                 'type_document_id.exists' => 'El tipo de documento seleccionado no es válido.',
                 'prefix.required' => 'El prefijo es obligatorio.',
@@ -61,11 +65,8 @@ class ResolutionController extends Controller
                 'to.gte' => 'El rango final debe ser mayor o igual al rango inicial.',
             ];
 
-            if ($isSimpleType) {
-                // Para tipos simples (91-94), no se requieren campos adicionales
-            } else {
+            if (!$isSimpleType) {
                 $rules = array_merge($rules, [
-                    'resolution' => 'required|string|max:255',
                     'resolution_date' => 'required|date',
                     'technical_key' => 'required|string|max:255',
                     'date_from' => 'required|date',
@@ -73,9 +74,6 @@ class ResolutionController extends Controller
                 ]);
 
                 $messages = array_merge($messages, [
-                    'resolution.required' => 'El número de resolución es obligatorio.',
-                    'resolution_date.required' => 'La fecha de resolución es obligatoria.',
-                    'resolution_date.date' => 'La fecha de resolución debe ser una fecha válida.',
                     'technical_key.required' => 'La clave técnica es obligatoria.',
                     'date_from.required' => 'La fecha de inicio de vigencia es obligatoria.',
                     'date_from.date' => 'La fecha de inicio de vigencia debe ser una fecha válida.',

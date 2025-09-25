@@ -112,7 +112,7 @@
                         @endif
                     </td>
                     <td>{{ $resolution->prefix }}</td>
-                    <td>{{ $resolution->number }}</td>
+                    <td>{{ $resolution->resolution }}</td>
                     <td>{{ $resolution->type_document->name }}</td>
                     <td>{{ $resolution->resolution_date }}</td>
                     <td>{{ $resolution->from }} - {{ $resolution->to }}</td>
@@ -120,7 +120,7 @@
                     <td>{{ $resolution->date_to }}</td>
                     <td>{{ $resolution->technical_key }}</td>
                     <td>
-                        <button class="btn btn-sm btn-primary edit-resolution-btn" 
+                        <button class="btn btn-sm btn-primary edit-resolution-btn"
                                 data-id="{{ $resolution->id }}"
                                 data-type-document-id="{{ $resolution->type_document_id }}"
                                 data-type-document-code="{{ $resolution->type_document->code }}"
@@ -132,7 +132,7 @@
                                 data-to="{{ $resolution->to }}"
                                 data-date-from="{{ $resolution->date_from }}"
                                 data-date-to="{{ $resolution->date_to }}"
-                                data-toggle="modal" 
+                                data-toggle="modal"
                                 data-target="#editResolutionModal">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -518,7 +518,7 @@ $(document).ready(function() {
     // Manejar clic en botón editar (usando event delegation para elementos dinámicos)
     $(document).on('click', '.edit-resolution-btn', function() {
         const button = $(this);
-        
+
         // Llenar el formulario con los datos de la resolución
         $('#edit_resolution_id').val(button.data('id'));
         $('#edit_type_document_id').val(button.data('type-document-id'));
