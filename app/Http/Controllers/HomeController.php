@@ -45,11 +45,11 @@ class HomeController extends Controller
     {
         $documents = Document::where('identification_number', $company->identification_number)->orderBy('id', 'DESC')->paginate(20);
 
-        $resolution_credit_note = Resolution::where('type_document_id', 4)->where('company_id', $company->id)->orderBy('id', 'DESC')->first();
+        $resolution_credit_notes = Resolution::where('type_document_id', 4)->where('company_id', $company->id)->get();
 
         $token_company = $company->user->api_token;
 
-        return view('company.documents', ['company' => $company, 'documents' => $documents, 'resolution_credit_note' => $resolution_credit_note, 'token_company' => $token_company]);
+        return view('company.documents', ['company' => $company, 'documents' => $documents, 'resolution_credit_notes' => $resolution_credit_notes, 'token_company' => $token_company]);
     }
 
     public function getXml(Company $company, $cufe)

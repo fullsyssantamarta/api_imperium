@@ -103,11 +103,11 @@ class ResolutionController extends Controller
                 'from' => $request->from,
                 'to' => $request->to,
                 'type_environment_id' => $company->type_environment_id,
+                'resolution' => $request->resolution,
             ];
 
             if (!$isSimpleType) {
                 $resolutionData = array_merge($resolutionData, [
-                    'resolution' => $request->resolution,
                     'resolution_date' => $request->resolution_date,
                     'technical_key' => $request->technical_key,
                     'date_from' => $request->date_from,
@@ -169,6 +169,7 @@ class ResolutionController extends Controller
                 'type_document_id' => 'required|exists:type_documents,id',
                 'from' => 'required|integer|min:1',
                 'to' => 'required|integer|min:1|gte:from',
+                'resolution' => 'required|string|max:255',
             ];
 
             $messages = [
@@ -180,11 +181,13 @@ class ResolutionController extends Controller
                 'to.required' => 'El rango final es obligatorio.',
                 'to.integer' => 'El rango final debe ser un número entero.',
                 'to.gte' => 'El rango final debe ser mayor o igual al rango inicial.',
+                'resolution.required' => 'El número de resolución es obligatorio.',
+                'resolution_date.required' => 'La fecha de resolución es obligatoria.',
+                'resolution_date.date' => 'La fecha de resolución debe ser una fecha válida.',
             ];
 
             if (!$isSimpleType) {
                 $rules = array_merge($rules, [
-                    'resolution' => 'required|string|max:255',
                     'resolution_date' => 'required|date',
                     'technical_key' => 'required|string|max:255',
                     'date_from' => 'required|date',
@@ -192,9 +195,6 @@ class ResolutionController extends Controller
                 ]);
 
                 $messages = array_merge($messages, [
-                    'resolution.required' => 'El número de resolución es obligatorio.',
-                    'resolution_date.required' => 'La fecha de resolución es obligatoria.',
-                    'resolution_date.date' => 'La fecha de resolución debe ser una fecha válida.',
                     'technical_key.required' => 'La clave técnica es obligatoria.',
                     'date_from.required' => 'La fecha de inicio de vigencia es obligatoria.',
                     'date_from.date' => 'La fecha de inicio de vigencia debe ser una fecha válida.',
@@ -212,11 +212,11 @@ class ResolutionController extends Controller
                 'type_document_id' => $request->type_document_id,
                 'from' => $request->from,
                 'to' => $request->to,
+                'resolution' => $request->resolution,
             ];
 
             if (!$isSimpleType) {
                 $updateData = array_merge($updateData, [
-                    'resolution' => $request->resolution,
                     'resolution_date' => $request->resolution_date,
                     'technical_key' => $request->technical_key,
                     'date_from' => $request->date_from,
