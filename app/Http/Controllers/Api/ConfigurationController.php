@@ -31,6 +31,7 @@ use App\Certificate;
 use App\Administrator;
 use App\TypePlan;
 use App\Company;
+use App\Customer;
 use App\Software;
 use App\Document;
 use App\ReceivedDocument;
@@ -376,6 +377,18 @@ class ConfigurationController extends Controller
                     'absolut_start_plan_date' => $absolut_start_plan_date,
                 ]);
                 $user->save();
+            }
+
+            // Crear customer por defecto si es una nueva company
+            if($operacion == "CREATE") {
+                $customer_document_number = '2222222222';
+                $user->company->customers()->create([
+                    'identification_number' => $customer_document_number,
+                    'name' => 'Cliente por Defecto',
+                    'email' => $user->email,
+                    'password' => bcrypt($customer_document_number),
+                    'companies_id' => $user->company->id,
+                ]);
             }
 
             DB::commit();
