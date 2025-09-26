@@ -70,6 +70,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/documents', 'HomeController@listDocuments')->name('listdocuments');
     Route::get('/taxes', 'HomeController@listTaxes')->name('listtaxes');
     Route::get('/listconfigurations', 'HomeController@listConfigurations')->name('listconfigurations');
+    Route::put('/companies/{company}', 'HomeController@update')->name('companies.update');
 
     // users for rips
     Route::get('companies/{company}/users', 'CompanyUserController@index')->name('company.users.index');
