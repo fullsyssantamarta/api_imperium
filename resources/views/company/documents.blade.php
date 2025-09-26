@@ -20,7 +20,6 @@
             <thead class="thead-light">
                 <tr>
                     <th>#</th>
-                    <th>Acciones</th>
                     <th>DIAN</th>
                     <th>Descargas</th>
                     <th>Ambiente</th>
@@ -32,32 +31,13 @@
                     <th class="text-right">Impuesto</th>
                     <th class="text-right">Subtotal</th>
                     <th class="text-right">Total</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($documents as $row)
                     <tr class="table-light">
                         <td>{{ $loop->iteration }}</td>
-                        <td>
-                            @if($row->type_document_id == 1 && $row->response_dian && $resolution_credit_notes && count($resolution_credit_notes) > 0)
-                                @php
-                                    $isValidResponse = false;
-                                    if ($row->response_dian) {
-                                        $decodedResponse = json_decode($row->response_dian, true);
-                                        $isValidResponse = isset($decodedResponse['Envelope']['Body']['SendBillSyncResponse']['SendBillSyncResult']['IsValid'])
-                                            && $decodedResponse['Envelope']['Body']['SendBillSyncResponse']['SendBillSyncResult']['IsValid'] === 'true';
-                                    }
-                                @endphp
-                                @if($isValidResponse)
-                                    <button type="button" class="btn btn-info btn-xs btn-credit-note mt-0"
-                                        data-id="{{ $row->id }}"
-                                        data-cufe="{{ $row->cufe }}"
-                                        data-request-api="{{ $row->request_api }}">
-                                        Nota de crédito
-                                    </button>
-                                @endif
-                            @endif
-                        </td>
                         <td>
                             @if($row->response_dian)
                                 <button type="button" class="btn btn-primary btn-xs modalApiResponse"
@@ -112,6 +92,26 @@
                         <td class="text-right">{{ round($row->total_tax, 2) }}</td>
                         <td class="text-right">{{ round($row->subtotal, 2) }}</td>
                         <td class="text-right">{{ round($row->total, 2) }}</td>
+                        <td>
+                            @if($row->type_document_id == 1 && $row->response_dian && $resolution_credit_notes && count($resolution_credit_notes) > 0)
+                                @php
+                                    $isValidResponse = false;
+                                    if ($row->response_dian) {
+                                        $decodedResponse = json_decode($row->response_dian, true);
+                                        $isValidResponse = isset($decodedResponse['Envelope']['Body']['SendBillSyncResponse']['SendBillSyncResult']['IsValid'])
+                                            && $decodedResponse['Envelope']['Body']['SendBillSyncResponse']['SendBillSyncResult']['IsValid'] === 'true';
+                                    }
+                                @endphp
+                                @if($isValidResponse)
+                                    <button type="button" class="btn btn-info btn-xs btn-credit-note mt-0"
+                                        data-id="{{ $row->id }}"
+                                        data-cufe="{{ $row->cufe }}"
+                                        data-request-api="{{ $row->request_api }}">
+                                        Nota de crédito
+                                    </button>
+                                @endif
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
