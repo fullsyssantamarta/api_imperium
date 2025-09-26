@@ -282,4 +282,22 @@ class ResolutionController extends Controller
             return redirect()->back()->with('error', 'Error al actualizar la resolución: ' . $e->getMessage());
         }
     }
+
+    public function create(Request $request, $companyNumber)
+    {
+        $company = Company::where('identification_number', $companyNumber)->firstOrFail();
+        $typeDocuments = TypeDocument::whereIn('code', ['01', '02', '03', '91', '92', '93', '94', '1', '2', '05', '95'])->get();
+
+        // Recoge los parámetros GET para prellenar
+        $prefill = $request->only([
+            'prefix', 'resolution', 'resolution_date', 'from', 'to', 'date_from', 'date_to', 'technical_key'
+        ]);
+
+        // Consulta las resoluciones existentes para la tabla
+        $resolutions = \App\Resolution::where('company_id', $company->id)
+            ->with(['type_environment', 'type_document'])
+            ->paginate(10);
+
+        return view('company.resolutions', compact('company', 'typeDocuments', 'prefill', 'resolutions'));
+    }
 }
