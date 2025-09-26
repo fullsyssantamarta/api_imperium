@@ -179,7 +179,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="prefix">Prefijo <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="prefix" name="prefix" maxlength="10">
+                                <input type="text" class="form-control" id="prefix" name="prefix" maxlength="10" value="{{ old('prefix', $prefill['prefix'] ?? '') }}">
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
@@ -197,14 +197,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="resolution">Número de Resolución <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="resolution" name="resolution">
+                                    <input type="text" class="form-control" id="resolution" name="resolution" value="{{ old('resolution', $prefill['resolution'] ?? '') }}">
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="resolution_date">Fecha de Resolución <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="resolution_date" name="resolution_date">
+                                    <input type="date" class="form-control" id="resolution_date" name="resolution_date" value="{{ old('resolution_date', $prefill['resolution_date'] ?? '') }}">
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -214,7 +214,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="technical_key">Clave Técnica <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="technical_key" name="technical_key">
+                                    <input type="text" class="form-control" id="technical_key" name="technical_key" value="{{ old('technical_key', $prefill['technical_key'] ?? '') }}">
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -225,14 +225,14 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="from">Rango Inicial <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="from" name="from" min="1">
+                                <input type="number" class="form-control" id="from" name="from" min="1" value="{{ old('from', $prefill['from'] ?? '') }}">
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="to">Rango Final <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="to" name="to" min="1">
+                                <input type="number" class="form-control" id="to" name="to" min="1" value="{{ old('to', $prefill['to'] ?? '') }}">
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
@@ -244,14 +244,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="date_from">Fecha Inicio Vigencia <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="date_from" name="date_from">
+                                    <input type="date" class="form-control" id="date_from" name="date_from" value="{{ old('date_from', $prefill['date_from'] ?? '') }}">
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="date_to">Fecha Fin Vigencia <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="date_to" name="date_to">
+                                    <input type="date" class="form-control" id="date_to" name="date_to" value="{{ old('date_to', $prefill['date_to'] ?? '') }}">
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -318,14 +318,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="edit_resolution">Número de Resolución <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="edit_resolution" name="resolution">
+                                    <input type="text" class="form-control" id="edit_resolution" name="resolution" value="{{ old('resolution', $prefill['resolution'] ?? '') }}">
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="edit_resolution_date">Fecha de Resolución <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="edit_resolution_date" name="resolution_date">
+                                    <input type="date" class="form-control" id="edit_resolution_date" name="resolution_date" value="{{ old('resolution_date', $prefill['resolution_date'] ?? '') }}">
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -335,7 +335,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="edit_technical_key">Clave Técnica <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="edit_technical_key" name="technical_key">
+                                    <input type="text" class="form-control" id="edit_technical_key" name="technical_key" value="{{ old('technical_key', $prefill['technical_key'] ?? '') }}">
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -346,14 +346,14 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="edit_from">Rango Inicial <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="edit_from" name="from" min="1">
+                                <input type="number" class="form-control" id="edit_from" name="from" min="1" value="{{ old('from', $prefill['from'] ?? '') }}">
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="edit_to">Rango Final <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="edit_to" name="to" min="1">
+                                <input type="number" class="form-control" id="edit_to" name="to" min="1" value="{{ old('to', $prefill['to'] ?? '') }}">
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
@@ -365,14 +365,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="edit_date_from">Fecha Inicio Vigencia <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="edit_date_from" name="date_from">
+                                    <input type="date" class="form-control" id="edit_date_from" name="date_from" value="{{ old('date_from', $prefill['date_from'] ?? '') }}">
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="edit_date_to">Fecha Fin Vigencia <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="edit_date_to" name="date_to">
+                                    <input type="date" class="form-control" id="edit_date_to" name="date_to" value="{{ old('date_to', $prefill['date_to'] ?? '') }}">
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -677,6 +677,15 @@ $(document).ready(function() {
             feedback.text(messages[0]).show();
         });
     }
+});
+</script>
+@endpush
+@push('scripts')
+<script>
+$(document).ready(function() {
+    @if(isset($prefill) && count($prefill))
+        $('#newResolutionModal').modal('show');
+    @endif
 });
 </script>
 @endpush

@@ -90,6 +90,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('companies/{company}/production', 'ProductionController@index')->name('company.production.index');
     Route::post('companies/{company}/production', 'ProductionController@process')->name('company.production.process');
     Route::post('/company/{company}/consultar-resoluciones', 'ProductionController@consultarResoluciones')->name('company.consultar.resoluciones');
+    Route::get('companies/{company}/configuration/resolutions/create', 'ResolutionController@create')->name('company.resolutions.create');
 
     //configuration
     Route::get('/configuration', 'ConfigurationController@index')->name('configuration_index');
