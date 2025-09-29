@@ -102,7 +102,7 @@ Route::middleware('auth:api')->group(function () {
         Route::prefix('/xml')->group(function () {
 	        Route::post('/document/{trackId}/{GuardarEn?}', 'Api\XmlDocumentController@document');
         });
-        
+
         // Configuration email
         Route::get('/emailconfig', 'Api\ConfigurationController@emailconfig');
 
@@ -450,6 +450,7 @@ Route::middleware('auth:api')->group(function () {
     //customers
     Route::get('/customers', 'Api\CustomerController@records');
     Route::post('/customers/add', 'Api\CustomerController@store');
+    Route::put('/customers/{identification_number}', 'Api\CustomerController@update');
 
     //type currencies
     Route::get('/type-currencies', 'Api\TypeCurrencyController@records');
