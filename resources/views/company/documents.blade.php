@@ -360,7 +360,7 @@ $(document).ready(function() {
             prefix: $row.find('td:nth-child(8)').text().match(/^([A-Z]+)/)?.[1] || '', // Extraer prefijo del número
             number: $row.find('td:nth-child(8)').text().match(/\d+/)?.[0] || '', // Extraer número
             cufe: $button.data('cufe'),
-            date_issue: $row.find('td:nth-child(7)').text().split(' ')[0], // Extraer solo la fecha sin la hora
+            date_issue: $row.find('td:nth-child(6)').text().split(' ')[0], // Extraer solo la fecha sin la hora
             request_api: $button.data('request-api')
         };
 
