@@ -14,7 +14,12 @@ class CompanyUserController extends Controller
     {
         $company = Company::with('users')->findOrFail($companyId);
         $document_types = HealthTypeDocumentIdentification::all();
-        $users = $company->users()->paginate(15);
+
+        $allUserIds = $company->users->pluck('id')->toArray();
+        if ($company->user && !in_array($company->user->id, $allUserIds)) {
+            $allUserIds[] = $company->user->id;
+        }
+        $users = User::whereIn('id', $allUserIds)->paginate(15);
 
         return view('company.users', compact('company', 'users', 'document_types'));
     }
@@ -37,7 +42,7 @@ class CompanyUserController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
-                'can_rips' => $request->has('can_rips'),
+                'can_rips' => $request->can_rips == '1',
                 'can_health' => $request->has('can_health'),
                 'api_token' => hash('sha256',  Str::random(80)),
                 'code_service_provider' => $request->code_service_provider,'document_type_id' => $request->document_type_id,
@@ -65,12 +70,18 @@ class CompanyUserController extends Controller
         ]);
 
         try {
+            $company = Company::findOrFail($companyId);
             $user = User::findOrFail($userId);
+            
+            // Prevenir edición del usuario principal
+            if ($user->id == $company->user->id) {
+                return redirect()->back()->with('error', 'No se puede editar el usuario principal de la compañía.');
+            }
             $user->update([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => $request->password ? bcrypt($request->password) : $user->password,
-                'can_rips' => $request->has('can_rips'),
+                'can_rips' => $request->can_rips == '1',
                 'can_health' => $request->has('can_health'),
                 'code_service_provider' => $request->code_service_provider,
                 'document_type_id' => $request->document_type_id,

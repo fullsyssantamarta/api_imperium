@@ -10,10 +10,6 @@
         <div class="row no-wrapper">
             <div class="col" style="line-height: 1rem;">
                 {{ $company->user->name }} <br>
-                <small>
-                    {{ $company->user->email }}<br>
-                    {{ $company->identification_number }}-{{ $company->dv }}
-                </small>
             </div>
         </div>
     </div>
@@ -23,6 +19,7 @@
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
+                    <th>Tipo</th>
                     <th>Nombre</th>
                     <th>Correo</th>
                     <th>Documento</th>
@@ -32,21 +29,29 @@
             <tbody>
                 @foreach ($users as $user)
                 <tr>
+                    <td>
+                        {{ $user->can_rips ? 'RIPS' : 'Facturación' }}
+                        @if($user->id == $company->user->id)
+                            <span class="badge bg-primary text-white">Principal</span>
+                        @endif
+                    </td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->document_type_id ? $user->document_type->name : '' }} {{ $user->document_number }}</td>
                     <td class="text-right">
-                        <button class="btn btn-sm btn-warning"
-                            data-toggle="modal" data-target="#userModal"
-                            data-id="{{ $user->id }}"
-                            data-name="{{ $user->name }}"
-                            data-email="{{ $user->email }}"
-                            data-document_number="{{ $user->document_number }}"
-                            data-document_type_id="{{ $user->document_type_id }}"
-                            data-can_rips="{{ $user->can_rips }}"
-                            data-can_health="{{ $user->can_health }}"
-                            data-code_service_provider="{{ $user->code_service_provider}}"
-                            data-url_fevrips="{{ $user->url_fevrips }}">Editar</button>
+                        @if($user->id != $company->user->id)
+                            <button class="btn btn-sm btn-warning"
+                                data-toggle="modal" data-target="#userModal"
+                                data-id="{{ $user->id }}"
+                                data-name="{{ $user->name }}"
+                                data-email="{{ $user->email }}"
+                                data-document_number="{{ $user->document_number }}"
+                                data-document_type_id="{{ $user->document_type_id }}"
+                                data-can_rips="{{ $user->can_rips }}"
+                                data-can_health="{{ $user->can_health }}"
+                                data-code_service_provider="{{ $user->code_service_provider}}"
+                                data-url_fevrips="{{ $user->url_fevrips }}">Editar</button>
+                        @endif
                     </td>
                 </tr>
                 @endforeach
@@ -142,11 +147,17 @@
                             @endif
                         </div>
                         <div class="form-group col-6 mt-2">
-                            <input type="checkbox" value="1" name="can_rips" id="can_rips" {{ old('can_rips') ? 'checked' : '' }}>
-                            <label for="can_rips">Generar RIPS</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="can_rips" id="can_rips_yes" value="1" {{ old('can_rips') == '1' ? 'checked' : '' }}>
+                                <label class="form-check-label" for="can_rips_yes">RIPS</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="can_rips" id="can_rips_no" value="0" {{ old('can_rips') == '0' || old('can_rips') === null ? 'checked' : '' }}>
+                                <label class="form-check-label" for="can_rips_no">FACTURACIÓN</label>
+                            </div>
                             <br>
-                            <input type="checkbox" value="1" name="can_health" id="can_health" {{ old('can_health') ? 'checked' : '' }}>
-                            <label for="can_health">Generar Factura de Sector Salud</label>
+                            {{-- <input type="checkbox" value="1" name="can_health" id="can_health" {{ old('can_health') ? 'checked' : '' }}> --}}
+                            {{-- <label for="can_health">Generar Factura de Sector Salud</label> --}}
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -182,7 +193,7 @@ $(document).ready(function () {
         var url_fevrips = button.data('url_fevrips') || '';
 
         var modal = $(this);
-        modal.find('.modal-title').text(id ? 'Editar Usuario RIPS' : 'Agregar Usuario RIPS');
+        modal.find('.modal-title').text(id ? 'Editar Usuario' : 'Agregar Usuario');
         modal.find('#userId').val(id);
         modal.find('#name').val(name);
         modal.find('#email').val(email);
@@ -192,7 +203,12 @@ $(document).ready(function () {
         modal.find('#url_fevrips').val(url_fevrips);
 
         // Set checkboxes
-        modal.find('#can_rips').prop('checked', can_rips);
+        // modal.find('#can_rips').prop('checked', can_rips);
+        if (can_rips) {
+            modal.find('#can_rips_yes').prop('checked', true);
+        } else {
+            modal.find('#can_rips_no').prop('checked', true);
+        }
         modal.find('#can_health').prop('checked', can_health);
 
         if (id) {
