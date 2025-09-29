@@ -158,7 +158,6 @@ class ProductionController extends Controller
                     // \Log::info('Respuesta envío factura de prueba', ['result' => $result]);
                     $zipkey = $result['ResponseDian']['Envelope']['Body']['SendTestSetAsyncResponse']['SendTestSetAsyncResult']['ZipKey'] ?? null;
 
-                    // NUEVO: Mostrar mensaje de error detallado si no hay ZipKey
                     if (!$zipkey) {
                         $mensaje = $result['message'] ?? 'No se obtuvo ZipKey.';
                         // \Log::error('No se obtuvo ZipKey', ['result' => $result]);
@@ -188,18 +187,50 @@ class ProductionController extends Controller
                         'headers' => $headers,
                         'json' => $body
                     ]);
-
-                    // LOG DE LA RESPUESTA RAW
                     // \Log::info('Respuesta RAW de la DIAN al consultar ZipKey', [
                     //     'raw_response' => (string) $response->getBody()
                     // ]);
-
                     $data = json_decode($response->getBody(), true);
-
                     // \Log::info('Respuesta ARRAY consulta ZipKey', [
                     //     'data' => $data
                     // ]);
 
+                    $dianResponse = $data['ResponseDian']['Envelope']['Body']['GetStatusZipResponse']['GetStatusZipResult']['DianResponse'] ?? null;
+                    if ($dianResponse && isset($dianResponse['IsValid']) && $dianResponse['IsValid'] === "false") {
+                        $desc = $dianResponse['StatusDescription'] ?? 'Error desconocido';
+                        $statusCode = $dianResponse['StatusCode'] ?? '';
+                        $statusMsg = $dianResponse['StatusMessage'] ?? '';
+                        $errorMsg = '';
+                        if (stripos($desc, 'proceso de validación') !== false) {
+                            return response()->json([
+                                'error' => 'El documento está en proceso de validación en la DIAN. Por favor, espera unos minutos y vuelve a consultar el ZipKey.'
+                            ]);
+                        }
+                        if (is_array($statusCode)) {
+                            $statusCode = json_encode($statusCode);
+                        }
+                        if (is_array($statusMsg)) {
+                            $statusMsg = json_encode($statusMsg);
+                        }
+
+                        if (isset($dianResponse['ErrorMessage']['string'])) {
+                            if (is_array($dianResponse['ErrorMessage']['string'])) {
+                                $errorMsg = implode('<br>', $dianResponse['ErrorMessage']['string']);
+                            } else {
+                                $errorMsg = $dianResponse['ErrorMessage']['string'];
+                            }
+                        }
+
+                        $fullMsg = $desc;
+                        if ($statusMsg) {
+                            $fullMsg .= '<br>' . $statusMsg;
+                        }
+                        if ($errorMsg) {
+                            $fullMsg .= '<br>' . $errorMsg;
+                        }
+
+                        return response()->json(['error' => $fullMsg]);
+                    }
                     return response()->json(['success' => true, 'zipkey_status' => $data]);
                 } catch (\Exception $e) {
                     // \Log::error('Error consultando ZipKey', ['exception' => $e]);
@@ -229,8 +260,6 @@ class ProductionController extends Controller
             }
         }
 
-        // Si no es AJAX, redirige o muestra error
-        // \Log::warning('Petición inválida no AJAX');
         return back()->with('error', 'Petición inválida.');
     }
     private function consultarZipKey($zipKey, $token)
