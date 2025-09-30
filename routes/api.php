@@ -445,6 +445,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('documents', 'Api\MobileController@documents');
 
     // items
+    Route::get('/items', 'Api\ItemController@records');
+    Route::put('/items/{id}', 'Api\ItemController@update');
     Route::post('/items/add', 'Api\ItemController@store');
 
     //customers
