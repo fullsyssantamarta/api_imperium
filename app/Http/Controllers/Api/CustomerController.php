@@ -75,6 +75,78 @@ class CustomerController extends Controller
         }
     }
 
+    public function update(Request $request, $identification_number)
+    {
+        try {
+            // Buscar el cliente por número de documento
+            $customer = Customer::where('identification_number', $identification_number)->firstOrFail();
+
+            // Verificar que el cliente pertenezca a la empresa del usuario autenticado
+            $companyId = auth()->user()->company->id;
+            if ($customer->companies_id !== $companyId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tienes permisos para actualizar este cliente'
+                ], 403);
+            }
+
+            $validatedData = $request->validate([
+                'dv' => 'nullable|numeric|digits:1',
+                'name' => 'required|string|max:500',
+                'phone' => 'nullable|string|max:20',
+                'address' => 'nullable|string|max:500',
+                'email' => 'nullable|email|max:255',
+            ], [
+                'dv.numeric' => 'El dígito de verificación debe ser numérico.',
+                'dv.digits' => 'El dígito de verificación debe ser de 1 dígito.',
+                'name.required' => 'El nombre es obligatorio.',
+                'name.string' => 'El nombre debe ser texto.',
+                'name.max' => 'El nombre no puede tener más de 500 caracteres.',
+                'phone.string' => 'El teléfono debe ser texto.',
+                'phone.max' => 'El teléfono no puede tener más de 20 caracteres.',
+                'address.string' => 'La dirección debe ser texto.',
+                'address.max' => 'La dirección no puede tener más de 500 caracteres.',
+                'email.email' => 'El email debe tener un formato válido.',
+                'email.max' => 'El email no puede tener más de 255 caracteres.',
+            ]);
+
+            $customer->update($validatedData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cliente actualizado exitosamente',
+                'data' => [
+                    'customer' => [
+                        'id' => $customer->id,
+                        'identification_number' => $customer->identification_number,
+                        'dv' => $customer->dv,
+                        'name' => $customer->name,
+                        'phone' => $customer->phone,
+                        'address' => $customer->address,
+                        'email' => $customer->email
+                    ]
+                ]
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación.',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cliente no encontrado'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el cliente',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function getAcquirer($document_type_identification_id, $document_number)
     {
         $response = $this->createXML($document_type_identification_id, $document_number);
