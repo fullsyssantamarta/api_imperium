@@ -37,7 +37,7 @@
                 @endif
                 <p style="color: black; font-size: 11px; margin-bottom: 2px; padding: 0px 0px 0px 0px;">
                     @if(isset($request->tarifaica) && $request->tarifaica != '100')
-                        TARIFA ICA: {{$request->tarifaica}}%
+                        TARIFA ICA: {{$request->tarifaica}}‰
                     @endif
                     @if(isset($request->tarifaica) && isset($request->actividadeconomica))
                         -

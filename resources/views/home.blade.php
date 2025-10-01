@@ -44,7 +44,8 @@
                                         data-municipality-id="{{ $row->municipality_id }}"
                                         data-merchant-registration="{{ $row->merchant_registration }}"
                                         data-address="{{ $row->address }}"
-                                        data-phone="{{ $row->phone }}">
+                                        data-phone="{{ $row->phone }}"
+                                        data-api-token="{{ $row->user->api_token }}">
                                         Editar Empresa
                                     </a>
                                     <div class="dropdown-divider"></div>
@@ -140,93 +141,148 @@
 <div class="modal fade" id="editCompanyModal" tabindex="-1" role="dialog" aria-labelledby="editCompanyModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <form id="editCompanyForm" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editCompanyModalLabel">Editar Empresa</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCompanyModalLabel">Editar Empresa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" id="companyTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="company-info-tab" data-toggle="tab" href="#company-info" role="tab" aria-controls="company-info" aria-selected="true">
+                            <i class="fas fa-building mr-2"></i>Información de la Empresa
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="company-logo-tab" data-toggle="tab" href="#company-logo" role="tab" aria-controls="company-logo" aria-selected="false">
+                            <i class="fas fa-image mr-2"></i>Logo de la Empresa
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content" id="companyTabContent">
+                    <!-- Tab de Información de la Empresa -->
+                    <div class="tab-pane fade show active" id="company-info" role="tabpanel" aria-labelledby="company-info-tab">
+                        <form id="editCompanyForm" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <div class="row">
+                                <div class="form-group col-6">
+                                    <label for="identification_number">Número de identificación</label>
+                                    <input type="text" name="identification_number" id="identification_number" class="form-control" required>
+                                    <div class="invalid-feedback"></div>
+                                    <small class="form-text text-muted">Solo números. El DV se calculará automáticamente.</small>
+                                </div>
+
+                                <div class="form-group col-6">
+                                    <label for="dv">Dígito de verificación</label>
+                                    <input type="text" name="dv" id="dv" class="form-control" readonly style="background-color: #f8f9fa;">
+                                    <div class="invalid-feedback"></div>
+                                    <small class="form-text text-muted">Se calcula automáticamente</small>
+                                </div>
+
+                                <div class="form-group col-6">
+                                    <label for="type_document_identification_id">Tipo de documento</label>
+                                    <select name="type_document_identification_id" id="type_document_identification_id" class="form-control" required>
+                                        @foreach ($type_document_identifications as $type)
+                                            <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+
+                                <div class="form-group col-6">
+                                    <label for="type_regime_id">Tipo de régimen</label>
+                                    <select name="type_regime_id" id="type_regime_id" class="form-control" required>
+                                        @foreach ($type_regimes as $regime)
+                                            <option value="{{ $regime->id }}">{{ $regime->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+
+                                <div class="form-group col-6">
+                                    <label for="type_liability_id">Tipo de responsabilidad</label>
+                                    <select name="type_liability_id" id="type_liability_id" class="form-control" required>
+                                        @foreach ($type_liabilities as $liability)
+                                            <option value="{{ $liability->id }}">{{ $liability->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+
+                                <div class="form-group col-6">
+                                    <label for="municipality_id">Municipio</label>
+                                    <select name="municipality_id" id="municipality_id" class="form-control" required>
+                                        @foreach ($municipalities as $municipality)
+                                            <option value="{{ $municipality->id }}">{{ $municipality->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+
+                                <div class="form-group col-6">
+                                    <label for="merchant_registration">Matrícula mercantil</label>
+                                    <input type="text" name="merchant_registration" id="merchant_registration" class="form-control">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+
+                                <div class="form-group col-6">
+                                    <label for="phone">Teléfono</label>
+                                    <input type="text" name="phone" id="phone" class="form-control">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+
+                                <div class="form-group col-12">
+                                    <label for="address">Dirección</label>
+                                    <input type="text" name="address" id="address" class="form-control">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Tab de Logo de la Empresa -->
+                    <div class="tab-pane fade" id="company-logo" role="tabpanel" aria-labelledby="company-logo-tab">
+                        <form id="editLogoForm" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="logo-upload">Logo de la Empresa</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="logo-upload" accept="image/jpeg">
+                                            <label class="custom-file-label" for="logo-upload">Seleccionar archivo...</label>
+                                        </div>
+                                        <div class="invalid-feedback"></div>
+                                        <small class="form-text text-muted">Formato permitido: JPG únicamente. Tamaño máximo: 2MB</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div id="logo-preview" class="text-center" style="display: none;">
+                                        <h6>Vista previa:</h6>
+                                        <img id="logo-preview-img" src="" alt="Vista previa del logo" class="img-thumbnail" style="max-width: 300px; max-height: 200px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="modal-body row">
-                    <div class="form-group col-6">
-                        <label for="identification_number">Número de identificación</label>
-                        <input type="text" name="identification_number" id="identification_number" class="form-control" required>
-                        <div class="invalid-feedback"></div>
-                        <small class="form-text text-muted">Solo números. El DV se calculará automáticamente.</small>
-                    </div>
-
-                    <div class="form-group col-6">
-                        <label for="dv">Dígito de verificación</label>
-                        <input type="text" name="dv" id="dv" class="form-control" readonly style="background-color: #f8f9fa;">
-                        <div class="invalid-feedback"></div>
-                        <small class="form-text text-muted">Se calcula automáticamente</small>
-                    </div>
-
-                    <div class="form-group col-6">
-                        <label for="type_document_identification_id">Tipo de documento</label>
-                        <select name="type_document_identification_id" id="type_document_identification_id" class="form-control" required>
-                            @foreach ($type_document_identifications as $type)
-                                <option value="{{ $type->id }}">{{ $type->name }}</option>
-                            @endforeach
-                        </select>
-                        <div class="invalid-feedback"></div>
-                    </div>
-
-                    <div class="form-group col-6">
-                        <label for="type_regime_id">Tipo de régimen</label>
-                        <select name="type_regime_id" id="type_regime_id" class="form-control" required>
-                            @foreach ($type_regimes as $regime)
-                                <option value="{{ $regime->id }}">{{ $regime->name }}</option>
-                            @endforeach
-                        </select>
-                        <div class="invalid-feedback"></div>
-                    </div>
-
-                    <div class="form-group col-6">
-                        <label for="type_liability_id">Tipo de responsabilidad</label>
-                        <select name="type_liability_id" id="type_liability_id" class="form-control" required>
-                            @foreach ($type_liabilities as $liability)
-                                <option value="{{ $liability->id }}">{{ $liability->name }}</option>
-                            @endforeach
-                        </select>
-                        <div class="invalid-feedback"></div>
-                    </div>
-
-                    <div class="form-group col-6">
-                        <label for="municipality_id">Municipio</label>
-                        <select name="municipality_id" id="municipality_id" class="form-control" required>
-                            @foreach ($municipalities as $municipality)
-                                <option value="{{ $municipality->id }}">{{ $municipality->name }}</option>
-                            @endforeach
-                        </select>
-                        <div class="invalid-feedback"></div>
-                    </div>
-
-                    <div class="form-group col-6">
-                        <label for="merchant_registration">Matrícula mercantil</label>
-                        <input type="text" name="merchant_registration" id="merchant_registration" class="form-control">
-                        <div class="invalid-feedback"></div>
-                    </div>
-
-                    <div class="form-group col-6">
-                        <label for="phone">Teléfono</label>
-                        <input type="text" name="phone" id="phone" class="form-control">
-                        <div class="invalid-feedback"></div>
-                    </div>
-
-                    <div class="form-group col-12">
-                        <label for="address">Dirección</label>
-                        <input type="text" name="address" id="address" class="form-control">
-                        <div class="invalid-feedback"></div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                </div>
-            </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" id="saveCompanyBtn" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar Información
+                </button>
+                <button type="button" id="saveLogoBtn" class="btn btn-success" style="display: none;">
+                    <i class="fas fa-image"></i> Actualizar Logo
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -265,6 +321,35 @@
 .is-invalid .invalid-feedback {
     display: block;
 }
+
+.nav-tabs .nav-link {
+    color: #495057;
+    border: 1px solid transparent;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: #e9ecef #e9ecef #dee2e6;
+}
+
+.nav-tabs .nav-link.active {
+    color: #495057;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+
+.tab-content {
+    border: 1px solid #dee2e6;
+    border-top: none;
+    padding: 1rem;
+    border-bottom-left-radius: .25rem;
+    border-bottom-right-radius: .25rem;
+}
+
+.custom-file-label::after {
+    content: "Buscar";
+}
 </style>
 
 @endsection
@@ -272,9 +357,15 @@
 @push('scripts')
 <script>
 $(document).ready(function () {
+    let currentCompanyId = null;
+    let currentApiToken = null;
+
     // Limpiar formulario cuando se abre el modal
     $('#editCompanyModal').on('show.bs.modal', function () {
         clearFormErrors();
+        clearLogoForm();
+        // Asegurar que el primer tab esté activo
+        $('#company-info-tab').tab('show');
     });
 
     // Configurar el modal para edición de empresa
@@ -283,7 +374,8 @@ $(document).ready(function () {
         var modal = $(this);
 
         if (button && button.length > 0 && button.data('company-id')) {
-            var companyId = button.data('company-id') || '';
+            currentCompanyId = button.data('company-id') || '';
+            currentApiToken = button.data('api-token') || '';
             var identificationNumber = button.data('identification-number') || '';
             var dv = button.data('dv') || '';
             var typeDocumentIdentificationId = button.data('type-document-identification-id') || '';
@@ -303,19 +395,79 @@ $(document).ready(function () {
             modal.find('#merchant_registration').val(merchantRegistration);
             modal.find('#address').val(address);
             modal.find('#phone').val(phone);
-
-            // Guardar el ID de la empresa en el formulario
-            modal.find('#editCompanyForm').data('company-id', companyId);
         }
     });
 
-    // Manejar envío del formulario con AJAX
-    $('#editCompanyForm').on('submit', function(e) {
+    // Manejar cambio de tabs
+    $('#companyTabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var target = $(e.target).attr("href");
+
+        if (target === '#company-info') {
+            $('#saveCompanyBtn').show();
+            $('#saveLogoBtn').hide();
+        } else if (target === '#company-logo') {
+            $('#saveCompanyBtn').hide();
+            $('#saveLogoBtn').show();
+        }
+    });
+
+    // Manejar subida de archivo de logo
+    $('#logo-upload').on('change', function(e) {
+        const file = e.target.files[0];
+        const label = $(this).next('.custom-file-label');
+
+        if (file) {
+            // Validar tipo de archivo
+            const allowedTypes = ['image/jpg'];
+            if (!allowedTypes.includes(file.type)) {
+                new PNotify({
+                    text: 'Por favor selecciona un archivo JPG válido',
+                    type: 'error',
+                    addclass: 'notification-danger',
+                    delay: 4000
+                });
+                $(this).val('');
+                label.text('Seleccionar archivo...');
+                $('#logo-preview').hide();
+                return;
+            }
+
+            // Validar tamaño (2MB máximo)
+            if (file.size > 2 * 1024 * 1024) {
+                new PNotify({
+                    text: 'El archivo es demasiado grande. Tamaño máximo: 2MB',
+                    type: 'error',
+                    addclass: 'notification-danger',
+                    delay: 4000
+                });
+                $(this).val('');
+                label.text('Seleccionar archivo...');
+                $('#logo-preview').hide();
+                return;
+            }
+
+            // Actualizar label
+            label.text(file.name);
+
+            // Mostrar vista previa
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#logo-preview-img').attr('src', e.target.result);
+                $('#logo-preview').show();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            label.text('Seleccionar archivo...');
+            $('#logo-preview').hide();
+        }
+    });
+
+    // Manejar envío del formulario de información de empresa
+    $('#saveCompanyBtn').on('click', function(e) {
         e.preventDefault();
 
-        const submitBtn = $('#editCompanyForm button[type="submit"]');
+        const submitBtn = $(this);
         const originalText = submitBtn.html();
-        const companyId = $(this).data('company-id');
 
         // Deshabilitar botón y mostrar estado de carga
         submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
@@ -324,11 +476,11 @@ $(document).ready(function () {
         clearFormErrors();
 
         // Preparar datos del formulario
-        const formData = $(this).serialize();
+        const formData = $('#editCompanyForm').serialize();
 
         // Realizar petición AJAX
         $.ajax({
-            url: `/companies/${companyId}`,
+            url: `/companies/${currentCompanyId}`,
             method: 'PUT',
             data: formData,
             dataType: 'json',
@@ -365,6 +517,9 @@ $(document).ready(function () {
                     const errors = xhr.responseJSON.errors;
                     displayFormErrors(errors);
 
+                    // Cambiar al tab de información si hay errores
+                    $('#company-info-tab').tab('show');
+
                     new PNotify({
                         text: 'Por favor corrige los errores en el formulario',
                         type: 'error',
@@ -387,7 +542,80 @@ $(document).ready(function () {
                 submitBtn.prop('disabled', false).html(originalText);
             }
         });
-    });    // Mostrar mensaje de éxito
+    });
+
+    // Manejar envío del logo
+    $('#saveLogoBtn').on('click', function(e) {
+        e.preventDefault();
+
+        const file = $('#logo-upload')[0].files[0];
+        if (!file) {
+            new PNotify({
+                text: 'Por favor selecciona una imagen',
+                type: 'error',
+                addclass: 'notification-danger',
+                delay: 3000
+            });
+            return;
+        }
+
+        const submitBtn = $(this);
+        const originalText = submitBtn.html();
+
+        // Deshabilitar botón y mostrar estado de carga
+        submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Subiendo logo...');
+
+        // Convertir archivo a base64
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Data = e.target.result.split(',')[1]; // Remover el prefijo data:image/...;base64,
+
+            // Realizar petición AJAX al API
+            $.ajax({
+                url: '/api/ubl2.1/config/logo',
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + currentApiToken,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                data: JSON.stringify({
+                    logo: base64Data
+                }),
+                success: function(response) {
+                    new PNotify({
+                        text: 'Logo actualizado exitosamente',
+                        type: 'success',
+                        addclass: 'notification-success',
+                        delay: 3000
+                    });
+
+                    // Limpiar el formulario de logo
+                    clearLogoForm();
+                },
+                error: function(xhr) {
+                    let message = 'Error al actualizar el logo';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+
+                    new PNotify({
+                        text: message,
+                        type: 'error',
+                        addclass: 'notification-danger',
+                        delay: 5000
+                    });
+                },
+                complete: function() {
+                    // Restaurar botón
+                    submitBtn.prop('disabled', false).html(originalText);
+                }
+            });
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Mostrar mensaje de éxito
     @if (session('success'))
         new PNotify({
             text: '{{ session('success') }}',
@@ -422,7 +650,16 @@ $(document).ready(function () {
             input.addClass('is-invalid');
             feedback.text(messages[0]).show();
         });
-    }    // Función para calcular el dígito de verificación
+    }
+
+    // Función para limpiar el formulario de logo
+    function clearLogoForm() {
+        $('#logo-upload').val('');
+        $('.custom-file-label').text('Seleccionar archivo...');
+        $('#logo-preview').hide();
+    }
+
+    // Función para calcular el dígito de verificación
     function calculateDV(nit) {
         if (!nit || nit.length === 0) return '';
 

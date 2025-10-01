@@ -39,7 +39,7 @@
                     <p style="font-size: 6px">Tipo Documento ID: {{$request->nombretipodocid}}</p><br>
                 @endif
                 @if(isset($request->tarifaica) && $request->tarifaica != '100')
-                    <p style="font-size: 6px">TARIFA ICA: {{$request->tarifaica}}%</p>
+                    <p style="font-size: 6px">TARIFA ICA: {{$request->tarifaica}}‰</p>
                 @endif
                 @if(isset($request->tarifaica) && isset($request->actividadeconomica))
                     -
