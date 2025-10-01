@@ -99,6 +99,12 @@
                         <td>{{$paymentForm[0]->payment_due_date}}</td>
                     </tr>
                     @endif
+                    @if(isset($request['seller']) && isset($request['seller']['name']))
+                    <tr>
+                        <td>Vendedor:</td>
+                        <td>{{$request['seller']['name']}}</td>
+                    </tr>
+                    @endif
                 </table>
             </td>
             <!-- Cuarta Columna -->

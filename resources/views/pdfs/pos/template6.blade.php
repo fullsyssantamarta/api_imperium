@@ -83,6 +83,12 @@
                         <td>Fecha Vencimiento:</td>
                         <td>{{$paymentForm[0]->payment_due_date}}</td>
                     </tr>
+                    @if(isset($request['seller']) && isset($request['seller']['name']))
+                    <tr>
+                        <td>Vendedor:</td>
+                        <td>{{$request['seller']['name']}}</td>
+                    </tr>
+                    @endif
                     @if(isset($request['order_reference']['id_order']))
                     <tr>
                         <td>Número Pedido:</td>
