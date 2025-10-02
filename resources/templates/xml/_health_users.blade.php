@@ -1,9 +1,51 @@
 @foreach ($healthUsers as $key => $healthUser)
+    @php
+        // Safe lookups for catalog data
+        $docType = \App\HealthTypeDocumentIdentification::find($healthUser->health_type_document_identification_id);
+        $typeUser = \App\HealthTypeUser::find($healthUser->health_type_user_id);
+    @endphp
     <Collection schemeName="Usuario">
         <AdditionalInformation>
             <Name>CODIGO_PRESTADOR</Name>
-            <Value>{{preg_replace("/[\r\n|\n|\r]+/", "", $healthUser->provider_code)}}</Value>
+            <Value>{{preg_replace("/[\r\n|\n|\r]+/", "", $healthUser->provider_code ?? '')}}</Value>
         </AdditionalInformation>
+
+        @if($docType)
+        <AdditionalInformation>
+            <Name>TIPO_DOCUMENTO_USUARIO</Name>
+            <Value schemeName="salud_tipo_documento.gc" schemeID="{{preg_replace("/[\r\n|\n|\r]+/", "", $docType->code)}}">{{preg_replace("/[\r\n|\n|\r]+/", "", $docType->name)}}</Value>
+        </AdditionalInformation>
+        @endif
+
+        <AdditionalInformation>
+            <Name>NUMERO_DOCUMENTO_USUARIO</Name>
+            <Value>{{preg_replace("/[\r\n|\n|\r]+/", "", $healthUser->identification_number ?? '')}}</Value>
+        </AdditionalInformation>
+
+        <AdditionalInformation>
+            <Name>PRIMER_APELLIDO</Name>
+            <Value>{{preg_replace("/[\r\n|\n|\r]+/", "", $healthUser->surname ?? '')}}</Value>
+        </AdditionalInformation>
+        <AdditionalInformation>
+            <Name>SEGUNDO_APELLIDO</Name>
+            <Value>{{preg_replace("/[\r\n|\n|\r]+/", "", $healthUser->second_surname ?? '')}}</Value>
+        </AdditionalInformation>
+        <AdditionalInformation>
+            <Name>PRIMER_NOMBRE</Name>
+            <Value>{{preg_replace("/[\r\n|\n|\r]+/", "", $healthUser->first_name ?? '')}}</Value>
+        </AdditionalInformation>
+        <AdditionalInformation>
+            <Name>SEGUNDO_NOMBRE</Name>
+            <Value>{{preg_replace("/[\r\n|\n|\r]+/", "", $healthUser->middle_name ?? '')}}</Value>
+        </AdditionalInformation>
+
+        @if($typeUser)
+        <AdditionalInformation>
+            <Name>TIPO_USUARIO</Name>
+            <Value schemeName="salud_tipo_usuario.gc" schemeID="{{preg_replace("/[\r\n|\n|\r]+/", "", $typeUser->code)}}">{{preg_replace("/[\r\n|\n|\r]+/", "", $typeUser->name)}}</Value>
+        </AdditionalInformation>
+        @endif
+
         <AdditionalInformation>
             <Name>MODALIDAD_PAGO</Name>
             <Value schemeName="salud_modalidad_pago.gc" schemeID="{{preg_replace("/[\r\n|\n|\r]+/", "", $healthUser->health_contracting_payment_method()->code)}}">{{preg_replace("/[\r\n|\n|\r]+/", "", $healthUser->health_contracting_payment_method()->name)}}</Value>
