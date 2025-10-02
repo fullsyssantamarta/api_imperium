@@ -418,7 +418,7 @@ $(document).ready(function () {
 
         if (file) {
             // Validar tipo de archivo
-            const allowedTypes = ['image/jpg'];
+            const allowedTypes = ['image/jpg', 'image/jpeg'];
             if (!allowedTypes.includes(file.type)) {
                 new PNotify({
                     text: 'Por favor selecciona un archivo JPG válido',
