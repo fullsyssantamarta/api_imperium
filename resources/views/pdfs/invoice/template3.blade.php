@@ -205,20 +205,26 @@
                     @if(isset($request['deliveryterms']))
                     <tr>
                         <td>Terminos de Entrega:</td>
-                        <td>{{$request['deliveryterms']['loss_risk_responsibility_code']}} - {{ $request['deliveryterms']['loss_risk'] }}</td>
+                        <td>
+                            {{ isset($request['deliveryterms']['loss_risk_responsibility_code']) ? $request['deliveryterms']['loss_risk_responsibility_code'] : '' }}
+                            -
+                            {{ isset($request['deliveryterms']['loss_risk']) ? $request['deliveryterms']['loss_risk'] : '' }}
+                        </td>
                     </tr>
                     <tr>
                         <td>T.R.M:</td>
-                        <td>{{number_format($request['calculationrate'], 2)}}</td>
+                        <td>{{ isset($request['k_supplement']['FctConvCop']) ? number_format($request['k_supplement']['FctConvCop'], 2) : '0.00' }}</td>
                     </tr>
                     <tr>
-                        <td>Fecha T.R.M:</td>
-                        <td>{{$request['calculationratedate']}}</td>
+                        <td>Destino</td>
+                        <td>{{ isset($request['k_supplement']['destination']) ? $request['k_supplement']['destination'] : '' }}</td>
                     </tr>
                     <tr>
                         @inject('currency', 'App\TypeCurrency')
                         <td>Tipo Moneda:</td>
-                        <td>{{$currency->findOrFail($request['idcurrency'])['name']}}</td>
+                        <td>
+                            {{ isset($request['k_supplement']['MonedaCop']) ? ($currency->where('code', 'like', '%'.$request['k_supplement']['MonedaCop'].'%')->first()['name'] ?? '') : '' }}
+                        </td>
                     </tr>
                     @endif
                 </table>

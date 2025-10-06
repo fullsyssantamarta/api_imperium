@@ -115,22 +115,35 @@
                     @if(isset($request['deliveryterms']))
                     <tr>
                         <td style="padding: 0; width: 50%;">Terminos de Entrega:</td>
-                        <td style="padding: 0;">{{$request['deliveryterms']['loss_risk_responsibility_code']}} - {{ $request['deliveryterms']['loss_risk'] }}</td>
+                        <td style="padding: 0;">
+                            {{ $request['deliveryterms']['loss_risk_responsibility_code'] ?? '' }}
+                            -
+                            {{ $request['deliveryterms']['loss_risk'] ?? '' }}
+                        </td>
                     </tr>
                     <tr>
                         <td style="padding: 0; width: 50%;">T.R.M:</td>
-                        <td style="padding: 0;">{{number_format($request['k_supplement']['FctConvCop'], 2)}}</td>
+                        <td style="padding: 0;">
+                            {{ isset($request['k_supplement']['FctConvCop']) ? number_format($request['k_supplement']['FctConvCop'], 2) : '0.00' }}
+                        </td>
                     </tr>
                     <tr>
                         <td style="padding: 0; width: 50%;">Destino</td>
-                        <td style="padding: 0;">{{$request['k_supplement']['destination']}}</td>
+                        <td style="padding: 0;">
+                            {{ $request['k_supplement']['destination'] ?? '' }}
+                        </td>
                     </tr>
                     <tr>
                         @inject('currency', 'App\TypeCurrency')
                         <td style="padding: 0; width: 50%;">Tipo Moneda:</td>
-                        <td style="padding: 0;">{{$currency->where('code', 'like', '%'.$request['k_supplement']['MonedaCop'].'%')->firstOrFail()['name']}}</td>
+                        <td style="padding: 0;">
+                            {{ isset($request['k_supplement']['MonedaCop']) 
+                                ? ($currency->where('code', 'like', '%'.$request['k_supplement']['MonedaCop'].'%')->first()['name'] ?? '') 
+                                : '' 
+                            }}
+                        </td>
                     </tr>
-                    @endif
+                @endif
                     @if(isset($paymentForm) && count($paymentForm) > 0)
                     <tr>
                         <td style="padding: 0; width: 50%;">Plazo Para Pagar:</td>
