@@ -70,9 +70,13 @@
                             <cbc:CountrySubentityCode>{{preg_replace("/[\r\n|\n|\r]+/", "", "01")}}</cbc:CountrySubentityCode>
                         @endif
                     @endif
-                    <cac:AddressLine>
-                        <cbc:Line>{{preg_replace("/[\r\n|\n|\r]+/", "",$request['establishment_address'] ?? $user->company->address)}}</cbc:Line>
-                    </cac:AddressLine>
+                    <cbc:Line>
+                        @if($node === 'AccountingCustomerParty' && isset($customer))
+                            {{ preg_replace("/[\r\n|\n|\r]+/", "", $customer->company->address) }}
+                        @else
+                            {{ preg_replace("/[\r\n|\n|\r]+/", "", $request['establishment_address'] ?? $user->company->address) }}
+                        @endif
+                    </cbc:Line>
                     <cac:Country>
                         <cbc:IdentificationCode>{{preg_replace("/[\r\n|\n|\r]+/", "", $user->company->country->code)}}</cbc:IdentificationCode>
                         <cbc:Name languageID="{{preg_replace("/[\r\n|\n|\r]+/", "", $user->company->language->code)}}">{{preg_replace("/[\r\n|\n|\r]+/", "", $user->company->country->name)}}</cbc:Name>
