@@ -241,9 +241,9 @@
         <tr>
             <td style="font-size: 8px;">{{$item->provider_code}}</td>
             <td>
-                <p style="font-size: 8px">Modalidad Contratacion: {{$item->health_contracting_payment_method()->name}}</p>
+                <p style="font-size: 8px">Modalidad Contratacion: {{($item->health_contracting_payment_method->name ?? '')}}</p>
                 <p style="font-size: 8px">Nro Contrato: {{$item->contract_number}}</p>
-                <p style="font-size: 8px">Cobertura: {{$item->health_coverage()->name}}</p>
+                <p style="font-size: 8px">Cobertura: {{($item->health_coverage->name ?? '')}}</p>
             </td>
             <td>
                 <p style="font-size: 8px">Copago: {{number_format($item->co_payment, 2)}}</p>

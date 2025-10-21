@@ -187,9 +187,9 @@
                                 </td>
                             @endif
                             <td>
-                                <p style="font-size: 8px">Modalidad Contratación: {{$item->health_contracting_payment_method()->name}}</p>
+                                <p style="font-size: 8px">Modalidad Contratación: {{($item->health_contracting_payment_method->name ?? '')}}</p>
                                 <p style="font-size: 8px">Nro. Contrato: {{$item->contract_number}}</p>
-                                <p style="font-size: 8px">Cobertura: {{$item->health_coverage()->name}}</p>
+                                <p style="font-size: 8px">Cobertura: {{($item->health_coverage->name ?? '')}}</p>
                             </td>
                             <td>
                                 <p style="font-size: 8px">Nros Autorización: {{$item->autorization_numbers}}</p>

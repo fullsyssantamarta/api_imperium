@@ -157,9 +157,9 @@
                 <tr>
                     <td class="desc-9 text-center">{{$item->provider_code}}</td>
                     <td class="desc-9">
-                        Modalidad Contratación: {{$item->health_contracting_payment_method()->name}}<br>
+                        Modalidad Contratación: {{($item->health_contracting_payment_method->name ?? '')}}<br>
                         Nro Contrato: {{$item->contract_number}}<br>
-                        Cobertura: {{$item->health_coverage()->name}}
+                        Cobertura: {{($item->health_coverage->name ?? '')}}
                     </td>
                     <td class="desc-9">
                         Copago: {{number_format($item->co_payment, 2)}}<br>

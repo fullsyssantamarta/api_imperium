@@ -19,38 +19,31 @@ class HealthUser extends Model
         'recovery_fee', 'shared_payment', 'advance_payment'
     ];
 
-    public function __construct(array $attributes = array())
-    {
-        parent::__construct($attributes);
-        $this->health_contracting_payment_method = $this->health_contracting_payment_method();
-        $this->health_coverage = $this->health_coverage();
-    }
-
     /**
     * Get the health type document identification belongs to
     */
     public function health_type_document_identification() {
-        return HealthTypeDocumentIdentification::where('id', $this->health_type_document_identification_id)->firstOrfail();
+        return $this->belongsTo(HealthTypeDocumentIdentification::class);
     }
 
     /**
     * Get the health type user belongs to
     */
     public function health_type_user() {
-        return HealthTypeUser::where('id', $this->health_type_user_id)->firstOrfail();
+        return $this->belongsTo(HealthTypeUser::class);
     }
 
     /**
     * Get the health contracting payment method belongs to
     */
     public function health_contracting_payment_method() {
-        return HealthContractingPaymentMethod::where('id', $this->health_contracting_payment_method_id)->firstOrfail();
+        return $this->belongsTo(HealthContractingPaymentMethod::class);
     }
 
     /**
     * Get the health coverage belongs to
     */
     public function health_coverage() {
-        return HealthCoverage::where('id', $this->health_coverage_id)->firstOrfail();
+        return $this->belongsTo(HealthCoverage::class);
     }
 }

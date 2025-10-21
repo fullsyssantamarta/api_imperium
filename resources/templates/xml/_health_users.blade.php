@@ -3,6 +3,8 @@
         // Safe lookups for catalog data
         $docType = \App\HealthTypeDocumentIdentification::find($healthUser->health_type_document_identification_id);
         $typeUser = \App\HealthTypeUser::find($healthUser->health_type_user_id);
+        $paymentMethod = \App\HealthContractingPaymentMethod::find($healthUser->health_contracting_payment_method_id);
+        $coverage = \App\HealthCoverage::find($healthUser->health_coverage_id);
     @endphp
     <Collection schemeName="Usuario">
         <AdditionalInformation>
@@ -46,14 +48,18 @@
         </AdditionalInformation>
         @endif
 
+        @if($paymentMethod)
         <AdditionalInformation>
             <Name>MODALIDAD_PAGO</Name>
-            <Value schemeName="salud_modalidad_pago.gc" schemeID="{{preg_replace("/[\r\n|\n|\r]+/", "", $healthUser->health_contracting_payment_method()->code)}}">{{preg_replace("/[\r\n|\n|\r]+/", "", $healthUser->health_contracting_payment_method()->name)}}</Value>
+            <Value schemeName="salud_modalidad_pago.gc" schemeID="{{preg_replace("/[\r\n|\n|\r]+/", "", $paymentMethod->code)}}">{{preg_replace("/[\r\n|\n|\r]+/", "", $paymentMethod->name)}}</Value>
         </AdditionalInformation>
+        @endif
+        @if($coverage)
         <AdditionalInformation>
             <Name>COBERTURA_PLAN_BENEFICIOS</Name>
-            <Value schemeName="salud_cobertura.gc" schemeID="{{preg_replace("/[\r\n|\n|\r]+/", "", $healthUser->health_coverage()->code)}}">{{preg_replace("/[\r\n|\n|\r]+/", "", $healthUser->health_coverage()->name)}}</Value>
+            <Value schemeName="salud_cobertura.gc" schemeID="{{preg_replace("/[\r\n|\n|\r]+/", "", $coverage->code)}}">{{preg_replace("/[\r\n|\n|\r]+/", "", $coverage->name)}}</Value>
         </AdditionalInformation>
+        @endif
         <AdditionalInformation>
             <Name>NUMERO_CONTRATO</Name>
             <Value>{{preg_replace("/[\r\n|\n|\r]+/", "", $healthUser->contract_number)}}</Value>

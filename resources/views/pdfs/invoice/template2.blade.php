@@ -86,6 +86,12 @@
                         <td>{{$paymentForm[0]->payment_due_date}}</td>
                     </tr>
                     @endif
+                    @if(isset($request['seller']) && isset($request['seller']['name']))
+                    <tr>
+                        <td>Vendedor:</td>
+                        <td>{{$request['seller']['name']}}</td>
+                    </tr>
+                    @endif
                     @if(isset($request['order_reference']['id_order']))
                     <tr>
                         <td>Número Pedido:</td>
@@ -117,20 +123,26 @@
                     @if(isset($request['deliveryterms']))
                     <tr>
                         <td>Terminos de Entrega:</td>
-                        <td>{{$request['deliveryterms']['loss_risk_responsibility_code']}} - {{ $request['deliveryterms']['loss_risk'] }}</td>
+                        <td>
+                            {{ isset($request['deliveryterms']['loss_risk_responsibility_code']) ? $request['deliveryterms']['loss_risk_responsibility_code'] : '' }}
+                            -
+                            {{ isset($request['deliveryterms']['loss_risk']) ? $request['deliveryterms']['loss_risk'] : '' }}
+                        </td>
                     </tr>
                     <tr>
                         <td>T.R.M:</td>
-                        <td>{{number_format($request['k_supplement']['FctConvCop'], 2)}}</td>
+                        <td>{{ isset($request['k_supplement']['FctConvCop']) ? number_format($request['k_supplement']['FctConvCop'], 2) : '0.00' }}</td>
                     </tr>
                     <tr>
                         <td>Destino</td>
-                        <td>{{$request['k_supplement']['destination']}}</td>
+                        <td>{{ isset($request['k_supplement']['destination']) ? $request['k_supplement']['destination'] : '' }}</td>
                     </tr>
                     <tr>
                         @inject('currency', 'App\TypeCurrency')
                         <td>Tipo Moneda:</td>
-                        <td>{{$currency->where('code', 'like', '%'.$request['k_supplement']['MonedaCop'].'%')->firstOrFail()['name']}}</td>
+                        <td>
+                            {{ isset($request['k_supplement']['MonedaCop']) ? ($currency->where('code', 'like', '%'.$request['k_supplement']['MonedaCop'].'%')->first()['name'] ?? '') : '' }}
+                        </td>
                     </tr>
                     @endif
                 </table>
@@ -182,9 +194,9 @@
                                 </td>
                             @endif
                             <td>
-                                <p style="font-size: 8px">Modalidad Contratación: {{$item->health_contracting_payment_method()->name}}</p>
+                                <p style="font-size: 8px">Modalidad Contratación: {{($item->health_contracting_payment_method->name ?? '')}}</p>
                                 <p style="font-size: 8px">Nro. Contrato: {{$item->contract_number}}</p>
-                                <p style="font-size: 8px">Cobertura: {{$item->health_coverage()->name}}</p>
+                                <p style="font-size: 8px">Cobertura: {{($item->health_coverage->name ?? '')}}</p>
                             </td>
                             <td>
                                 <p style="font-size: 8px">Nros Autorización: {{$item->autorization_numbers}}</p>
