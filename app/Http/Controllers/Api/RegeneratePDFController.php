@@ -40,6 +40,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\StateController;
 use App\Http\Requests\Api\RegeneratePDFRequest;
 use App\Http\Requests\Api\StatusRequest;
+use App\Services\DocumentXmlPayloadBuilder;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Mail\InvoiceMail;
@@ -257,8 +259,47 @@ class RegeneratePDFController extends Controller
             $company = $user->company;
 
             if(!$request){
-                $request_db = new Request(json_decode($invoice_doc[0]->request_api, true));
+                $basePayload = json_decode($invoice_doc[0]->request_api, true) ?: [];
+
+                /** @var DocumentXmlPayloadBuilder $xmlPayloadBuilder */
+                $xmlPayloadBuilder = app(DocumentXmlPayloadBuilder::class);
+                $payload = $xmlPayloadBuilder->build($invoice_doc[0], $basePayload);
+
+                if (is_null($payload) || !is_array($payload) || empty($payload)) {
+                    $payload = $basePayload;
+                }
+
+                $formatOverride = config('pdf.page_format_override');
+                $previousTemplate = $payload['invoice_template'] ?? null;
+
+                if ($formatOverride) {
+                    $payload['page_format'] = $formatOverride;
+
+                    if (in_array($formatOverride, ['letter', 'a4'], true)) {
+                        $payload['is_tirilla2'] = false;
+                        $payload['invoice_template'] = '2';
+                        $payload['template_token'] = password_hash($company->identification_number, PASSWORD_BCRYPT);
+                    }
+                }
+
+                $request_db = new Request($payload);
                 $request = RegeneratePDFRequest::create('api/ubl2.1/regeneratepdf/invoice', 'POST', $request_db->all());
+                $request->merge([
+                    'page_format' => $payload['page_format'] ?? null,
+                    'invoice_template' => $payload['invoice_template'] ?? null,
+                    'is_tirilla2' => $payload['is_tirilla2'] ?? null,
+                    'template_token' => $payload['template_token'] ?? null,
+                ]);
+
+                \Log::debug('regenerate.request.settings', [
+                    'document_id' => $invoice_doc[0]->id ?? null,
+                    'override_requested' => $formatOverride,
+                    'previous_invoice_template' => $previousTemplate,
+                    'page_format' => $request->page_format ?? null,
+                    'invoice_template' => $request->invoice_template ?? null,
+                    'is_tirilla2' => $request->is_tirilla2 ?? null,
+                    'has_template_token' => !empty($request->template_token),
+                ]);
 //                $request->setContainer(app())->setRedirector(app(\Illuminate\Routing\Redirector::class))->validateResolved();
                 $request->count_resolutions = auth()->user()->company->resolutions->where('type_document_id', $request->type_document_id)->count();
                 if($request->count_resolutions < 2)

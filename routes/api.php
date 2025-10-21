@@ -379,63 +379,7 @@ Route::post('/accept-reject-document', 'AcceptRejectDocumentController@ExecuteAc
 Route::post('/download-file', 'AcceptRejectDocumentController@DownloadFile')->name('downloadfile');
 
 if(env('ALLOW_PUBLIC_DOWNLOAD', TRUE)){
-    Route::get('download/{identification}/{file}/{type_response?}',
-        function($identification, $file, $type_response = FALSE)
-        {
-            $u = new \App\Utils;
-            if(strpos($file, 'Attachment-') === false and strpos($file, 'ZipAttachm-') === false)
-                if(file_exists(storage_path("app/public/{$identification}/{$file}")))
-                    if($type_response && $type_response === 'BASE64')
-                        return [
-                            'success' => true,
-                            'message' => "Archivo: ".$file." se encontro.",
-                            'filebase64'=>base64_encode(file_get_contents(storage_path("app/public/{$identification}/{$file}")))
-                        ];
-                    else
-                        return Storage::download("public/{$identification}/{$file}");
-                else
-                    return [
-                        'success' => false,
-                        'message' => "No se encontro el archivo: ".$file
-                    ];
-            else{
-                if(strpos($file, 'ZipAttachm-') === false){
-                    $filename = $u->attacheddocumentname($identification, $file);
-                    if(file_exists(storage_path("app/public/{$identification}/{$filename}.xml")))
-                        if($type_response && $type_response === 'BASE64')
-                            return [
-                                'success' => true,
-                                'message' => "Archivo: ".$filename.".xml se encontro.",
-                                'filebase64'=>base64_encode(file_get_contents(storage_path("app/public/{$identification}/{$filename}.xml")))
-                            ];
-                        else
-                            return Storage::download("public/{$identification}/{$filename}.xml");
-                    else
-                        return [
-                            'success' => false,
-                            'message' => "No se encontro el archivo: ".$filename.".xml"
-                        ];
-                }
-                else{
-                    $filename = $u->attacheddocumentname($identification, $file);
-                    if(file_exists(storage_path("app/public/{$identification}/{$filename}.zip")))
-                        if($type_response && $type_response === 'BASE64')
-                            return [
-                                'success' => true,
-                                'message' => "Archivo: ".$filename.".zip se encontro.",
-                                'filebase64'=>base64_encode(file_get_contents(storage_path("app/public/{$identification}/{$filename}.zip")))
-                            ];
-                        else
-                            return Storage::download("public/{$identification}/{$filename}.zip");
-                    else
-                        return [
-                            'success' => false,
-                            'message' => "No se encontro el archivo: ".$filename.".zip"
-                        ];
-                }
-            }
-        }
-    );
+    Route::get('download/{identification}/{file}/{type_response?}', 'Api\DownloadController@download');
 }
 
 Route::post('login', 'Api\AuthController@login');

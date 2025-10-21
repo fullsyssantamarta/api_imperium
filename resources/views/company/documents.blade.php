@@ -59,11 +59,13 @@
                                 href="{{ '/storage/'.$row->identification_number.'/'.$row->xml }}" target="_BLANK">
                                 XML
                             </a>
-                            <a class="btn btn-success btn-xs text-white mt-1"
-                                role="button"
-                                href="{{ '/storage/'.$row->identification_number.'/'.$row->pdf }}" target="_BLANK">
+                            <button
+                                type="button"
+                                class="btn btn-success btn-xs text-white mt-1 download-pdf"
+                                data-pdf-path="{{ $row->pdf }}"
+                            >
                                 PDF
-                            </a>
+                            </button>
                         </td>
                         <td>{{ $row->ambient_id === 2 ? 'Habilitación' : 'Producción' }}</td>
                         <td class="text-center">{{ $row->state_document_id ? 'Si' : 'No' }}</td>
@@ -158,6 +160,30 @@
     </div>
 </div>
 
+<!-- Modal formato PDF -->
+<div class="modal fade" id="pdfFormatModal" tabindex="-1" role="dialog" aria-labelledby="pdfFormatModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pdfFormatModalLabel">Selecciona el formato del PDF</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Elige el tamaño de hoja para descargar el documento.</p>
+                <div class="d-flex justify-content-around">
+                    <button type="button" class="btn btn-primary" id="downloadLetter">Carta (Letter)</button>
+                    <button type="button" class="btn btn-outline-primary" id="downloadA4">A4</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Excel a JSON -->
 <div class="modal fade" id="excelModal" tabindex="-1" role="dialog" aria-labelledby="excelModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
@@ -211,6 +237,45 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 $(document).ready(function() {
+    const baseDownloadUrl = "{{ url('documents/downloadpdf') }}";
+    let selectedPdfPath = null;
+    const $formatModal = $('#pdfFormatModal');
+
+    function openPdfWithFormat(format) {
+        if (!selectedPdfPath) {
+            return;
+        }
+
+        const normalized = format === 'a4' ? 'a4' : 'letter';
+        const url = `${baseDownloadUrl}/${selectedPdfPath}?format=${normalized}`;
+        window.open(url, '_blank');
+        $formatModal.modal('hide');
+        selectedPdfPath = null;
+    }
+
+    $(document).on('click', '.download-pdf', function (event) {
+        event.preventDefault();
+        selectedPdfPath = this.getAttribute('data-pdf-path');
+
+        if (!selectedPdfPath) {
+            return;
+        }
+
+        $formatModal.modal('show');
+    });
+
+    $('#downloadLetter').on('click', function () {
+        openPdfWithFormat('letter');
+    });
+
+    $('#downloadA4').on('click', function () {
+        openPdfWithFormat('a4');
+    });
+
+    $('#pdfFormatModal').on('hidden.bs.modal', function () {
+        selectedPdfPath = null;
+    });
+
     // Añadir función para copiar token
     window.copyToken = function() {
         const tokenText = document.getElementById('apiToken').textContent;

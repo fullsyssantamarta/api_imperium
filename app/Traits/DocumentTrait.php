@@ -33,6 +33,7 @@ use App\Mail\PasswordEmployeeMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Api\ConfigurationController;
 use DateTime;
 use Carbon\Carbon;
@@ -58,6 +59,71 @@ trait DocumentTrait
         'payment_form_id' => 1,
         'payment_method_id' => 10,
     ];
+
+    /**
+     * Requested page format override (letter, a4, etc.).
+     *
+     * @var string|null
+     */
+    protected $pageFormatOverride = null;
+
+    /**
+     * Normalize and capture requested page format override.
+     *
+     * @param mixed $request
+     * @return void
+     */
+    protected function capturePageFormatOverride($request): void
+    {
+        $format = null;
+
+        if ($request instanceof \Illuminate\Http\Request) {
+            $format = $request->get('page_format');
+        } elseif (is_array($request) && array_key_exists('page_format', $request)) {
+            $format = $request['page_format'];
+        } elseif (is_object($request) && isset($request->page_format)) {
+            $format = $request->page_format;
+        }
+
+        if (is_null($format)) {
+            $format = config('pdf.page_format_override');
+        }
+
+        $this->pageFormatOverride = $this->normalizePageFormat($format);
+    }
+
+    /**
+     * Reset the stored page format override.
+     */
+    protected function clearPageFormatOverride(): void
+    {
+        $this->pageFormatOverride = null;
+    }
+
+    /**
+     * Normalize supported page format values.
+     *
+     * @param mixed $format
+     * @return string|null
+     */
+    protected function normalizePageFormat($format): ?string
+    {
+        if (!is_string($format)) {
+            return null;
+        }
+
+        $value = strtolower(trim($format));
+
+        if (in_array($value, ['letter', 'carta'], true)) {
+            return 'letter';
+        }
+
+        if ($value === 'a4') {
+            return 'a4';
+        }
+
+        return null;
+    }
 
     /**
      * Get query.
@@ -316,12 +382,15 @@ trait DocumentTrait
      */
     protected function createPDF($user, $company, $customer, $typeDocument, $resolution, $date, $time, $paymentForm, $request, $cufecude, $tipodoc = "INVOICE", $withHoldingTaxTotal = NULL, $notes = NULL, $healthfields)
     {
-        set_time_limit(0);
-        ini_set("pcre.backtrack_limit", "5000000");
-        define("DOMPDF_ENABLE_REMOTE", true);
+    set_time_limit(0);
+    ini_set("pcre.backtrack_limit", "5000000");
+    define("DOMPDF_ENABLE_REMOTE", true);
 
-        $template_json = false;
-        $template_pdf = $company->graphic_representation_template;
+    $this->capturePageFormatOverride($request);
+
+    try {
+    $template_json = false;
+    $template_pdf = $company->graphic_representation_template;
 
         if (empty($request->invoice_template) && $template_pdf == 3) {
             $template_json = true;
@@ -333,7 +402,17 @@ trait DocumentTrait
             }
         }
 
-        $temp_template_pdf = (isset($request->is_tirilla2) && $request->is_tirilla2) ? 7 : $template_pdf;
+        // Respetar is_tirilla2=false cuando viene en el request (override de formato completo)
+        $temp_template_pdf = (isset($request->is_tirilla2) && $request->is_tirilla2 === true) ? 7 : $template_pdf;
+
+        \Log::debug('createPDF.template_decision', [
+            'company_template' => $company->graphic_representation_template,
+            'request_invoice_template' => $request->invoice_template ?? null,
+            'request_is_tirilla2' => $request->is_tirilla2 ?? null,
+            'final_template_pdf' => $template_pdf,
+            'final_temp_template_pdf' => $temp_template_pdf,
+            'has_valid_token' => !empty($request->template_token),
+        ]);
 
         $QRStr = '';
 //        try {
@@ -742,6 +821,9 @@ trait DocumentTrait
             }
             $pdf->Output($filename);
             return $QRStr;
+        } finally {
+            $this->clearPageFormatOverride();
+        }
     }
 
     /**
@@ -758,6 +840,10 @@ trait DocumentTrait
         $QRStr = '';
 //        try {
             define("DOMPDF_ENABLE_REMOTE", true);
+
+            $this->capturePageFormatOverride($request);
+
+            try {
             if(isset($request->establishment_logo)){
                 $filenameLogo   = storage_path("app/public/{$company->identification_number}/alternate_{$company->identification_number}{$company->dv}.jpg");
                 $this->storeLogo($request->establishment_logo);
@@ -804,6 +890,9 @@ trait DocumentTrait
             $pdf->Output($filename);
 //            return compact("resolution", "period", "user", "request", "company", "imgLogo");
             return $QRStr;
+            } finally {
+                $this->clearPageFormatOverride();
+            }
     }
 
     /**
@@ -820,6 +909,10 @@ trait DocumentTrait
         $QRStr = '';
 //        try {
             define("DOMPDF_ENABLE_REMOTE", true);
+
+            $this->capturePageFormatOverride($request);
+
+            try {
             if(isset($request->establishment_logo)){
                 $filenameLogo   = storage_path("app/public/{$company->identification_number}/alternate_{$company->identification_number}{$company->dv}.jpg");
                 $this->storeLogo($request->establishment_logo);
@@ -861,6 +954,9 @@ trait DocumentTrait
             $pdf->Output($filename);
 //            return compact("resolution", "period", "user", "request", "company", "imgLogo");
             return $QRStr;
+            } finally {
+                $this->clearPageFormatOverride();
+            }
     }
 
     protected function initMPdf(string $type = 'invoice', string $template = null): Mpdf
@@ -874,17 +970,21 @@ trait DocumentTrait
         $margin_right = null;
         $margin_top = null;
         $margin_bottom = null;
+        $orientation = null;
+        $format_print = null;
 
-        $filename = base_path('resources/views/pdfs/' . $type . '/config'.$template.'.json');
-            if (file_exists($filename)) {
-            $jsonD =  file_get_contents('config'.$template.'.json');
-            $margin = json_decode($jsonD,true);
-            if(isset($margin)){
-                $arr_margin = explode(",",$request->margin);
-                $margin_top = $margin['top'];
-                $margin_right = $margin['right'];
-                $margin_bottom = $margin['bottom'];
-                $margin_left = $margin['left'];
+        $overrideFormat = $this->pageFormatOverride ?? $this->normalizePageFormat(config('pdf.page_format_override'));
+
+        if ($template) {
+            $configPath = base_path('resources/views/pdfs/' . $type . '/config' . $template . '.json');
+            if (file_exists($configPath)) {
+                $marginConfig = json_decode(file_get_contents($configPath), true);
+                if (is_array($marginConfig)) {
+                    $margin_top = $marginConfig['top'] ?? $margin_top;
+                    $margin_right = $marginConfig['right'] ?? $margin_right;
+                    $margin_bottom = $marginConfig['bottom'] ?? $margin_bottom;
+                    $margin_left = $marginConfig['left'] ?? $margin_left;
+                }
             }
         }
 
@@ -897,15 +997,15 @@ trait DocumentTrait
             $margin_bottom = '10';
             $orientation = 'L';
 
-         }elseif($template == 2)  {
+            }elseif($template == 2)  {
 
-            $format_print = 'A4';
-            $margin_top = '39';
-            $margin_left = '10';
-            $margin_right = '10';
-            $margin_bottom = '12';
+                $format_print = 'A4';
+                $margin_top = '39';
+                $margin_left = '10';
+                $margin_right = '10';
+                $margin_bottom = '12';
 
-         } elseif($template == 3 || $template == 7)  {
+            } elseif($template == 3 || $template == 7)  {
 
 
             $margin_top = '2';
@@ -919,6 +1019,38 @@ trait DocumentTrait
             $format_print = [$ancho, $alto];
 
          }
+
+        if ($overrideFormat && !in_array($template, [3, 7], true)) {
+            // Override reemplaza completamente el formato y márgenes del template
+            if ($overrideFormat === 'letter') {
+                $format_print = [215.9, 279.4];
+            } elseif ($overrideFormat === 'a4') {
+                $format_print = [210, 297];
+            } else {
+                $format_print = strtoupper($overrideFormat);
+            }
+
+            // Forzar márgenes para formato completo
+            $margin_left = 5;
+            $margin_right = 5;
+            $margin_top = 30;
+            $margin_bottom = 10;
+            $orientation = 'P';
+        }
+
+        Log::debug('mpdf.format_selection', [
+            'type' => $type,
+            'template' => $template,
+            'override' => $overrideFormat,
+            'format_print' => $format_print,
+            'orientation' => $orientation ?? 'P',
+            'margins' => [
+                'top' => $margin_top,
+                'right' => $margin_right,
+                'bottom' => $margin_bottom,
+                'left' => $margin_left,
+            ],
+        ]);
 
         if($template){
             $pdf = new Mpdf([
@@ -939,8 +1071,8 @@ trait DocumentTrait
                 'margin_bottom' => $margin_bottom ,
                 'margin_header' => 5,
                 'margin_footer' => 2,
-                'format' => isset($format_print) ? $format_print : null ,  // Esta es la línea que se añade para definir el tamaño del papel
-                'orientation' => isset($orientation) ? $orientation : 'P',
+                'format' => $format_print,
+                'orientation' => $orientation ?? 'P',
             ]);
         }
         else{

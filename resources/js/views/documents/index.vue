@@ -23,7 +23,13 @@
         </el-table-column>
         <el-table-column fixed="right" label="PDF" width="120">
           <template slot-scope="scope">
-           <a :href="`${resource}/downloadpdf/${scope.row.pdf}`" target="_blank" class="btn btn-xs btn-info waves-effect waves-light"><i class="fa fa-download"></i></a>
+            <button
+              type="button"
+              class="btn btn-xs btn-info waves-effect waves-light"
+              @click.prevent="handleDownloadPdf(scope.row)"
+            >
+              <i class="fa fa-download"></i>
+            </button>
           </template>
         </el-table-column>
       </el-table>
@@ -48,6 +54,42 @@ export default {
       this.getRecords();
   },
   methods: {
+    handleDownloadPdf(row) {
+      if (!row || !row.pdf) {
+        return;
+      }
+
+      this.$msgbox({
+        title: 'Formato del PDF',
+        message: 'Selecciona el formato en el que deseas descargar el documento.',
+        confirmButtonText: 'Carta (Letter)',
+        cancelButtonText: 'A4',
+        showClose: true,
+        showCancelButton: true,
+        distinguishCancelAndClose: true,
+        closeOnClickModal: false,
+        closeOnPressEscape: false,
+        type: 'info'
+      })
+        .then(() => {
+          this.openPdf(row, 'letter');
+        })
+        .catch(action => {
+          if (action === 'cancel') {
+            this.openPdf(row, 'a4');
+          }
+        });
+    },
+    openPdf(row, format) {
+      const sanitizedFormat = (format || '').toLowerCase();
+      const acceptedFormats = ['letter', 'carta', 'a4'];
+      const finalFormat = acceptedFormats.includes(sanitizedFormat)
+        ? sanitizedFormat
+        : 'letter';
+
+      const url = `/${this.resource}/downloadpdf/${row.pdf}?format=${finalFormat}`;
+      window.open(url, '_blank');
+    },
     clickDownload(format) {
      /* window.open(
         `/${this.resource}/download/${this.form.external_id}/${format}`,
