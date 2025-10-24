@@ -1,50 +1,2838 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-        "title": "Configuracion de empresa",
-        "version": "ubl2.1"
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Fullsys APIDIAN - API de Facturación Electrónica Colombia",
+    "description": "API completa para la gestión de documentos electrónicos conforme a la normativa DIAN de Colombia. Incluye facturación electrónica, documentos soporte, nómina electrónica, documentos equivalentes y RIPS.",
+    "version": "2.1.0",
+    "contact": {
+      "name": "Fullsys Tecnología",
+      "email": "fullsyssantamarta@gmail.com",
+      "url": "https://fullsystecnologia.com"
     },
-    "servers": [
-        {
-            "url": "/api/ubl2.1"
-        }
-    ],
-    "paths": {
-        "/config/{nit}/{dv}": {
-            "summary": "Crear empresa",
-            "parameters": [
-                {
-                    "name": "nit",
-                    "in": "path",
-                    "description": "NIT de la Empresa",
-                    "required": true,
-                    "schema": {
-                        "type": "integer"
-                    }
-                },
-                {
-                    "name": "dv",
-                    "in": "path",
-                    "description": "Digito de verificacion de la empresa",
-                    "required": false,
-                    "schema": {
-                        "type": "integer"
-                    }
-                }
-            ]
-        },
-        "/config/software": {
-            "summary": "Crear o actualizar software"
-        }
-    },
-    "components": {
-        "securitySchemes": {
-            "Bearer": {
-                "type": "http",
-                "description": "Token de acceso que se debe incluir en el encabezado Authorization.",
-                "bearerFormat": "JWT",
-                "scheme": "bearer"
-            }
-        }
+    "license": {
+      "name": "Propietario",
+      "url": "https://fullsystecnologia.com/licencia"
     }
+  },
+  "servers": [
+    {
+      "url": "https://api.imperiumfevsrips.net/api",
+      "description": "Servidor de producción"
+    },
+    {
+      "url": "http://localhost/api",
+      "description": "Servidor de desarrollo local"
+    },
+    {
+      "url": "{protocol}://{host}/api",
+      "description": "Servidor personalizado",
+      "variables": {
+        "protocol": {
+          "enum": ["http", "https"],
+          "default": "https"
+        },
+        "host": {
+          "default": "api.imperiumfevsrips.net"
+        }
+      }
+    }
+  ],
+  "tags": [
+    {
+      "name": "Configuración Básica",
+      "description": "Endpoints para configurar empresa, software, certificados y resoluciones"
+    },
+    {
+      "name": "Facturación Electrónica",
+      "description": "Creación y gestión de facturas electrónicas (FE)"
+    },
+    {
+      "name": "Documentos Equivalentes",
+      "description": "POS, tiquetes de transporte, servicios públicos, etc."
+    },
+    {
+      "name": "Documentos Soporte",
+      "description": "Documentos soporte de adquisiciones (DS)"
+    },
+    {
+      "name": "Notas Crédito y Débito",
+      "description": "Gestión de notas crédito y débito"
+    },
+    {
+      "name": "Nómina Electrónica",
+      "description": "Generación de documentos de nómina electrónica"
+    },
+    {
+      "name": "RADIAN",
+      "description": "Eventos RADIAN (acuse, aceptación, rechazo, etc.)"
+    },
+    {
+      "name": "Sector Salud",
+      "description": "Facturación electrónica para el sector salud con información de pacientes, MIPRES y servicios médicos"
+    },
+    {
+      "name": "RIPS",
+      "description": "Registro Individual de Prestación de Servicios de Salud - API RIPS para validación y envío al Ministerio de Salud"
+    },
+    {
+      "name": "Consultas",
+      "description": "Listados de documentos, estados, descargas"
+    },
+    {
+      "name": "Clientes e Items",
+      "description": "Gestión de clientes y productos/servicios"
+    },
+    {
+      "name": "Utilitarios",
+      "description": "TRM, envío de emails, regeneración de PDF, etc."
+    }
+  ],
+  "paths": {
+    "/ubl2.1/config/{nit}/{dv}": {
+      "post": {
+        "tags": ["Configuración Básica"],
+        "summary": "Crear o actualizar empresa",
+        "description": "Configura o actualiza los datos de una empresa en el sistema. No requiere autenticación para crear, devuelve un token de API que se debe usar en endpoints subsecuentes.",
+        "operationId": "createCompany",
+        "parameters": [
+          {
+            "name": "nit",
+            "in": "path",
+            "description": "NIT de la empresa (sin dígito de verificación)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "89008003"
+            }
+          },
+          {
+            "name": "dv",
+            "in": "path",
+            "description": "Dígito de verificación del NIT",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "2"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompanyConfiguration"
+              },
+              "example": {
+                "type_document_identification_id": 3,
+                "type_organization_id": 2,
+                "type_regime_id": 2,
+                "type_liability_id": 14,
+                "business_name": "ALEXANDER OBANDO LONDONO",
+                "merchant_registration": "0000000-00",
+                "municipality_id": 820,
+                "address": "CRA 21A NRO 11-25",
+                "phone": 3103891693,
+                "email": "alexander_obando@hotmail.com",
+                "mail_host": "smtp.gmail.com",
+                "mail_port": "587",
+                "mail_username": "backupsbabel7@gmail.com",
+                "mail_password": "ccsdfjruqddyxcsjgfggqlqvttt",
+                "mail_encryption": "tls"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Empresa creada/actualizada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Empresa creada/actualizada con éxito" },
+                    "token": { "type": "string", "description": "Token de API para usar en subsecuentes llamadas", "example": "0efacb667d343c125740d132b242cd76cef9208b842bc2867a9d0505e13f7c8b" },
+                    "password": { "type": "string", "description": "Contraseña generada (hash)" },
+                    "company": { "$ref": "#/components/schemas/Company" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acceso restringido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": 403,
+                  "status": false,
+                  "message": "Access to this route is disabled."
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Errores de validación",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ubl2.1/config/software": {
+      "put": {
+        "tags": ["Configuración Básica"],
+        "summary": "Configurar software de facturación electrónica",
+        "description": "Configura el ID y PIN del software registrado ante la DIAN para facturación electrónica.",
+        "operationId": "configureSoftware",
+        "security": [{"Bearer": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["id", "pin"],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "ID del software registrado en DIAN",
+                    "example": "82bf0c5e-0117-434d-9471-8a5ee58ae682"
+                  },
+                  "pin": {
+                    "type": "integer",
+                    "description": "PIN del software (5 dígitos)",
+                    "example": 12345
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Software configurado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "software": { "$ref": "#/components/schemas/Software" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/ubl2.1/config/softwarepayroll": {
+      "put": {
+        "tags": ["Configuración Básica"],
+        "summary": "Configurar software de nómina electrónica",
+        "description": "Configura el ID y PIN del software registrado ante la DIAN para nómina electrónica.",
+        "operationId": "configureSoftwarePayroll",
+        "security": [{"Bearer": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["idpayroll", "pinpayroll"],
+                "properties": {
+                  "idpayroll": {
+                    "type": "string",
+                    "description": "ID del software de nómina registrado en DIAN",
+                    "example": "880eafd9-f445-4e0b-a355-92063e1557a4"
+                  },
+                  "pinpayroll": {
+                    "type": "integer",
+                    "description": "PIN del software de nómina (5 dígitos)",
+                    "example": 12345
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Software de nómina configurado exitosamente"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/ubl2.1/config/softwareeqdocs": {
+      "put": {
+        "tags": ["Configuración Básica"],
+        "summary": "Configurar software de documentos equivalentes",
+        "description": "Configura el ID y PIN del software registrado ante la DIAN para documentos equivalentes (POS, tiquetes, etc.).",
+        "operationId": "configureSoftwareEqDocs",
+        "security": [{"Bearer": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["ideqdocs", "pineqdocs"],
+                "properties": {
+                  "ideqdocs": {
+                    "type": "string",
+                    "description": "ID del software de documentos equivalentes registrado en DIAN",
+                    "example": "6edae6bd-3003-492f-bf0b-b23c32f46333"
+                  },
+                  "pineqdocs": {
+                    "type": "integer",
+                    "description": "PIN del software de documentos equivalentes (5 dígitos)",
+                    "example": 12345
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Software de documentos equivalentes configurado exitosamente"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/ubl2.1/config/certificate": {
+      "put": {
+        "tags": ["Configuración Básica"],
+        "summary": "Configurar certificado digital",
+        "description": "Sube el certificado digital PKCS12 (.pfx o .p12) de la empresa codificado en base64.",
+        "operationId": "configureCertificate",
+        "security": [{"Bearer": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["certificate", "password"],
+                "properties": {
+                  "certificate": {
+                    "type": "string",
+                    "description": "Certificado digital (.pfx/.p12) codificado en base64",
+                    "example": "MIACAQMwgAYJKoZIhvcNAQcBoIAkgASCA+gwgDCABgkqhkiG9w0BBwGggCSABIID..."
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Contraseña del certificado digital",
+                    "example": "WvftBsv-axtgmdffad-ZyNcacTmA"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Certificado configurado exitosamente"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "description": "Certificado inválido o contraseña incorrecta"
+          }
+        }
+      }
+    },
+    "/ubl2.1/config/resolution": {
+      "put": {
+        "tags": ["Configuración Básica"],
+        "summary": "Configurar resolución de facturación",
+        "description": "Configura una resolución de facturación electrónica, documento soporte, nómina, etc. El tipo de documento determina qué campos son requeridos.",
+        "operationId": "configureResolution",
+        "security": [{"Bearer": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Resolution"
+              },
+              "examples": {
+                "factura": {
+                  "summary": "Factura Electrónica (FE)",
+                  "value": {
+                    "type_document_id": 1,
+                    "prefix": "SETP",
+                    "resolution": "18760000001",
+                    "resolution_date": "2019-01-19",
+                    "technical_key": "fc8eac422eba16e22ffd8c6f94b3f40a6e38162c",
+                    "from": 990000000,
+                    "to": 995000000,
+                    "generated_to_date": 0,
+                    "date_from": "2019-01-19",
+                    "date_to": "2030-01-19"
+                  }
+                },
+                "notaCredito": {
+                  "summary": "Nota Crédito",
+                  "value": {
+                    "type_document_id": 4,
+                    "from": 1,
+                    "to": 99999999,
+                    "prefix": "NC"
+                  }
+                },
+                "documentoSoporte": {
+                  "summary": "Documento Soporte",
+                  "value": {
+                    "type_document_id": 11,
+                    "prefix": "SEDS",
+                    "resolution": "18760000001",
+                    "resolution_date": "2022-01-01",
+                    "from": 984000000,
+                    "to": 985000000,
+                    "generated_to_date": 0,
+                    "date_from": "2022-01-01",
+                    "date_to": "2022-12-31"
+                  }
+                },
+                "pos": {
+                  "summary": "POS - Documento Equivalente",
+                  "value": {
+                    "type_document_id": 15,
+                    "prefix": "EPOS",
+                    "resolution": "18760000001",
+                    "resolution_date": "2019-01-19",
+                    "from": 1,
+                    "to": 1000000,
+                    "generated_to_date": 0,
+                    "date_from": "2019-01-19",
+                    "date_to": "2030-01-19"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resolución configurada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "resolution": { "$ref": "#/components/schemas/ResolutionResponse" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/ubl2.1/invoice/{testSetId}": {
+      "post": {
+        "tags": ["Facturación Electrónica", "Sector Salud"],
+        "summary": "Crear factura electrónica",
+        "description": "Genera y transmite una factura electrónica a la DIAN. Devuelve el XML, PDF y respuesta de la DIAN. Para sector salud, incluir el objeto health_fields con información de pacientes.",
+        "operationId": "createInvoice",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "testSetId",
+            "in": "path",
+            "description": "ID del conjunto de pruebas de la DIAN. Usar identificador específico o vacío para producción.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": ""
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Invoice"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Factura creada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/ubl2.1/invoice-health-capita-initial/{testSetId}": {
+      "post": {
+        "tags": ["Sector Salud"],
+        "summary": "Crear factura sector salud - Capita Inicial",
+        "description": "Factura tipo SS-RECAUDO con modalidad de Inicio de contrato por cápita. No contiene atención de pacientes. El XML cuenta con la sección InformationContentProviderParty. El attacheddocument debe usarse en el RIPS como en el ejemplo RIPS Capita inicial.",
+        "operationId": "createInvoiceHealthCapitaInitial",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "testSetId",
+            "in": "path",
+            "description": "ID del conjunto de pruebas de la DIAN",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": ""
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  { "$ref": "#/components/schemas/Invoice" },
+                  {
+                    "type": "object",
+                    "required": ["health_type_operation_id"],
+                    "properties": {
+                      "health_type_operation_id": {
+                        "type": "integer",
+                        "description": "Tipo de operación de salud. Para Capita Inicial usar modalidad de inicio de contrato",
+                        "example": 2
+                      },
+                      "information_content_provider": {
+                        "type": "object",
+                        "description": "Información del proveedor de contenido (InformationContentProviderParty)",
+                        "properties": {
+                          "identification_number": { "type": "string" },
+                          "name": { "type": "string" },
+                          "contact_name": { "type": "string" },
+                          "contact_telephone": { "type": "string" },
+                          "contact_email": { "type": "string", "format": "email" }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "description": "Factura capita inicial sin atención de pacientes"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Factura capita inicial creada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/ubl2.1/invoice-health-capita-period/{testSetId}": {
+      "post": {
+        "tags": ["Sector Salud"],
+        "summary": "Crear factura sector salud - Capita Periodo",
+        "description": "Factura tipo SS-CUFE con atención de pacientes. El JSON y el XML son similares a los ejemplos de la factura de Salud estándar. El attacheddocument debe usarse en el RIPS como en el ejemplo RIPS Capita Periodo.",
+        "operationId": "createInvoiceHealthCapitaPeriod",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "testSetId",
+            "in": "path",
+            "description": "ID del conjunto de pruebas de la DIAN",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": ""
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  { "$ref": "#/components/schemas/Invoice" },
+                  {
+                    "type": "object",
+                    "required": ["health_fields"],
+                    "properties": {
+                      "health_fields": {
+                        "$ref": "#/components/schemas/HealthFields",
+                        "description": "Campos de salud requeridos con información de pacientes atendidos en el periodo"
+                      }
+                    }
+                  }
+                ],
+                "description": "Factura capita periodo con atención de pacientes"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Factura capita periodo creada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/ubl2.1/invoice-health-multiple-patients/{testSetId}": {
+      "post": {
+        "tags": ["Sector Salud"],
+        "summary": "Crear factura sector salud - Múltiples Pacientes",
+        "description": "Factura de salud con múltiples pacientes en un solo documento. El array users_info puede contener múltiples pacientes con sus respectivos servicios, MIPRES, autorizaciones y valores.",
+        "operationId": "createInvoiceHealthMultiplePatients",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "testSetId",
+            "in": "path",
+            "description": "ID del conjunto de pruebas de la DIAN",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": ""
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  { "$ref": "#/components/schemas/Invoice" },
+                  {
+                    "type": "object",
+                    "required": ["health_fields"],
+                    "properties": {
+                      "health_fields": {
+                        "allOf": [
+                          { "$ref": "#/components/schemas/HealthFields" }
+                        ],
+                        "description": "Campos de salud con array users_info conteniendo múltiples pacientes"
+                      }
+                    }
+                  }
+                ],
+                "description": "Factura con múltiples pacientes"
+              },
+              "example": {
+                "number": 990000105,
+                "type_document_id": 1,
+                "customer": {
+                  "identification_number": "900123456",
+                  "name": "EPS EJEMPLO",
+                  "email": "eps@ejemplo.com"
+                },
+                "health_fields": {
+                  "invoice_period_start_date": "2025-01-01",
+                  "invoice_period_end_date": "2025-01-31",
+                  "health_type_operation_id": 1,
+                  "print_users_info_to_pdf": true,
+                  "users_info": [
+                    {
+                      "provider_code": "AF-0000500-85-XX-001",
+                      "identification_number": "123456789",
+                      "surname": "PEREZ",
+                      "first_name": "JUAN",
+                      "health_type_user_id": 1,
+                      "health_coverage_id": 5,
+                      "co_payment": "5000.00"
+                    },
+                    {
+                      "provider_code": "AF-0000500-85-XX-001",
+                      "identification_number": "987654321",
+                      "surname": "GOMEZ",
+                      "first_name": "MARIA",
+                      "health_type_user_id": 1,
+                      "health_coverage_id": 5,
+                      "moderating_fee": "8000.00"
+                    }
+                  ]
+                },
+                "legal_monetary_totals": {
+                  "line_extension_amount": 100000,
+                  "payable_amount": 100000
+                },
+                "invoice_lines": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Factura con múltiples pacientes creada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ubl2.1/credit-note/{testSetId}": {
+      "post": {
+        "tags": ["Notas Crédito y Débito"],
+        "summary": "Crear nota crédito",
+        "description": "Genera y transmite una nota crédito a la DIAN. Debe referenciar una factura previamente emitida.",
+        "operationId": "createCreditNote",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "testSetId",
+            "in": "path",
+            "description": "ID del conjunto de pruebas de la DIAN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreditNote"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Nota crédito creada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ubl2.1/credit-note-health/{testSetId}": {
+      "post": {
+        "tags": ["Notas Crédito y Débito", "Sector Salud"],
+        "summary": "Crear nota crédito sector salud",
+        "description": "Genera y transmite una nota crédito de factura del sector salud a la DIAN. Debe referenciar una factura de salud previamente emitida. Puede incluir información de pacientes si aplica.",
+        "operationId": "createCreditNoteHealth",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "testSetId",
+            "in": "path",
+            "description": "ID del conjunto de pruebas de la DIAN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  { "$ref": "#/components/schemas/CreditNote" },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "health_fields": {
+                        "$ref": "#/components/schemas/HealthFields",
+                        "description": "Campos específicos de salud. Opcional, incluir solo si la nota crédito aplica a servicios de salud específicos"
+                      }
+                    }
+                  }
+                ],
+                "description": "Nota crédito para factura de sector salud"
+              },
+              "example": {
+                "number": 1,
+                "type_document_id": 4,
+                "prefix": "NCSS",
+                "billing_reference": {
+                  "number": "SETP990000105",
+                  "uuid": "abc123def456...",
+                  "issue_date": "2025-01-15"
+                },
+                "discrepancy_response": {
+                  "code": "1",
+                  "description": "Anulación total de servicios de salud facturados"
+                },
+                "customer": {
+                  "identification_number": "900123456",
+                  "name": "EPS EJEMPLO"
+                },
+                "health_fields": {
+                  "invoice_period_start_date": "2025-01-01",
+                  "invoice_period_end_date": "2025-01-15",
+                  "health_type_operation_id": 1,
+                  "users_info": [
+                    {
+                      "provider_code": "AF-0000500-85-XX-001",
+                      "identification_number": "123456789",
+                      "surname": "PEREZ",
+                      "first_name": "JUAN",
+                      "health_type_user_id": 1,
+                      "health_coverage_id": 5
+                    }
+                  ]
+                },
+                "legal_monetary_totals": {
+                  "line_extension_amount": 50000,
+                  "payable_amount": 50000
+                },
+                "credit_note_lines": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Nota crédito sector salud creada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/ubl2.1/debit-note/{testSetId}": {
+      "post": {
+        "tags": ["Notas Crédito y Débito"],
+        "summary": "Crear nota débito",
+        "description": "Genera y transmite una nota débito a la DIAN.",
+        "operationId": "createDebitNote",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "testSetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DebitNote"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Nota débito creada exitosamente"
+          }
+        }
+      }
+    },
+    "/ubl2.1/debit-note-health/{testSetId}": {
+      "post": {
+        "tags": ["Notas Crédito y Débito", "Sector Salud"],
+        "summary": "Crear nota débito sector salud",
+        "description": "Genera y transmite una nota débito de factura del sector salud a la DIAN. Se usa para ajustar valores adicionales en facturas de salud previamente emitidas.",
+        "operationId": "createDebitNoteHealth",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "testSetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  { "$ref": "#/components/schemas/DebitNote" },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "health_fields": {
+                        "$ref": "#/components/schemas/HealthFields",
+                        "description": "Campos específicos de salud para la nota débito"
+                      },
+                      "billing_reference": {
+                        "type": "object",
+                        "required": ["number", "uuid", "issue_date"],
+                        "properties": {
+                          "number": {
+                            "type": "string",
+                            "description": "Número factura de salud referenciada con prefijo"
+                          },
+                          "uuid": {
+                            "type": "string",
+                            "description": "CUFE de la factura de salud referenciada"
+                          },
+                          "issue_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Fecha de emisión de la factura referenciada"
+                          }
+                        }
+                      },
+                      "discrepancy_response": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "Código concepto de la nota débito"
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Descripción del motivo del ajuste"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "description": "Nota débito para factura de sector salud"
+              },
+              "example": {
+                "number": 1,
+                "type_document_id": 5,
+                "prefix": "NDSS",
+                "billing_reference": {
+                  "number": "SETP990000105",
+                  "uuid": "abc123def456...",
+                  "issue_date": "2025-01-15"
+                },
+                "discrepancy_response": {
+                  "code": "2",
+                  "description": "Ajuste por servicios adicionales de salud no facturados inicialmente"
+                },
+                "customer": {
+                  "identification_number": "900123456",
+                  "name": "EPS EJEMPLO"
+                },
+                "health_fields": {
+                  "invoice_period_start_date": "2025-01-01",
+                  "invoice_period_end_date": "2025-01-15",
+                  "health_type_operation_id": 1,
+                  "users_info": [
+                    {
+                      "provider_code": "AF-0000500-85-XX-001",
+                      "identification_number": "123456789",
+                      "surname": "PEREZ",
+                      "first_name": "JUAN",
+                      "health_type_user_id": 1,
+                      "health_coverage_id": 5,
+                      "moderating_fee": "15000.00"
+                    }
+                  ]
+                },
+                "legal_monetary_totals": {
+                  "line_extension_amount": 25000,
+                  "payable_amount": 25000
+                },
+                "debit_note_lines": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Nota débito sector salud creada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/ubl2.1/payroll/{testSetId}": {
+      "post": {
+        "tags": ["Nómina Electrónica"],
+        "summary": "Crear nómina electrónica",
+        "description": "Genera y transmite un documento de nómina electrónica a la DIAN.",
+        "operationId": "createPayroll",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "testSetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Payroll"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Nómina creada exitosamente"
+          }
+        }
+      }
+    },
+    "/ubl2.1/support-document/{testSetId}": {
+      "post": {
+        "tags": ["Documentos Soporte"],
+        "summary": "Crear documento soporte",
+        "description": "Genera y transmite un documento soporte de adquisiciones a la DIAN.",
+        "operationId": "createSupportDocument",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "testSetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportDocument"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Documento soporte creado exitosamente"
+          }
+        }
+      }
+    },
+    "/ubl2.1/documents/{prefix}/{number}": {
+      "get": {
+        "tags": ["Consultas"],
+        "summary": "Consultar documento por consecutivo",
+        "description": "Obtiene los detalles de un documento específico usando su prefijo y número.",
+        "operationId": "getDocumentByNumber",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "prefix",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "SETP"
+            }
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 990000001
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Documento encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Documento no encontrado"
+          }
+        }
+      }
+    },
+    "/ubl2.1/documents": {
+      "get": {
+        "tags": ["Consultas"],
+        "summary": "Listar documentos",
+        "description": "Obtiene un listado de documentos con filtros opcionales.",
+        "operationId": "listDocuments",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "type_document_id",
+            "in": "query",
+            "description": "Filtrar por tipo de documento (1=FE, 4=NC, 5=ND, 9=Nómina, 11=DS, 15=POS, etc.)",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "description": "Fecha inicial (formato: YYYY-MM-DD)",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "description": "Fecha final (formato: YYYY-MM-DD)",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "customer_identification_number",
+            "in": "query",
+            "description": "Filtrar por identificación del cliente",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Listado de documentos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "documents": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DocumentSummary"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ubl2.1/customer": {
+      "post": {
+        "tags": ["Clientes e Items"],
+        "summary": "Crear cliente",
+        "description": "Registra un nuevo cliente en el sistema.",
+        "operationId": "createCustomer",
+        "security": [{"Bearer": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Customer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cliente creado exitosamente"
+          }
+        }
+      }
+    },
+    "/ubl2.1/item": {
+      "post": {
+        "tags": ["Clientes e Items"],
+        "summary": "Crear producto/servicio",
+        "description": "Registra un nuevo producto o servicio en el sistema.",
+        "operationId": "createItem",
+        "security": [{"Bearer": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Item"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Producto/servicio creado exitosamente"
+          }
+        }
+      }
+    },
+    "/ubl2.1/radian-event": {
+      "post": {
+        "tags": ["RADIAN"],
+        "summary": "Enviar evento RADIAN",
+        "description": "Envía un evento RADIAN (acuse, aceptación, rechazo, etc.) sobre una factura electrónica.",
+        "operationId": "sendRadianEvent",
+        "security": [{"Bearer": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RadianEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Evento RADIAN enviado exitosamente"
+          }
+        }
+      }
+    },
+    "/ubl2.1/trm": {
+      "get": {
+        "tags": ["Utilitarios"],
+        "summary": "Consultar TRM",
+        "description": "Obtiene la Tasa Representativa del Mercado (TRM) actual o de una fecha específica.",
+        "operationId": "getTrm",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Fecha para consultar TRM (formato: YYYY-MM-DD). Si no se envía, retorna TRM actual.",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "TRM consultada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "date": { "type": "string", "format": "date" },
+                    "trm": { "type": "number", "format": "double" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rips/BasicHealth": {
+      "get": {
+        "tags": ["RIPS"],
+        "summary": "Verificar estado del servicio RIPS",
+        "description": "Muestra los datos de la versión actual del apirips-docker",
+        "operationId": "ripsBasicHealth",
+        "responses": {
+          "200": {
+            "description": "Información de versión del servicio RIPS",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "ApplicationName: FVE.WebAPILocal\nVersion: 5.4.1.0\nEnvironmentName: DockerStage\nDateTime: 2025-05-19 02:42:19.304 PM\nTimeZone: Coordinated Universal Time"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rips/api/auth/LoginSISPRO": {
+      "post": {
+        "tags": ["RIPS"],
+        "summary": "Login SISPRO para acceso a RIPS",
+        "description": "Autenticación en el sistema SISPRO con credenciales de sector salud. Devuelve un token JWT para usar en endpoints de RIPS.",
+        "operationId": "ripsLogin",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["persona", "clave", "nit"],
+                "properties": {
+                  "persona": {
+                    "type": "object",
+                    "required": ["identificacion"],
+                    "properties": {
+                      "identificacion": {
+                        "type": "object",
+                        "required": ["tipo", "numero"],
+                        "properties": {
+                          "tipo": {
+                            "type": "string",
+                            "description": "Tipo de documento (CC, TI, CE, etc.)",
+                            "example": "CC"
+                          },
+                          "numero": {
+                            "type": "string",
+                            "description": "Número de documento del usuario",
+                            "example": "16602426"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "clave": {
+                    "type": "string",
+                    "description": "Contraseña del usuario SISPRO",
+                    "example": "Cabl20000"
+                  },
+                  "nit": {
+                    "type": "string",
+                    "description": "NIT de la empresa prestadora de servicios de salud",
+                    "example": "901355357"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login exitoso o error de credenciales",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "nullable": true,
+                      "description": "Token JWT para autenticación en endpoints RIPS"
+                    },
+                    "login": {
+                      "type": "boolean",
+                      "description": "Indica si el login fue exitoso"
+                    },
+                    "registrado": {
+                      "type": "boolean",
+                      "description": "Indica si el usuario está registrado"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "nullable": true,
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Lista de errores si el login falla"
+                    }
+                  }
+                },
+                "examples": {
+                  "exitoso": {
+                    "summary": "Login exitoso",
+                    "value": {
+                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                      "login": true,
+                      "registrado": true,
+                      "errors": null
+                    }
+                  },
+                  "error": {
+                    "summary": "Credenciales inválidas",
+                    "value": {
+                      "token": null,
+                      "login": false,
+                      "registrado": false,
+                      "errors": ["Sus Credenciales de Usuario no son validas"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rips/api/PaquetesFevRips/CargarRipsSinFactura": {
+      "post": {
+        "tags": ["RIPS"],
+        "summary": "Cargar RIPS sin factura electrónica",
+        "description": "Carga de RIPS asociado a documentos no electrónicos. El campo xmlFevFile debe ser null y se debe usar tipoNota 'RS'.",
+        "operationId": "ripsCargarSinFactura",
+        "security": [{"RipsBearer": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RipsPackage"
+              },
+              "example": {
+                "rips": {
+                  "numDocumentoIdObligado": "901355357",
+                  "numFactura": null,
+                  "tipoNota": "RS",
+                  "numNota": "1",
+                  "usuarios": [
+                    {
+                      "tipoDocumentoIdentificacion": "CC",
+                      "numDocumentoIdentificacion": "1127606374",
+                      "tipoUsuario": "12",
+                      "fechaNacimiento": "1988-07-07",
+                      "codSexo": "M",
+                      "codPaisResidencia": "170",
+                      "codMunicipioResidencia": "76001",
+                      "codZonaTerritorialResidencia": "01",
+                      "incapacidad": "NO",
+                      "codPaisOrigen": "170",
+                      "consecutivo": 1,
+                      "servicios": {
+                        "consultas": [
+                          {
+                            "codPrestador": "760011269401",
+                            "fechaInicioAtencion": "2025-04-09 09:37",
+                            "numAutorizacion": null,
+                            "codConsulta": "890201",
+                            "modalidadGrupoServicioTecSal": "01",
+                            "grupoServicios": "02",
+                            "codServicio": 748,
+                            "finalidadTecnologiaSalud": "15",
+                            "causaMotivoAtencion": "38",
+                            "codDiagnosticoPrincipal": "Z012",
+                            "codDiagnosticoRelacionado1": null,
+                            "codDiagnosticoRelacionado2": null,
+                            "codDiagnosticoRelacionado3": null,
+                            "tipoDiagnosticoPrincipal": "01",
+                            "tipoDocumentoIdentificacion": "CC",
+                            "numDocumentoIdentificacion": "29126774",
+                            "vrServicio": 0,
+                            "conceptoRecaudo": "05",
+                            "valorPagoModerador": 0,
+                            "numFEVPagoModerador": null,
+                            "consecutivo": 1
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "xmlFevFile": null
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "RIPS procesado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RipsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "RIPS rechazado por errores de validación",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RipsResponseError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token RIPS inválido o expirado"
+          }
+        }
+      }
+    },
+    "/rips/api/PaquetesFevRips/CargarFevRips": {
+      "post": {
+        "tags": ["RIPS"],
+        "summary": "Cargar RIPS con factura electrónica",
+        "description": "Carga de RIPS asociado a una factura electrónica aceptada. El campo xmlFevFile debe contener el attacheddocument de la factura en base64. El NIT debe coincidir con el de la factura.",
+        "operationId": "ripsCargarConFactura",
+        "security": [{"RipsBearer": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RipsPackage"
+              },
+              "example": {
+                "rips": {
+                  "numDocumentoIdObligado": "901355357",
+                  "numFactura": "SETP990000103",
+                  "tipoNota": null,
+                  "numNota": null,
+                  "usuarios": []
+                },
+                "xmlFevFile": "<base64_encoded_zip_from_attacheddocument>"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "RIPS con factura procesado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RipsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "RIPS rechazado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RipsResponseError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ubl2.1/pdf/{cufe}": {
+      "get": {
+        "tags": ["Consultas"],
+        "summary": "Descargar PDF de documento",
+        "description": "Descarga el PDF de un documento usando su CUFE/CUDE.",
+        "operationId": "downloadPdf",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "cufe",
+            "in": "path",
+            "description": "CUFE o CUDE del documento",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PDF del documento",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Documento no encontrado"
+          }
+        }
+      }
+    },
+    "/ubl2.1/xml/{cufe}": {
+      "get": {
+        "tags": ["Consultas"],
+        "summary": "Descargar XML de documento",
+        "description": "Descarga el XML firmado de un documento usando su CUFE/CUDE.",
+        "operationId": "downloadXml",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "cufe",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "XML del documento",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API-Token",
+        "description": "Token de API obtenido al crear/configurar la empresa. Debe incluirse en el header Authorization como 'Bearer {token}'."
+      },
+      "RipsBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token JWT obtenido del login SISPRO (/rips/api/auth/LoginSISPRO). Debe incluirse en el header Authorization como 'Bearer {token}' para endpoints de RIPS."
+      }
+    },
+    "schemas": {
+      "CompanyConfiguration": {
+        "type": "object",
+        "required": [
+          "type_document_identification_id",
+          "type_organization_id",
+          "type_regime_id",
+          "type_liability_id",
+          "business_name",
+          "municipality_id",
+          "address",
+          "phone",
+          "email"
+        ],
+        "properties": {
+          "type_document_identification_id": {
+            "type": "integer",
+            "description": "Tipo de documento de identificación (3=NIT, 6=Cédula, 13=Cédula extranjería, 31=NIT extranjero)",
+            "example": 3
+          },
+          "type_organization_id": {
+            "type": "integer",
+            "description": "Tipo de organización (1=Persona jurídica, 2=Persona natural)",
+            "example": 2
+          },
+          "type_regime_id": {
+            "type": "integer",
+            "description": "Tipo de régimen (1=Simple, 2=Común)",
+            "example": 2
+          },
+          "type_liability_id": {
+            "type": "integer",
+            "description": "Responsabilidad fiscal (ej: 14=Gran contribuyente, 48=No responsable IVA)",
+            "example": 14
+          },
+          "business_name": {
+            "type": "string",
+            "description": "Razón social o nombre completo",
+            "example": "FULLSYS TECNOLOGIA SAS"
+          },
+          "merchant_registration": {
+            "type": "string",
+            "description": "Matrícula mercantil",
+            "example": "0000000-00"
+          },
+          "municipality_id": {
+            "type": "integer",
+            "description": "ID del municipio (consultar tabla municipalities)",
+            "example": 820
+          },
+          "address": {
+            "type": "string",
+            "description": "Dirección completa",
+            "example": "CRA 21A NRO 11-25"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Teléfono de contacto",
+            "example": "3103891693"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email de contacto",
+            "example": "contacto@empresa.com"
+          },
+          "mail_host": {
+            "type": "string",
+            "description": "Servidor SMTP para envío de emails",
+            "example": "smtp.gmail.com"
+          },
+          "mail_port": {
+            "type": "string",
+            "description": "Puerto SMTP",
+            "example": "587"
+          },
+          "mail_username": {
+            "type": "string",
+            "description": "Usuario de correo electrónico",
+            "example": "notificaciones@empresa.com"
+          },
+          "mail_password": {
+            "type": "string",
+            "description": "Contraseña del correo electrónico",
+            "example": "password123"
+          },
+          "mail_encryption": {
+            "type": "string",
+            "enum": ["tls", "ssl"],
+            "description": "Tipo de cifrado del correo",
+            "example": "tls"
+          }
+        }
+      },
+      "Company": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "identification_number": { "type": "string" },
+          "dv": { "type": "string" },
+          "business_name": { "type": "string" },
+          "address": { "type": "string" },
+          "phone": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "type_environment_id": { "type": "integer", "description": "1=Producción, 2=Habilitación" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Software": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "identifier": { "type": "string", "description": "ID software facturación" },
+          "pin": { "type": "string" },
+          "identifier_payroll": { "type": "string", "description": "ID software nómina" },
+          "pin_payroll": { "type": "string" },
+          "identifier_eqdocs": { "type": "string", "description": "ID software docs equivalentes" },
+          "pin_eqdocs": { "type": "string" },
+          "url": { "type": "string", "description": "URL webservice DIAN facturación" },
+          "url_payroll": { "type": "string" },
+          "url_eqdocs": { "type": "string" }
+        }
+      },
+      "Resolution": {
+        "type": "object",
+        "required": ["type_document_id", "prefix", "from", "to"],
+        "properties": {
+          "type_document_id": {
+            "type": "integer",
+            "description": "1=FE, 4=NC, 5=ND, 9=Nómina, 11=DS, 15=POS, 16=Boleta cine, 19=Transporte terrestre, 24=Serv. públicos, 25=ND eq.doc, 26=NC eq.doc"
+          },
+          "prefix": {
+            "type": "string",
+            "description": "Prefijo de la resolución (sin números)"
+          },
+          "resolution": {
+            "type": "string",
+            "description": "Número de resolución DIAN (requerido para FE y DS)"
+          },
+          "resolution_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha de resolución (requerido para FE y DS)"
+          },
+          "technical_key": {
+            "type": "string",
+            "description": "Clave técnica (solo producción, consultar con getnumberingrange)"
+          },
+          "from": {
+            "type": "integer",
+            "description": "Número inicial de rango"
+          },
+          "to": {
+            "type": "integer",
+            "description": "Número final de rango"
+          },
+          "generated_to_date": {
+            "type": "integer",
+            "description": "Número de consecutivos generados hasta la fecha"
+          },
+          "date_from": {
+            "type": "string",
+            "format": "date",
+            "description": "Vigencia desde"
+          },
+          "date_to": {
+            "type": "string",
+            "format": "date",
+            "description": "Vigencia hasta"
+          }
+        }
+      },
+      "ResolutionResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "type_document_id": { "type": "integer" },
+          "prefix": { "type": "string" },
+          "resolution": { "type": "string" },
+          "from": { "type": "integer" },
+          "to": { "type": "integer" },
+          "number": { "type": "integer", "description": "Siguiente número disponible" },
+          "next_consecutive": { "type": "string", "description": "Próximo consecutivo con prefijo" }
+        }
+      },
+      "Invoice": {
+        "type": "object",
+        "required": ["number", "type_document_id", "customer", "legal_monetary_totals", "invoice_lines"],
+        "properties": {
+          "number": { "type": "integer", "description": "Número de factura (sin prefijo)" },
+          "type_document_id": { "type": "integer", "example": 1 },
+          "date": { "type": "string", "format": "date", "description": "Fecha de emisión" },
+          "time": { "type": "string", "format": "time", "description": "Hora de emisión" },
+          "resolution_number": { "type": "string" },
+          "prefix": { "type": "string" },
+          "notes": { "type": "string", "description": "Observaciones" },
+          "customer": { "$ref": "#/components/schemas/Customer" },
+          "payment_form": { "$ref": "#/components/schemas/PaymentForm" },
+          "legal_monetary_totals": { "$ref": "#/components/schemas/LegalMonetaryTotals" },
+          "invoice_lines": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/InvoiceLine" }
+          },
+          "health_fields": {
+            "allOf": [
+              { "$ref": "#/components/schemas/HealthFields" }
+            ],
+            "description": "Campos específicos para facturación del sector salud. Requerido solo para facturas de salud con información de pacientes."
+          }
+        }
+      },
+      "CreditNote": {
+        "type": "object",
+        "required": ["number", "type_document_id", "billing_reference", "customer", "legal_monetary_totals", "credit_note_lines"],
+        "properties": {
+          "number": { "type": "integer" },
+          "type_document_id": { "type": "integer", "example": 4 },
+          "date": { "type": "string", "format": "date" },
+          "time": { "type": "string", "format": "time" },
+          "prefix": { "type": "string", "description": "Prefijo de la nota crédito" },
+          "billing_reference": {
+            "type": "object",
+            "properties": {
+              "number": { "type": "string", "description": "Número factura referenciada con prefijo" },
+              "uuid": { "type": "string", "description": "CUFE de la factura referenciada" },
+              "issue_date": { "type": "string", "format": "date" }
+            }
+          },
+          "discrepancy_response": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "description": "Código concepto NC" },
+              "description": { "type": "string", "description": "Descripción del motivo" }
+            }
+          },
+          "customer": { "$ref": "#/components/schemas/Customer" },
+          "legal_monetary_totals": { "$ref": "#/components/schemas/LegalMonetaryTotals" },
+          "credit_note_lines": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/InvoiceLine" }
+          },
+          "health_fields": {
+            "allOf": [
+              { "$ref": "#/components/schemas/HealthFields" }
+            ],
+            "description": "Campos específicos para notas crédito del sector salud. Opcional, incluir solo si aplica a factura de salud."
+          }
+        }
+      },
+      "DebitNote": {
+        "type": "object",
+        "required": ["number", "type_document_id"],
+        "properties": {
+          "number": { "type": "integer" },
+          "type_document_id": { "type": "integer", "example": 5 },
+          "prefix": { "type": "string", "description": "Prefijo de la nota débito" },
+          "date": { "type": "string", "format": "date" },
+          "time": { "type": "string", "format": "time" },
+          "billing_reference": {
+            "type": "object",
+            "properties": {
+              "number": { "type": "string", "description": "Número factura referenciada con prefijo" },
+              "uuid": { "type": "string", "description": "CUFE de la factura referenciada" },
+              "issue_date": { "type": "string", "format": "date" }
+            }
+          },
+          "discrepancy_response": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "description": "Código concepto ND" },
+              "description": { "type": "string", "description": "Descripción del motivo" }
+            }
+          },
+          "customer": { "$ref": "#/components/schemas/Customer" },
+          "legal_monetary_totals": { "$ref": "#/components/schemas/LegalMonetaryTotals" },
+          "debit_note_lines": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/InvoiceLine" }
+          },
+          "health_fields": {
+            "allOf": [
+              { "$ref": "#/components/schemas/HealthFields" }
+            ],
+            "description": "Campos específicos para notas débito del sector salud. Opcional, incluir solo si aplica a factura de salud."
+          }
+        }
+      },
+      "SupportDocument": {
+        "type": "object",
+        "properties": {
+          "number": { "type": "integer" },
+          "type_document_id": { "type": "integer", "example": 11 }
+        }
+      },
+      "Payroll": {
+        "type": "object",
+        "properties": {
+          "number": { "type": "integer" },
+          "type_document_id": { "type": "integer", "example": 9 }
+        }
+      },
+      "Customer": {
+        "type": "object",
+        "required": ["identification_number", "name", "phone", "address", "email"],
+        "properties": {
+          "identification_number": { "type": "string", "example": "900123456" },
+          "dv": { "type": "string", "example": "7" },
+          "type_document_identification_id": { "type": "integer", "example": 3 },
+          "type_organization_id": { "type": "integer", "example": 1 },
+          "type_liability_id": { "type": "integer", "example": 14 },
+          "type_regime_id": { "type": "integer", "example": 2 },
+          "name": { "type": "string", "example": "CLIENTE EJEMPLO SAS" },
+          "phone": { "type": "string", "example": "3001234567" },
+          "address": { "type": "string", "example": "CL 123 # 45-67" },
+          "email": { "type": "string", "format": "email", "example": "cliente@ejemplo.com" },
+          "municipality_id": { "type": "integer", "example": 149 }
+        }
+      },
+      "Item": {
+        "type": "object",
+        "required": ["code", "description", "price"],
+        "properties": {
+          "code": { "type": "string" },
+          "description": { "type": "string" },
+          "price": { "type": "number", "format": "double" },
+          "type_item_identification_id": { "type": "integer" },
+          "unit_measure_id": { "type": "integer" }
+        }
+      },
+      "PaymentForm": {
+        "type": "object",
+        "properties": {
+          "payment_form_id": { "type": "integer", "description": "1=Contado, 2=Crédito" },
+          "payment_method_id": { "type": "integer", "description": "Método de pago" },
+          "payment_due_date": { "type": "string", "format": "date" },
+          "duration_measure": { "type": "integer", "description": "Plazo en días" }
+        }
+      },
+      "LegalMonetaryTotals": {
+        "type": "object",
+        "required": ["line_extension_amount", "tax_exclusive_amount", "tax_inclusive_amount", "payable_amount"],
+        "properties": {
+          "line_extension_amount": { "type": "number", "format": "double", "description": "Subtotal antes de impuestos" },
+          "tax_exclusive_amount": { "type": "number", "format": "double", "description": "Base gravable" },
+          "tax_inclusive_amount": { "type": "number", "format": "double", "description": "Total con impuestos" },
+          "allowance_total_amount": { "type": "number", "format": "double", "description": "Total descuentos" },
+          "charge_total_amount": { "type": "number", "format": "double", "description": "Total cargos" },
+          "payable_amount": { "type": "number", "format": "double", "description": "Total a pagar" }
+        }
+      },
+      "InvoiceLine": {
+        "type": "object",
+        "required": ["unit_measure_id", "invoiced_quantity", "line_extension_amount", "description", "code"],
+        "properties": {
+          "unit_measure_id": { "type": "integer", "description": "Unidad de medida" },
+          "invoiced_quantity": { "type": "number", "format": "double" },
+          "line_extension_amount": { "type": "number", "format": "double" },
+          "free_of_charge_indicator": { "type": "boolean" },
+          "description": { "type": "string" },
+          "code": { "type": "string" },
+          "type_item_identification_id": { "type": "integer" },
+          "price_amount": { "type": "number", "format": "double" },
+          "base_quantity": { "type": "number", "format": "double" },
+          "tax_totals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tax_id": { "type": "integer", "description": "1=IVA, 4=INC, 5=ReteIVA, etc." },
+                "tax_amount": { "type": "number" },
+                "taxable_amount": { "type": "number" },
+                "percent": { "type": "number" }
+              }
+            }
+          }
+        }
+      },
+      "RadianEvent": {
+        "type": "object",
+        "required": ["cufe", "event_id"],
+        "properties": {
+          "cufe": { "type": "string", "description": "CUFE del documento al que se le aplica el evento" },
+          "event_id": {
+            "type": "integer",
+            "description": "30=Acuse recibo, 32=Recibo bienes, 33=Aceptación expresa, 34=Aceptación tácita, 35=Reclamo, 36=Rechazo"
+          },
+          "date": { "type": "string", "format": "date" },
+          "time": { "type": "string", "format": "time" },
+          "response_code": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "DocumentResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "message": { "type": "string" },
+          "cufe": { "type": "string", "description": "CUFE/CUDE generado" },
+          "number": { "type": "string", "description": "Número del documento con prefijo" },
+          "xml": { "type": "string", "description": "XML firmado en base64" },
+          "pdf": { "type": "string", "description": "PDF en base64" },
+          "zip": { "type": "string", "description": "ZIP con attachments en base64" },
+          "ResponseDian": {
+            "type": "object",
+            "properties": {
+              "Envelope": {
+                "type": "object",
+                "properties": {
+                  "Body": {
+                    "type": "object",
+                    "properties": {
+                      "SendBillSyncResponse": {
+                        "type": "object",
+                        "properties": {
+                          "SendBillSyncResult": {
+                            "type": "object",
+                            "properties": {
+                              "IsValid": { "type": "string" },
+                              "StatusCode": { "type": "string" },
+                              "StatusDescription": { "type": "string" },
+                              "StatusMessage": { "type": "string" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "DocumentDetail": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "prefix": { "type": "string" },
+          "number": { "type": "integer" },
+          "cufe": { "type": "string" },
+          "date": { "type": "string", "format": "date" },
+          "time": { "type": "string", "format": "time" },
+          "customer_name": { "type": "string" },
+          "customer_identification_number": { "type": "string" },
+          "total": { "type": "number", "format": "double" },
+          "state_document_id": { "type": "integer" },
+          "pdf": { "type": "string", "description": "URL del PDF" },
+          "xml": { "type": "string", "description": "URL del XML" }
+        }
+      },
+      "DocumentSummary": {
+        "type": "object",
+        "properties": {
+          "prefix": { "type": "string" },
+          "number": { "type": "integer" },
+          "cufe": { "type": "string" },
+          "date": { "type": "string", "format": "date" },
+          "customer_name": { "type": "string" },
+          "total": { "type": "number" },
+          "state": { "type": "string" }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "integer" },
+          "status": { "type": "boolean" },
+          "message": { "type": "string" }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      },
+      "HealthFields": {
+        "type": "object",
+        "description": "Campos específicos para facturación electrónica del sector salud",
+        "required": ["invoice_period_start_date", "invoice_period_end_date", "health_type_operation_id", "users_info"],
+        "properties": {
+          "invoice_period_start_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha de inicio del período de facturación",
+            "example": "2025-01-01"
+          },
+          "invoice_period_end_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha de fin del período de facturación",
+            "example": "2025-01-29"
+          },
+          "health_type_operation_id": {
+            "type": "integer",
+            "description": "ID del tipo de operación de salud (1=Evento, 2=Capita)",
+            "example": 1
+          },
+          "print_users_info_to_pdf": {
+            "type": "boolean",
+            "description": "Indica si se debe imprimir la información de usuarios/pacientes en el PDF",
+            "example": true
+          },
+          "users_info": {
+            "type": "array",
+            "description": "Array de información de pacientes atendidos",
+            "items": {
+              "$ref": "#/components/schemas/HealthPatientInfo"
+            }
+          }
+        }
+      },
+      "HealthPatientInfo": {
+        "type": "object",
+        "description": "Información del paciente/usuario de salud para facturación sector salud",
+        "required": [
+          "provider_code",
+          "health_type_document_identification_id",
+          "identification_number",
+          "surname",
+          "first_name",
+          "health_type_user_id",
+          "health_contracting_payment_method_id",
+          "health_coverage_id"
+        ],
+        "properties": {
+          "provider_code": {
+            "type": "string",
+            "description": "Código del prestador de servicios de salud (código habilitación REPS)",
+            "example": "AF-0000500-85-XX-001"
+          },
+          "health_type_document_identification_id": {
+            "type": "integer",
+            "description": "ID del tipo de documento de identificación del paciente",
+            "example": 1
+          },
+          "identification_number": {
+            "type": "string",
+            "description": "Número de identificación del paciente",
+            "example": "A89008003"
+          },
+          "surname": {
+            "type": "string",
+            "description": "Primer apellido del paciente",
+            "example": "OBANDO"
+          },
+          "second_surname": {
+            "type": "string",
+            "description": "Segundo apellido del paciente",
+            "example": "LONDOÑO"
+          },
+          "first_name": {
+            "type": "string",
+            "description": "Primer nombre del paciente",
+            "example": "ALEXANDER"
+          },
+          "middle_name": {
+            "type": "string",
+            "description": "Segundo nombre del paciente",
+            "example": "ANDRES"
+          },
+          "health_type_user_id": {
+            "type": "integer",
+            "description": "ID del tipo de usuario de salud (1=Contributivo, 2=Subsidiado, 3=Vinculado, etc.)",
+            "example": 1
+          },
+          "health_contracting_payment_method_id": {
+            "type": "integer",
+            "description": "ID del método de pago de contratación (1=Pago por evento, 2=Pago por capita, etc.)",
+            "example": 2
+          },
+          "health_coverage_id": {
+            "type": "integer",
+            "description": "ID de la cobertura de salud/EPS del paciente",
+            "example": 5
+          },
+          "autorization_numbers": {
+            "type": "string",
+            "description": "Números de autorización separados por punto y coma (;)",
+            "example": "A12345;604567;AX-2345"
+          },
+          "mipres": {
+            "type": "string",
+            "description": "Números de prescripción MIPRES separados por punto y coma (;)",
+            "example": "RNA3D345;664FF04567;ARXXX-2765345"
+          },
+          "mipres_delivery": {
+            "type": "string",
+            "description": "Números de entrega MIPRES separados por punto y coma (;)",
+            "example": "RN6645G-345;6-064XX54FF04567;XXX-2-OO-987D65345"
+          },
+          "contract_number": {
+            "type": "string",
+            "description": "Número de contrato con la EPS",
+            "example": "1000-2021-0005698"
+          },
+          "policy_number": {
+            "type": "string",
+            "description": "Número de póliza",
+            "example": "1045-2FG01-0567228"
+          },
+          "co_payment": {
+            "type": "string",
+            "description": "Valor del copago (formato decimal como string)",
+            "example": "3300.00"
+          },
+          "moderating_fee": {
+            "type": "string",
+            "description": "Valor de la cuota moderadora (formato decimal como string)",
+            "example": "5800.00"
+          },
+          "recovery_fee": {
+            "type": "string",
+            "description": "Valor de la cuota de recuperación (formato decimal como string)",
+            "example": "105000.00"
+          },
+          "shared_payment": {
+            "type": "string",
+            "description": "Valor del pago compartido (formato decimal como string)",
+            "example": "225000.00"
+          }
+        }
+      },
+      "RipsPackage": {
+        "type": "object",
+        "description": "Paquete RIPS para envío al Ministerio de Salud",
+        "required": ["rips"],
+        "properties": {
+          "rips": {
+            "$ref": "#/components/schemas/RipsData"
+          },
+          "xmlFevFile": {
+            "type": "string",
+            "nullable": true,
+            "description": "Archivo ZIP de la factura electrónica codificado en base64. Debe ser null para RIPS sin factura, o el attacheddocument de la factura para RIPS con factura."
+          }
+        }
+      },
+      "RipsData": {
+        "type": "object",
+        "description": "Datos del RIPS",
+        "required": ["numDocumentoIdObligado", "usuarios"],
+        "properties": {
+          "numDocumentoIdObligado": {
+            "type": "string",
+            "description": "NIT del prestador de servicios de salud obligado a reportar",
+            "example": "901355357"
+          },
+          "numFactura": {
+            "type": "string",
+            "nullable": true,
+            "description": "Número de factura con prefijo (sin espacios ni caracteres especiales). Null para RIPS sin factura.",
+            "example": "SETP990000103"
+          },
+          "tipoNota": {
+            "type": "string",
+            "nullable": true,
+            "description": "Tipo de nota. Usar 'RS' para RIPS sin factura (documento no electrónico), null para RIPS con factura.",
+            "example": "RS"
+          },
+          "numNota": {
+            "type": "string",
+            "nullable": true,
+            "description": "Número de la nota para documentos no electrónicos. Null para RIPS con factura.",
+            "example": "1"
+          },
+          "usuarios": {
+            "type": "array",
+            "description": "Array de usuarios/pacientes atendidos",
+            "items": {
+              "$ref": "#/components/schemas/RipsUsuario"
+            }
+          }
+        }
+      },
+      "RipsUsuario": {
+        "type": "object",
+        "description": "Usuario/paciente en el registro RIPS",
+        "required": [
+          "tipoDocumentoIdentificacion",
+          "numDocumentoIdentificacion",
+          "tipoUsuario",
+          "fechaNacimiento",
+          "codSexo",
+          "codPaisResidencia",
+          "codMunicipioResidencia",
+          "codZonaTerritorialResidencia",
+          "incapacidad",
+          "codPaisOrigen",
+          "consecutivo",
+          "servicios"
+        ],
+        "properties": {
+          "tipoDocumentoIdentificacion": {
+            "type": "string",
+            "description": "Tipo de documento de identificación (CC, TI, CE, etc.)",
+            "example": "CC"
+          },
+          "numDocumentoIdentificacion": {
+            "type": "string",
+            "description": "Número de documento de identificación",
+            "example": "1127606374"
+          },
+          "tipoUsuario": {
+            "type": "string",
+            "description": "Código del tipo de usuario según normativa SISPRO",
+            "example": "12"
+          },
+          "fechaNacimiento": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha de nacimiento del paciente (YYYY-MM-DD)",
+            "example": "1988-07-07"
+          },
+          "codSexo": {
+            "type": "string",
+            "enum": ["M", "F"],
+            "description": "Código de sexo del paciente",
+            "example": "M"
+          },
+          "codPaisResidencia": {
+            "type": "string",
+            "description": "Código del país de residencia (170=Colombia)",
+            "example": "170"
+          },
+          "codMunicipioResidencia": {
+            "type": "string",
+            "description": "Código DANE del municipio de residencia",
+            "example": "76001"
+          },
+          "codZonaTerritorialResidencia": {
+            "type": "string",
+            "description": "Código de zona territorial (01=Urbano, 02=Rural)",
+            "example": "01"
+          },
+          "incapacidad": {
+            "type": "string",
+            "enum": ["SI", "NO"],
+            "description": "Indica si el paciente tiene incapacidad",
+            "example": "NO"
+          },
+          "codPaisOrigen": {
+            "type": "string",
+            "description": "Código del país de origen",
+            "example": "170"
+          },
+          "consecutivo": {
+            "type": "integer",
+            "description": "Consecutivo del usuario en el paquete RIPS",
+            "example": 1
+          },
+          "servicios": {
+            "$ref": "#/components/schemas/RipsServicios"
+          }
+        }
+      },
+      "RipsServicios": {
+        "type": "object",
+        "description": "Servicios de salud prestados al paciente",
+        "properties": {
+          "consultas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RipsConsulta"
+            }
+          },
+          "procedimientos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RipsProcedimiento"
+            }
+          },
+          "urgencias": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "hospitalizacion": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "recienNacidos": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "medicamentos": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "otrosServicios": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "RipsConsulta": {
+        "type": "object",
+        "description": "Registro de consulta médica en RIPS",
+        "required": [
+          "codPrestador",
+          "fechaInicioAtencion",
+          "codConsulta",
+          "modalidadGrupoServicioTecSal",
+          "grupoServicios",
+          "codServicio",
+          "finalidadTecnologiaSalud",
+          "causaMotivoAtencion",
+          "codDiagnosticoPrincipal",
+          "tipoDiagnosticoPrincipal",
+          "tipoDocumentoIdentificacion",
+          "numDocumentoIdentificacion",
+          "vrServicio",
+          "conceptoRecaudo",
+          "valorPagoModerador",
+          "consecutivo"
+        ],
+        "properties": {
+          "codPrestador": {
+            "type": "string",
+            "description": "Código del prestador habilitado (código REPS con sede)",
+            "example": "760011269401"
+          },
+          "fechaInicioAtencion": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Fecha y hora de inicio de la atención (YYYY-MM-DD HH:mm)",
+            "example": "2025-04-09 09:37"
+          },
+          "numAutorizacion": {
+            "type": "string",
+            "nullable": true,
+            "description": "Número de autorización de la EPS"
+          },
+          "codConsulta": {
+            "type": "string",
+            "description": "Código CUPS de la consulta realizada",
+            "example": "890201"
+          },
+          "modalidadGrupoServicioTecSal": {
+            "type": "string",
+            "description": "Modalidad del grupo de servicio de tecnología en salud",
+            "example": "01"
+          },
+          "grupoServicios": {
+            "type": "string",
+            "description": "Código del grupo de servicios",
+            "example": "02"
+          },
+          "codServicio": {
+            "type": "integer",
+            "description": "Código del servicio prestado",
+            "example": 748
+          },
+          "finalidadTecnologiaSalud": {
+            "type": "string",
+            "description": "Código de la finalidad de la tecnología en salud",
+            "example": "15"
+          },
+          "causaMotivoAtencion": {
+            "type": "string",
+            "description": "Código de la causa o motivo de atención",
+            "example": "38"
+          },
+          "codDiagnosticoPrincipal": {
+            "type": "string",
+            "description": "Código CIE-10 del diagnóstico principal",
+            "example": "Z012"
+          },
+          "codDiagnosticoRelacionado1": {
+            "type": "string",
+            "nullable": true,
+            "description": "Código CIE-10 del primer diagnóstico relacionado"
+          },
+          "codDiagnosticoRelacionado2": {
+            "type": "string",
+            "nullable": true,
+            "description": "Código CIE-10 del segundo diagnóstico relacionado"
+          },
+          "codDiagnosticoRelacionado3": {
+            "type": "string",
+            "nullable": true,
+            "description": "Código CIE-10 del tercer diagnóstico relacionado"
+          },
+          "tipoDiagnosticoPrincipal": {
+            "type": "string",
+            "description": "Tipo de diagnóstico principal (01=Impresión diagnóstica, 02=Confirmado nuevo, 03=Confirmado repetido)",
+            "example": "01"
+          },
+          "tipoDocumentoIdentificacion": {
+            "type": "string",
+            "description": "Tipo de documento del profesional que atendió",
+            "example": "CC"
+          },
+          "numDocumentoIdentificacion": {
+            "type": "string",
+            "description": "Número de documento del profesional que atendió",
+            "example": "29126774"
+          },
+          "vrServicio": {
+            "type": "number",
+            "description": "Valor del servicio prestado",
+            "example": 0
+          },
+          "conceptoRecaudo": {
+            "type": "string",
+            "description": "Concepto de recaudo (01=Cuota moderadora, 02=Copago, 03=Cuota de recuperación, 04=Pago compartido, 05=No aplica)",
+            "example": "05"
+          },
+          "valorPagoModerador": {
+            "type": "number",
+            "description": "Valor del pago moderador",
+            "example": 0
+          },
+          "numFEVPagoModerador": {
+            "type": "string",
+            "nullable": true,
+            "description": "Número de factura electrónica de venta del pago moderador"
+          },
+          "consecutivo": {
+            "type": "integer",
+            "description": "Consecutivo de la consulta",
+            "example": 1
+          }
+        }
+      },
+      "RipsProcedimiento": {
+        "type": "object",
+        "description": "Registro de procedimiento médico en RIPS",
+        "properties": {
+          "codPrestador": {
+            "type": "string",
+            "description": "Código del prestador habilitado"
+          },
+          "fechaInicioAtencion": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Fecha y hora de inicio del procedimiento"
+          },
+          "codProcedimiento": {
+            "type": "string",
+            "description": "Código CUPS del procedimiento"
+          },
+          "viaIngresoServicioSalud": {
+            "type": "string",
+            "description": "Vía de ingreso al servicio de salud"
+          },
+          "finalidadTecnologiaSalud": {
+            "type": "string",
+            "description": "Finalidad del procedimiento"
+          },
+          "tipoDocumentoIdentificacion": {
+            "type": "string",
+            "description": "Tipo de documento del profesional"
+          },
+          "numDocumentoIdentificacion": {
+            "type": "string",
+            "description": "Número de documento del profesional"
+          },
+          "codDiagnosticoPrincipal": {
+            "type": "string",
+            "description": "Código CIE-10 del diagnóstico principal"
+          },
+          "vrServicio": {
+            "type": "number",
+            "description": "Valor del servicio"
+          },
+          "conceptoRecaudo": {
+            "type": "string",
+            "description": "Concepto de recaudo"
+          },
+          "valorPagoModerador": {
+            "type": "number",
+            "description": "Valor del pago moderador"
+          },
+          "consecutivo": {
+            "type": "integer",
+            "description": "Consecutivo del procedimiento"
+          }
+        }
+      },
+      "RipsResponse": {
+        "type": "object",
+        "description": "Respuesta exitosa del procesamiento de RIPS",
+        "properties": {
+          "ResultState": {
+            "type": "boolean",
+            "description": "Indica si el procesamiento fue exitoso",
+            "example": true
+          },
+          "ProcesoId": {
+            "type": "integer",
+            "description": "ID del proceso asignado por el sistema",
+            "example": 8
+          },
+          "NumFactura": {
+            "type": "string",
+            "description": "Número de factura procesada",
+            "example": "1"
+          },
+          "CodigoUnicoValidacion": {
+            "type": "string",
+            "description": "Código Único de Validación (CUV) generado por el Ministerio de Salud",
+            "example": "712cf437a5ac5a6a1503905ed9566f431cc425f4a55f0ebead67f0e816d88b30e6e2546dc90ba36abf3747cf8512b0d6"
+          },
+          "FechaRadicacion": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Fecha y hora de radicación en el Ministerio de Salud",
+            "example": "2025-04-10T21:22:25.7325877+00:00"
+          },
+          "RutaArchivos": {
+            "type": "string",
+            "nullable": true,
+            "description": "Ruta de archivos generados"
+          },
+          "ResultadosValidacion": {
+            "type": "array",
+            "description": "Lista de validaciones realizadas por el sistema RIPS",
+            "items": {
+              "$ref": "#/components/schemas/RipsValidacion"
+            }
+          }
+        }
+      },
+      "RipsResponseError": {
+        "type": "object",
+        "description": "Respuesta de error del procesamiento de RIPS",
+        "properties": {
+          "resultState": {
+            "type": "boolean",
+            "example": false
+          },
+          "procesoId": {
+            "type": "integer",
+            "example": 0
+          },
+          "numFactura": {
+            "type": "string",
+            "example": ""
+          },
+          "codigoUnicoValidacion": {
+            "type": "string",
+            "example": "-"
+          },
+          "codigoUnicoValidacionToShow": {
+            "type": "string",
+            "example": "No aplica a paquetes procesados en estado [RECHAZADO] o validaciones realizadas antes del envío al Ministerio de Salud y Protección Social"
+          },
+          "fechaRadicacion": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "rutaArchivos": {
+            "type": "string",
+            "nullable": true
+          },
+          "resultadosValidacion": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RipsValidacion"
+            }
+          }
+        }
+      },
+      "RipsValidacion": {
+        "type": "object",
+        "description": "Resultado de una validación RIPS",
+        "properties": {
+          "Clase": {
+            "type": "string",
+            "enum": ["NOTIFICACION", "RECHAZADO"],
+            "description": "Clase de validación. NOTIFICACION: aviso informativo, RECHAZADO: error que impide procesamiento",
+            "example": "NOTIFICACION"
+          },
+          "Codigo": {
+            "type": "string",
+            "description": "Código de la validación (ej: RVC017, RVC001, RVG01)",
+            "example": "RVC017"
+          },
+          "Descripcion": {
+            "type": "string",
+            "description": "Descripción de la validación",
+            "example": "El código de CUPS puede ser validado que corresponda a la cobertura o plan de beneficios informada en la factura electrónica de venta."
+          },
+          "Observaciones": {
+            "type": "string",
+            "description": "Observaciones adicionales sobre la validación",
+            "example": "Verificar tabla de referencia Dato (890201)"
+          },
+          "PathFuente": {
+            "type": "string",
+            "description": "Ruta del campo en el JSON que generó la validación",
+            "example": "usuarios[0].servicios.consultas[0].codConsulta"
+          },
+          "Fuente": {
+            "type": "string",
+            "description": "Fuente de la validación (Rips, FevRips)",
+            "example": "Rips"
+          }
+        }
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "No autorizado - Token de API inválido o ausente",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "code": 401,
+              "status": false,
+              "message": "Unauthorized"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Error de validación",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      }
+    }
+  }
 }

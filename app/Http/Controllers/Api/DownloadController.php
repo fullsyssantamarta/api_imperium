@@ -36,7 +36,7 @@ class DownloadController extends Controller
 
             // Capturar parámetro de formato de la query string
             $format = request()->query('format');
-            if ($format && in_array(strtolower($format), ['letter', 'a4'], true)) {
+            if ($format && in_array(strtolower($format), ['letter', 'a4', 'ticket'], true)) {
                 config(['pdf.page_format_override' => strtolower($format)]);
                 \Log::debug('DownloadController.format_override', [
                     'format' => strtolower($format),
@@ -237,17 +237,32 @@ class DownloadController extends Controller
 
             // Aplicar override de formato si está presente
             $formatOverride = config('pdf.page_format_override');
-            if ($formatOverride && in_array($formatOverride, ['letter', 'a4'], true)) {
-                $new_request = $new_request->merge([
-                    'invoice_template' => '2',
-                    'is_tirilla2' => false,
-                    'template_token' => bin2hex(random_bytes(16))
-                ]);
-                \Log::debug('DownloadController.request_override', [
-                    'format' => $formatOverride,
-                    'invoice_template' => '2',
-                    'is_tirilla2' => false
-                ]);
+            if ($formatOverride) {
+                if ($formatOverride === 'ticket') {
+                    // Para ticket/tirilla usar template especial
+                    $new_request = $new_request->merge([
+                        'invoice_template' => '1',
+                        'is_tirilla2' => true,
+                        'template_token' => bin2hex(random_bytes(16))
+                    ]);
+                    \Log::debug('DownloadController.request_override_ticket', [
+                        'format' => $formatOverride,
+                        'invoice_template' => '1',
+                        'is_tirilla2' => true
+                    ]);
+                } elseif (in_array($formatOverride, ['letter', 'a4'], true)) {
+                    // Para letter y a4 usar template normal
+                    $new_request = $new_request->merge([
+                        'invoice_template' => '2',
+                        'is_tirilla2' => false,
+                        'template_token' => bin2hex(random_bytes(16))
+                    ]);
+                    \Log::debug('DownloadController.request_override', [
+                        'format' => $formatOverride,
+                        'invoice_template' => '2',
+                        'is_tirilla2' => false
+                    ]);
+                }
             }
 
             foreach($new_request->with_holding_tax_total ?? [] as $item) {
@@ -298,10 +313,33 @@ class DownloadController extends Controller
             
             $this->createPDF($user, $company, $customer, $typeDocument, $resolution, $date, $time, $paymentFormArray, $new_request, $cufe, "INVOICE", $withHoldingTaxTotal, $notes, $healthfields);
 
-            \Log::info('DownloadController.reloadPdf.SUCCESS');
+            \Log::info('DownloadController.reloadPdf.PDF_created_reading_file');
+            
+            // Leer el archivo PDF generado
+            $pdfPath = storage_path("app/public/{$identification}/{$file}");
+            
+            if (!file_exists($pdfPath)) {
+                \Log::error('DownloadController.reloadPdf.file_not_found_after_creation', [
+                    'path' => $pdfPath
+                ]);
+                return [
+                    'success' => false,
+                    'message' => 'El PDF fue generado pero no se encontró en el almacenamiento'
+                ];
+            }
+            
+            $pdfContent = file_get_contents($pdfPath);
+            $base64Content = base64_encode($pdfContent);
+            
+            \Log::info('DownloadController.reloadPdf.SUCCESS', [
+                'file_size' => strlen($pdfContent),
+                'base64_size' => strlen($base64Content)
+            ]);
+            
             return [
                 'success' => true,
-                'message' => 'PDF regenerado correctamente'
+                'message' => 'PDF regenerado correctamente',
+                'filebase64' => $base64Content
             ];
 
         }
