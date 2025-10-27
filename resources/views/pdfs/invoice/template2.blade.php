@@ -182,8 +182,8 @@
                                 <td>
                                     <p style="font-size: 8px">Nro ID: {{$item->identification_number}}</p>
                                     <p style="font-size: 8px">Nombre: {{$item->first_name}} {{$item->middle_name}} {{$item->surname}} {{$item->second_surname}}</p>
-                                    <p style="font-size: 8px">Tipo Documento: {{$item->health_type_document_identification()->name}}</p>
-                                    <p style="font-size: 8px">Tipo Usuario: {{$item->health_type_user()->name}}</p>
+                                    <p style="font-size: 8px">Tipo Documento: {{$item->health_type_document_identification->name ?? ''}}</p>
+                                    <p style="font-size: 8px">Tipo Usuario: {{$item->health_type_user->name ?? ''}}</p>
                                 </td>
                             @else
                                 <td>
