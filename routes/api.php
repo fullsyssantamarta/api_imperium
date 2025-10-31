@@ -56,6 +56,7 @@ Route::prefix('/ubl2.1')->group(function () {
 Route::middleware('auth:api')->group(function () {
 
     Route::get('reload-pdf/{identification}/{file}/{cufe}', 'Api\DownloadController@reloadPdf');
+    Route::get('regenerate-pdf/{identification}/{prefix}/{number}', 'Api\DownloadController@regeneratePdf');
 
     Route::get('/templates', 'Api\ConfigurationController@getTemplates');
     Route::put('/templates', 'Api\ConfigurationController@updateTemplate');

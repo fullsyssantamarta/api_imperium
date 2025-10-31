@@ -543,5 +543,173 @@ class DownloadController extends Controller
             }
         }
     }
+    
+    /**
+     * Regenerate PDF with specific format
+     */
+    public function regeneratePdf($identification, $prefix, $number)
+    {
+        try {
+            \Log::info('DownloadController.regeneratePdf.START', [
+                'identification' => $identification,
+                'prefix' => $prefix,
+                'number' => $number
+            ]);
+
+            // Capturar parámetro de formato de la query string
+            $format = request()->query('format');
+            if ($format && in_array(strtolower($format), ['letter', 'a4', 'ticket'], true)) {
+                config(['pdf.page_format_override' => strtolower($format)]);
+                \Log::info('DownloadController.regeneratePdf.format_override', [
+                    'format' => strtolower($format)
+                ]);
+            }
+
+            // Buscar documento por identification_number, prefix y number
+            $document = Document::where('identification_number', $identification)
+                ->where('prefix', $prefix)
+                ->where('number', $number)
+                ->where('type_document_id', 1) // Solo facturas
+                ->first();
+                
+            if (!$document) {
+                \Log::warning('DownloadController.regeneratePdf.document_not_found');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Documento no encontrado'
+                ], 404);
+            }
+
+            \Log::info('DownloadController.regeneratePdf.document_found', [
+                'document_id' => $document->id
+            ]);
+
+            // Obtener company del documento
+            $company = Company::where('identification_number', $identification)->first();
+            if (!$company) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Company no encontrada'
+                ], 404);
+            }
+
+            // Obtener user asociado a la company
+            $user = User::where('company_id', $company->id)->first();
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado'
+                ], 404);
+            }
+
+            // Decodificar el request original
+            $request = json_decode($document->request_api);
+            $typeDocument = TypeDocument::findOrFail($request->type_document_id);
+
+            // Customer
+            $customerAll = collect($request->customer);
+            if(isset($customerAll['municipality_id_fact'])){
+                $customerAll['municipality_id'] = Municipality::where('codefacturador', $customerAll['municipality_id_fact'])->first();
+            }
+            $customer = new User($customerAll->toArray());
+            $customer->company = new Company($customerAll->toArray());
+
+            // Resolution
+            $resolution = $company->resolutions()
+                ->where('type_document_id', $request->type_document_id)
+                ->where('prefix', $prefix)
+                ->first();
+                
+            if (!$resolution) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Resolución no encontrada'
+                ], 404);
+            }
+            
+            $resolution->number = $number;
+
+            // Payment form
+            $paymentForm = [];
+            if (isset($request->payment_form) && is_array($request->payment_form)) {
+                foreach ($request->payment_form as $paymentF) {
+                    $paymentFormItem = PaymentForm::findOrFail($paymentF->payment_form_id);
+                    $paymentMethod = PaymentMethod::findOrFail($paymentF->payment_method_id);
+                    $paymentFormItem->nameMethod = $paymentMethod->name;
+                    $paymentFormItem->payment_due_date = $paymentF->payment_due_date ?? null;
+                    $paymentFormItem->duration_measure = $paymentF->duration_measure ?? null;
+                    $paymentForm[] = $paymentFormItem;
+                }
+            }
+
+            // Tax totals
+            $withHoldingTaxTotal = [];
+            if (isset($request->with_holding_tax_total)) {
+                foreach ($request->with_holding_tax_total as $item) {
+                    $withHoldingTaxTotal[] = new TaxTotal($item);
+                }
+            }
+
+            // Health fields
+            $healthfields = null;
+            if (isset($request->health_fields)) {
+                $healthfields = new HealthField($request->health_fields);
+            }
+
+            // Date and time
+            $date = $request->date ?? date('Y-m-d');
+            $time = $request->time ?? date('H:i:s');
+
+            // Regenerar PDF
+            $this->createPDF(
+                $user,
+                $company,
+                $customer,
+                $typeDocument,
+                $resolution,
+                $date,
+                $time,
+                $paymentForm,
+                $request,
+                $document->cufe,
+                "INVOICE",
+                $withHoldingTaxTotal,
+                $request->notes ?? null,
+                $healthfields
+            );
+
+            // Leer el PDF regenerado
+            $pdfPath = storage_path("app/public/{$identification}/{$prefix}-{$prefix}{$number}.pdf");
+            
+            if (!file_exists($pdfPath)) {
+                \Log::error('DownloadController.regeneratePdf.pdf_not_found', [
+                    'path' => $pdfPath
+                ]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'PDF regenerado no encontrado'
+                ], 500);
+            }
+
+            $pdfContent = file_get_contents($pdfPath);
+
+            return response()->json([
+                'success' => true,
+                'filebase64' => base64_encode($pdfContent)
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('DownloadController.regeneratePdf.exception', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al regenerar PDF: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
+
 
