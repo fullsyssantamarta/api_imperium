@@ -418,7 +418,7 @@ trait DocumentTrait
 //        try {
             if(isset($request->establishment_logo)){
                 $filenameLogo   = storage_path("app/public/{$company->identification_number}/alternate_{$company->identification_number}{$company->dv}.jpg");
-                $this->storeLogo($request->establishment_logo);
+                $this->storeLogo($request->establishment_logo, $company->identification_number, $company->dv);
             }
             else
                 $filenameLogo   = storage_path("app/public/{$company->identification_number}/{$company->identification_number}{$company->dv}.jpg");
@@ -846,7 +846,7 @@ trait DocumentTrait
             try {
             if(isset($request->establishment_logo)){
                 $filenameLogo   = storage_path("app/public/{$company->identification_number}/alternate_{$company->identification_number}{$company->dv}.jpg");
-                $this->storeLogo($request->establishment_logo);
+                $this->storeLogo($request->establishment_logo, $company->identification_number, $company->dv);
             }
             else
                 $filenameLogo   = storage_path("app/public/{$company->identification_number}/{$company->identification_number}{$company->dv}.jpg");
@@ -915,7 +915,7 @@ trait DocumentTrait
             try {
             if(isset($request->establishment_logo)){
                 $filenameLogo   = storage_path("app/public/{$company->identification_number}/alternate_{$company->identification_number}{$company->dv}.jpg");
-                $this->storeLogo($request->establishment_logo);
+                $this->storeLogo($request->establishment_logo, $company->identification_number, $company->dv);
             }
             else
                 $filenameLogo   = storage_path("app/public/{$company->identification_number}/{$company->identification_number}{$company->dv}.jpg");
@@ -1657,7 +1657,7 @@ trait DocumentTrait
         return explode(' ', $name);
     }
 
-    public function storeLogo($base64logo)
+    public function storeLogo($base64logo, $identificationNumber = null, $dv = null)
     {
         try {
             if (!base64_decode($base64logo, true)) {
@@ -1680,9 +1680,12 @@ trait DocumentTrait
         }
 
         try {
-            $company = auth()->user()->company;
-            $name = "alternate_{$company->identification_number}{$company->dv}.jpg";
-            Storage::put("public/{$company->identification_number}/{$name}", base64_decode($base64logo));
+            // Si se recibe identificationNumber lo usamos, si no usamos la company del usuario autenticado
+            $authCompany = auth()->user()->company;
+            $companyIdNumber = $identificationNumber ?? $authCompany->identification_number;
+            $companyDv = $dv ?? $authCompany->dv;
+            $name = "alternate_{$companyIdNumber}{$companyDv}.jpg";
+            Storage::put("public/{$companyIdNumber}/{$name}", base64_decode($base64logo));
 
             return [
                 'success' => true,
