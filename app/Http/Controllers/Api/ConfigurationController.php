@@ -649,27 +649,28 @@ class ConfigurationController extends Controller
     public function storeLogo(ConfigurationLogoRequest $request)
     {
         try {
-            if (!base64_decode($request->logo, true)) {
-                throw new Exception('The given data was invalid.');
+            // Validar que el logo sea base64 válido
+            $decoded = base64_decode($request->logo, true);
+            if ($decoded === false || !$decoded) {
+                throw new Exception('El formato base64 no es válido.');
             }
+            
+            // Validar que sea una imagen válida
+            $imageInfo = @getimagesizefromstring($decoded);
+            if ($imageInfo === false) {
+                throw new Exception('El archivo no es una imagen válida.');
+            }
+            
         } catch (Exception $e) {
             return response([
-                'message' => $e->getMessage(),
+                'message' => 'Error de validación',
                 'errors' => [
-                    'logo' => 'The base64 encoding is not valid.',
-                ],
-            ], 422);
-
-            return response([
-                'message' => $e->getMessage(),
-                'errors' => [
-                    'logo' => $error,
+                    'logo' => $e->getMessage(),
                 ],
             ], 422);
         }
 
         try {
-
             $company = auth()->user()->company;
             $name = "{$company->identification_number}{$company->dv}.jpg";
 
@@ -680,9 +681,8 @@ class ConfigurationController extends Controller
                 'message' => 'Logo almacenado con éxito',
             ];
         } catch (Exception $e) {
-
             return response([
-                'message' => 'Internal Server Error',
+                'message' => 'Error al guardar el logo',
                 'payload' => $e->getMessage(),
             ], 500);
         }
