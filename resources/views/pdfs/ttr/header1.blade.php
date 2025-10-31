@@ -49,7 +49,7 @@
                     Tipo Documento ID: {{$request->nombretipodocid}}<br>
                 @endif
                 @if(isset($request->tarifaica) && $request->tarifaica != '100')
-                    TARIFA ICA: {{$request->tarifaica}}%
+                    TARIFA ICA: {{$request->tarifaica}}‰
                 @endif
                 @if(isset($request->tarifaica) && isset($request->actividadeconomica))
                     -

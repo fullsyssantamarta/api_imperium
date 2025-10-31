@@ -70,6 +70,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/documents', 'HomeController@listDocuments')->name('listdocuments');
     Route::get('/taxes', 'HomeController@listTaxes')->name('listtaxes');
     Route::get('/listconfigurations', 'HomeController@listConfigurations')->name('listconfigurations');
+    Route::put('/companies/{company}', 'HomeController@update')->name('companies.update');
 
     // users for rips
     Route::get('companies/{company}/users', 'CompanyUserController@index')->name('company.users.index');
@@ -82,7 +83,15 @@ Route::group(['middleware' => 'auth'], function() {
 
     // resoluciones
     Route::get('companies/{company}/configuration/resolutions', 'ResolutionController@index')->name('company.resolutions.index');
+    Route::post('companies/{company}/configuration/resolutions', 'ResolutionController@store')->name('company.resolutions.store');
+    Route::put('companies/{company}/configuration/resolutions/{resolutionId}', 'ResolutionController@update')->name('company.resolutions.edit');
     Route::patch('companies/{company}/configuration/resolutions/{resolutionId}', 'ResolutionController@updateEnvironment')->name('company.resolutions.update');
+
+    // production
+    Route::get('companies/{company}/production', 'ProductionController@index')->name('company.production.index');
+    Route::post('companies/{company}/production', 'ProductionController@process')->name('company.production.process');
+    Route::post('/company/{company}/consultar-resoluciones', 'ProductionController@consultarResoluciones')->name('company.consultar.resoluciones');
+    Route::get('companies/{company}/configuration/resolutions/create', 'ResolutionController@create')->name('company.resolutions.create');
 
     //configuration
     Route::get('/configuration', 'ConfigurationController@index')->name('configuration_index');

@@ -1089,8 +1089,8 @@ trait DocumentTrait
             ],
             'default_font' => 'Roboto',
             'margin_left' => 5,
-            'margin_top' => 35,
-            'margin_bottom' => 5,
+            'margin_top' => 36,
+            'margin_bottom' => 30,
             'margin_header' => 5,
             'margin_footer' => 2
             ]);

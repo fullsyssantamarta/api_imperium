@@ -8,16 +8,22 @@
         </button>
     </div>
 </header>
+
+@php
+    // dd($resolution_credit_notes);
+@endphp
+
+
 <div class="card border">
     <div class="table-responsive card-body p-0">
         <table class="table table-sm table-striped table-hover">
             <thead class="thead-light">
                 <tr>
                     <th>#</th>
-                    <th>Acciones</th>
+                    <th>DIAN</th>
                     <th>Descargas</th>
                     <th>Ambiente</th>
-                    <th>DIAN</th>
+                    <th>Válido</th>
                     <th>Fecha</th>
                     <th>Número</th>
                     <th>Cliente</th>
@@ -25,6 +31,7 @@
                     <th class="text-right">Impuesto</th>
                     <th class="text-right">Subtotal</th>
                     <th class="text-right">Total</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -87,10 +94,31 @@
                         <td class="text-right">{{ round($row->total_tax, 2) }}</td>
                         <td class="text-right">{{ round($row->subtotal, 2) }}</td>
                         <td class="text-right">{{ round($row->total, 2) }}</td>
+                        <td>
+                            @if($row->type_document_id == 1 && $row->response_dian && $resolution_credit_notes && count($resolution_credit_notes) > 0)
+                                @php
+                                    $isValidResponse = false;
+                                    if ($row->response_dian) {
+                                        $decodedResponse = json_decode($row->response_dian, true);
+                                        $isValidResponse = isset($decodedResponse['Envelope']['Body']['SendBillSyncResponse']['SendBillSyncResult']['IsValid'])
+                                            && $decodedResponse['Envelope']['Body']['SendBillSyncResponse']['SendBillSyncResult']['IsValid'] === 'true';
+                                    }
+                                @endphp
+                                @if($isValidResponse)
+                                    <button type="button" class="btn btn-info btn-xs btn-credit-note mt-0"
+                                        data-id="{{ $row->id }}"
+                                        data-cufe="{{ $row->cufe }}"
+                                        data-request-api="{{ $row->request_api }}">
+                                        Nota de crédito
+                                    </button>
+                                @endif
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
+        {{-- {{ dd($documents) }} --}}
     </div>
     <div class="card-footer d-flex justify-content-center">
         {{ $documents->links() }}
@@ -231,6 +259,63 @@
     </div>
 </div>
 
+<!-- Modal Selección de Resolución para Nota de Crédito -->
+<div class="modal fade" id="resolutionModal" tabindex="-1" role="dialog" aria-labelledby="resolutionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resolutionModalLabel">
+                    <i class="fas fa-file-invoice mr-2"></i>Seleccionar Resolución para Nota de Crédito
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Seleccione la resolución que desea utilizar para generar la nota de crédito.
+                </div>
+                <div class="list-group" id="resolutionList">
+                    @if($resolution_credit_notes)
+                        @foreach($resolution_credit_notes as $resolution)
+                            <button type="button" class="list-group-item list-group-item-action resolution-item"
+                                data-resolution-id="{{ $resolution->id }}"
+                                data-resolution-prefix="{{ $resolution->prefix }}"
+                                data-resolution-number="{{ $resolution->resolution_number ?? $resolution->resolution ?? '' }}"
+                                data-resolution-has-number="{{ ($resolution->resolution_number ?? $resolution->resolution) ? 'true' : 'false' }}">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ $resolution->prefix }}</h6>
+                                    <small>{{ $resolution->type_document->name ?? 'Nota de Crédito' }}</small>
+                                </div>
+                                <p class="mb-1">
+                                    <strong>Resolución:</strong>
+                                    @if($resolution->resolution_number ?? $resolution->resolution)
+                                        {{ $resolution->resolution_number ?? $resolution->resolution }}
+                                    @else
+                                        <span class="text-danger">Sin número de resolución</span>
+                                    @endif
+                                </p>
+                                <small>
+                                    <strong>Rango:</strong> {{ $resolution->from }} - {{ $resolution->to }}
+                                    @if($resolution->date_from && $resolution->date_to)
+                                        | <strong>Vigencia:</strong> {{ $resolution->date_from }} - {{ $resolution->date_to }}
+                                    @endif
+                                </small>
+                            </button>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-2"></i>Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
@@ -323,6 +408,277 @@ $(document).ready(function() {
         $('#verificarInput').val(id);
         $('#changeStateModal').modal('show');
     });
+
+    // Variable global para almacenar los datos del documento actual
+    window.currentDocumentData = null;
+    window.currentButton = null;
+
+    // Manejar clic en botón "Nota de crédito"
+    $(document).on('click', '.btn-credit-note', function() {
+        var documentId = $(this).data('id');
+        var $button = $(this);
+
+        // Buscar la fila correspondiente para obtener los datos del documento
+        var $row = $button.closest('tr');
+        var documentData = {
+            id: documentId,
+            prefix: $row.find('td:nth-child(8)').text().match(/^([A-Z]+)/)?.[1] || '', // Extraer prefijo del número
+            number: $row.find('td:nth-child(8)').text().match(/\d+/)?.[0] || '', // Extraer número
+            cufe: $button.data('cufe'),
+            date_issue: $row.find('td:nth-child(6)').text().split(' ')[0], // Extraer solo la fecha sin la hora
+            request_api: $button.data('request-api')
+        };
+
+        // Guardar los datos globalmente
+        window.currentDocumentData = documentData;
+        window.currentButton = $button;
+
+        // Mostrar el modal de selección de resolución
+        $('#resolutionModal').modal('show');
+    });
+
+    // Manejar selección de resolución
+    $(document).on('click', '.resolution-item', function() {
+        var resolutionId = $(this).data('resolution-id');
+        var resolutionPrefix = $(this).data('resolution-prefix');
+        var resolutionNumber = $(this).data('resolution-number');
+        var hasResolutionNumber = $(this).data('resolution-has-number') === 'true';
+
+        console.log('Datos de resolución:', {
+            id: resolutionId,
+            prefix: resolutionPrefix,
+            number: resolutionNumber,
+            hasNumber: hasResolutionNumber
+        });
+
+        // Verificar si la resolución tiene número (más flexible)
+        if (!resolutionNumber || resolutionNumber === 'undefined') {
+            new PNotify({
+                text: 'Esta resolución no tiene configurado el número de resolución. Por favor, agregue este campo en el menú de resoluciones.',
+                type: 'warning',
+                addclass: 'notification-warning',
+                delay: 5000
+            });
+            return;
+        }
+
+        // Procesar la nota de crédito con la resolución seleccionada
+        if (window.currentDocumentData && window.currentButton) {
+            // Deshabilitar botón mientras se procesa
+            window.currentButton.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Procesando...');
+
+            // Deshabilitar todos los botones del modal y mostrar estado de procesando
+            $('.resolution-item').prop('disabled', true);
+            $('#resolutionModal .btn-secondary').prop('disabled', true);
+            $('#resolutionModalLabel').html('<i class="fas fa-spinner fa-spin mr-2"></i>Procesando Nota de Crédito...');
+
+            // Cambiar el contenido del modal para mostrar progreso
+            $('#resolutionModal .modal-body').html(`
+                <div class="alert alert-info">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>
+                    Procesando la nota de crédito con la resolución <strong>${resolutionPrefix}</strong>...
+                </div>
+                <div class="progress mt-3">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%">
+                        Enviando a la DIAN...
+                    </div>
+                </div>
+            `);
+
+            processCreditNote(window.currentDocumentData, window.currentButton, {
+                id: resolutionId,
+                prefix: resolutionPrefix,
+                resolution_number: resolutionNumber
+            });
+        }
+    });
+
+    // Limpiar variables globales cuando se cierre el modal
+    $('#resolutionModal').on('hidden.bs.modal', function () {
+        window.currentDocumentData = null;
+        window.currentButton = null;
+    });
+
+    // Función para procesar la nota de crédito
+    async function processCreditNote(documentData, $button, selectedResolution) {
+        try {
+            const token = '{{ $token_company }}';
+
+            if (!selectedResolution) {
+                throw new Error('No se encontró resolución seleccionada para notas de crédito');
+            }
+
+            const payloadConsecutive = {
+                type_document_id: 4,
+                prefix: selectedResolution.prefix
+            };
+
+            // 1. Consultar next-consecutive
+            const consecutiveResponse = await fetch('/api/ubl2.1/next-consecutive', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(payloadConsecutive)
+            });
+
+            if (!consecutiveResponse.ok) {
+                throw new Error('Error al obtener el consecutivo');
+            }
+
+            const consecutiveData = await consecutiveResponse.json();
+            const nextNumber = consecutiveData.number; // Convertir a string para prueba
+
+            // 2. Armar el JSON para la nota de crédito
+            console.log('Datos request_api:', documentData.request_api);
+            console.log('Tipo de request_api:', typeof documentData.request_api);
+
+            const originalData = documentData.request_api; // Ya viene como objeto, no parsear
+            const now = new Date();
+            // Ajustar a zona horaria de Colombia (GMT-5)
+            const colombiaTime = new Date(now.getTime() - (5 * 60 * 60 * 1000));
+            const currentDate = colombiaTime.toISOString().split('T')[0];
+            const currentTime = colombiaTime.toTimeString().split(' ')[0];
+
+            const creditNoteData = {
+                billing_reference: {
+                    number: documentData.prefix + documentData.number,
+                    uuid: documentData.cufe,
+                    issue_date: documentData.date_issue
+                },
+                resolution_number: selectedResolution.resolution_number,
+                discrepancyresponsecode: 2,
+                discrepancyresponsedescription: "NOTA DE CREDITO GENERADA AUTOMATICAMENTE",
+                notes: "NOTA DE CREDITO",
+                prefix: selectedResolution.prefix,
+                number: nextNumber,
+                type_document_id: 4,
+                date: currentDate,
+                time: currentTime,
+                sendmail: originalData.sendmail || false,
+                sendmailtome: originalData.sendmailtome || false,
+                seze: "2021-2017",
+                head_note: originalData.head_note || '',
+                foot_note: originalData.foot_note || '',
+                customer: originalData.customer,
+                tax_totals: originalData.tax_totals,
+                legal_monetary_totals: originalData.legal_monetary_totals,
+                credit_note_lines: originalData.invoice_lines.map(line => ({
+                    unit_measure_id: line.unit_measure_id,
+                    invoiced_quantity: line.invoiced_quantity,
+                    line_extension_amount: line.line_extension_amount,
+                    free_of_charge_indicator: line.free_of_charge_indicator,
+                    tax_totals: line.tax_totals,
+                    description: line.description,
+                    notes: line.notes || '',
+                    code: line.code,
+                    type_item_identification_id: line.type_item_identification_id,
+                    price_amount: line.price_amount,
+                    base_quantity: line.base_quantity
+                }))
+            };
+            console.log('Datos de la nota de crédito a enviar:', creditNoteData);
+            // 3. Enviar la nota de crédito
+            const creditNoteResponse = await fetch('/api/ubl2.1/credit-note', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(creditNoteData)
+            });
+
+            const creditNoteResult = await creditNoteResponse.json();
+
+            // 4. Verificar el resultado y mostrar notificación
+            const statusCode = creditNoteResult.ResponseDian?.Envelope?.Body?.SendBillSyncResponse?.SendBillSyncResult?.StatusCode;
+
+            if (statusCode === "00") {
+                // Mostrar resultado exitoso en el modal
+                $('#resolutionModal .modal-body').html(`
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <strong>¡Nota de crédito creada exitosamente!</strong>
+                    </div>
+                    <p>La nota de crédito ha sido enviada correctamente a la DIAN.</p>
+                `);
+                $('#resolutionModalLabel').html('<i class="fas fa-check-circle mr-2"></i>Nota de Crédito Creada');
+
+                // Cambiar botón de cancelar por cerrar
+                $('#resolutionModal .btn-secondary').removeClass('disabled').prop('disabled', false)
+                    .html('<i class="fas fa-times mr-2"></i>Cerrar').off('click').on('click', function() {
+                        location.reload();
+                    });
+
+                new PNotify({
+                    text: 'Nota de crédito creada exitosamente',
+                    type: 'success',
+                    addclass: 'notification-success',
+                    delay: 3000
+                });
+            } else {
+                const errorMessage = creditNoteResult.ResponseDian?.Envelope?.Body?.SendBillSyncResponse?.SendBillSyncResult?.ErrorMessage?.string || 'Error desconocido';
+
+                // Mostrar error en el modal
+                $('#resolutionModal .modal-body').html(`
+                    <div class="alert alert-danger">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        <strong>Error al crear la nota de crédito</strong>
+                    </div>
+                    <p><strong>Mensaje de error:</strong></p>
+                    <div class="bg-light p-3 rounded">
+                        <small>${errorMessage}</small>
+                    </div>
+                `);
+                $('#resolutionModalLabel').html('<i class="fas fa-times-circle mr-2"></i>Error en Nota de Crédito');
+
+                // Habilitar botón de cerrar
+                $('#resolutionModal .btn-secondary').removeClass('disabled').prop('disabled', false)
+                    .html('<i class="fas fa-times mr-2"></i>Cerrar');
+
+                new PNotify({
+                    text: 'Error al crear la nota de crédito: ' + errorMessage,
+                    type: 'error',
+                    addclass: 'notification-danger',
+                    delay: 5000
+                });
+            }
+
+        } catch (error) {
+            console.error('Error procesando nota de crédito:', error);
+
+            // Mostrar error en el modal
+            $('#resolutionModal .modal-body').html(`
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    <strong>Error al procesar la nota de crédito</strong>
+                </div>
+                <p><strong>Mensaje de error:</strong></p>
+                <div class="bg-light p-3 rounded">
+                    <small>${error.message}</small>
+                </div>
+            `);
+            $('#resolutionModalLabel').html('<i class="fas fa-exclamation-triangle mr-2"></i>Error de Conexión');
+
+            // Habilitar botón de cerrar
+            $('#resolutionModal .btn-secondary').removeClass('disabled').prop('disabled', false)
+                .html('<i class="fas fa-times mr-2"></i>Cerrar');
+
+            new PNotify({
+                text: 'Error al procesar la nota de crédito: ' + error.message,
+                type: 'error',
+                addclass: 'notification-danger',
+                delay: 5000
+            });
+        } finally {
+            // Restaurar el botón
+            $button.prop('disabled', false).html('Nota de crédito');
+        }
+    }
+
     // Manejo de Excel a JSON
     $('#excelFile').on('change', function(e) {
         const file = e.target.files[0];

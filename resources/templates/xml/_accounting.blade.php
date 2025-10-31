@@ -71,7 +71,13 @@
                         @endif
                     @endif
                     <cac:AddressLine>
-                        <cbc:Line>{{preg_replace("/[\r\n|\n|\r]+/", "",$request['establishment_address'] ?? $user->company->address)}}</cbc:Line>
+                        <cbc:Line>
+                            @if($node === 'AccountingCustomerParty' && isset($customer))
+                                {{ preg_replace("/[\r\n|\n|\r]+/", "", $customer->company->address) }}
+                            @else
+                                {{ preg_replace("/[\r\n|\n|\r]+/", "", $request['establishment_address'] ?? $user->company->address) }}
+                            @endif
+                        </cbc:Line>
                     </cac:AddressLine>
                     <cac:Country>
                         <cbc:IdentificationCode>{{preg_replace("/[\r\n|\n|\r]+/", "", $user->company->country->code)}}</cbc:IdentificationCode>

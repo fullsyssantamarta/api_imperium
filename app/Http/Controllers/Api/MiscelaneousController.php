@@ -151,9 +151,11 @@ class MiscelaneousController extends Controller
     {
        $client = new ClientScrap(HttpClient::create(['timeout' => 80, 'verify_peer' => false]));
        $crawler = $client->request('GET', "https://www.einforma.co/servlet/app/portal/ENTP/prod/LISTA_EMPRESAS/razonsocial/{$nit}");
-       $crawler->filter('h1[class="title01"]')->each(function($node){
-          $this->setNameClient($node->text());
-       });
+       $node = $crawler->filter('h1#titEtiqueta');
+        if ($node->count() > 0) {
+            $name = $node->getNode(0)->childNodes->item(0)->nodeValue;
+            $this->setNameClient(trim($name));
+        }
        if(!is_null($this->nameclient)){
            $arrayName = explode(" ", $this->nameclient);
            if(count($arrayName) == 1)
