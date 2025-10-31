@@ -219,8 +219,10 @@ class InvoiceController extends Controller
                 \Config::set('mail.encryption', $user->mail_encryption);
             }
 
-        // User company
-        $company = $user->company;
+        // User company - Obtener de la resolución en lugar del usuario autenticado
+        // Esto permite que documentos de diferentes companies usen el mismo token API
+        $resolution = $request->resolution;
+        $company = $resolution->company ?? $user->company;
 
         // Verificar la disponibilidad de la DIAN antes de continuar
         $dian_url = $company->software->url;
@@ -370,9 +372,8 @@ class InvoiceController extends Controller
             // $calculationratedate = Carbon::now()->format('Y-m-d');
         }
 
-        // Resolution
+        // Resolution - ya se obtuvo arriba al definir $company
         $request->resolution->number = $request->number;
-        $resolution = $request->resolution;
         if(config('system_configuration.validate_before_sending')){
             $doc = Document::where('type_document_id', $request->type_document_id)->where('identification_number', $company->identification_number)->where('prefix', $resolution->prefix)->where('number', $request->number)->where('state_document_id', 1)->get();
             if(count($doc) > 0)
