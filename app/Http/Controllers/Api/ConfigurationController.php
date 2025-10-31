@@ -673,8 +673,9 @@ class ConfigurationController extends Controller
         try {
             $company = auth()->user()->company;
             $name = "{$company->identification_number}{$company->dv}.jpg";
+            $path = "public/{$company->identification_number}/{$name}";
 
-            Storage::put("public/{$company->identification_number}/{$name}", base64_decode($request->logo));
+            Storage::put($path, base64_decode($request->logo));
 
             return [
                 'success' => true,
