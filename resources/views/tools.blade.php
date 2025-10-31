@@ -16,7 +16,7 @@
                     </div>
                     <div class="widget-summary-col">
                         <div class="summary">
-                            <h4 class="title" style="word-break: normal;">ChatGPT BOT FacturaLatam</h4>
+                            <h4 class="title" style="word-break: normal;">ChatGPT BOT FULLSYS TECNOLOGÍA SANTA MARTA</h4>
                             {{-- <div class="info">
                                 <strong class="amount">1281</strong>
                             </div> --}}
