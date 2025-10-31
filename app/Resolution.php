@@ -94,6 +94,14 @@ class Resolution extends Model
         return $this->belongsTo(TypeEnvironment::class);
     }
 
+    /**
+     * Get the company that owns the resolution.
+     */
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     public function scopeFilterByDocumentType($query, $id)
     {
         if(!$id) {
