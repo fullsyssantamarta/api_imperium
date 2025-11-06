@@ -6,50 +6,6 @@
 </head>
 
 <body>
-    {{-- Header con Logo y Datos del Emisor --}}
-    <table style="width: 100%; font-size: 9px; margin-bottom: 10px;">
-        <!-- Logo en la parte superior -->
-        <tr>
-            <td style="text-align: center;">
-                <img style="max-width: 170px; height: auto; margin-bottom: 5px;" src="{{$imgLogo}}" alt="logo">
-            </td>
-        </tr>
-
-        <!-- Información de la Empresa Emisora -->
-        <tr>
-            <td style="text-align: center;">
-                <strong>{{$user->name}}</strong><br>
-                @if(isset($request->establishment_name) && $request->establishment_name != 'Oficina Principal')
-                    <strong>{{$request->establishment_name}}</strong><br>
-                @endif
-                NIT: {{$company->identification_number}}-{{$company->dv}} - Dirección: {{$company->address}}<br>
-                Tel: {{$company->phone}} - Correo: {{$user->email}}<br>
-            </td>
-        </tr>
-
-        <!-- Detalles de la Factura -->
-        <tr>
-            <td style="text-align: center;">
-                <strong>FACTURA ELECTRONICA DE VENTA {{$resolution->prefix}} - {{$request->number}}</strong><br>
-                Fecha Emisión: {{$date}} - Fecha Validación DIAN: {{$date}}<br>
-                Hora Validación DIAN: {{$time}}<br>
-            </td>
-        </tr>
-
-        <!-- Información Adicional -->
-        <tr>
-            <td style="text-align: center; font-size: 8px;">
-                @if(isset($request->ivaresponsable) && $request->ivaresponsable != $company->type_regime->name)
-                    {{$company->type_regime->name}} - {{$request->ivaresponsable}}<br>
-                @endif
-                Resolución de Facturación Electrónica No. {{$resolution->resolution}} de {{$resolution->resolution_date}}<br>
-                Prefijo: {{$resolution->prefix}}, Rango {{$resolution->from}} al {{$resolution->to}}<br>
-                Vigencia Desde: {{$resolution->date_from}} Hasta: {{$resolution->date_to}}<br>
-            </td>
-        </tr>
-    </table>
-    {{-- Fin del Header --}}
-
     <hr>
     @if(isset($request->head_note))
     <div class="row">
