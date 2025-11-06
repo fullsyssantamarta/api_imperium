@@ -31,7 +31,6 @@ class Resolution extends Model
         'date_from',
         'date_to',
         'type_environment_id',
-        'company_id',
     ];
 
     /**

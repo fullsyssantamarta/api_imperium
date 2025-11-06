@@ -103,7 +103,7 @@ Route::middleware('auth:api')->group(function () {
         Route::prefix('/xml')->group(function () {
 	        Route::post('/document/{trackId}/{GuardarEn?}', 'Api\XmlDocumentController@document');
         });
-
+        
         // Configuration email
         Route::get('/emailconfig', 'Api\ConfigurationController@emailconfig');
 
@@ -390,14 +390,11 @@ Route::middleware('auth:api')->group(function () {
     Route::get('documents', 'Api\MobileController@documents');
 
     // items
-    Route::get('/items', 'Api\ItemController@records');
-    Route::put('/items/{id}', 'Api\ItemController@update');
     Route::post('/items/add', 'Api\ItemController@store');
 
     //customers
     Route::get('/customers', 'Api\CustomerController@records');
     Route::post('/customers/add', 'Api\CustomerController@store');
-    Route::put('/customers/{identification_number}', 'Api\CustomerController@update');
 
     //type currencies
     Route::get('/type-currencies', 'Api\TypeCurrencyController@records');

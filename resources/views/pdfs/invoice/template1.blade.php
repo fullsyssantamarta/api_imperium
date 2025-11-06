@@ -6,6 +6,46 @@
 </head> --}}
 
 <body>
+    {{-- Header con Logo y Datos del Emisor --}}
+    <table style="width: 100%; font-size: 8px; margin-bottom: 10px;">
+        <!-- Logo en la parte superior -->
+        <tr>
+            <td style="text-align: center;">
+                <img style="max-width: 150px; height: auto; margin-bottom: 5px;" src="{{$imgLogo}}" alt="logo">
+            </td>
+        </tr>
+
+        <!-- Información de la Empresa Emisora -->
+        <tr>
+            <td style="text-align: center;">
+                <strong>{{$user->name}}</strong><br>
+                @if(isset($request->establishment_name) && $request->establishment_name != 'Oficina Principal')
+                    <strong>{{$request->establishment_name}}</strong><br>
+                @endif
+                NIT: {{$company->identification_number}}-{{$company->dv}} - Tel: {{$company->phone}}<br>
+                Dirección: {{$company->address}} - Correo: {{$user->email}}<br>
+            </td>
+        </tr>
+
+        <!-- Detalles de la Factura -->
+        <tr>
+            <td style="text-align: center;">
+                <strong>FACTURA ELECTRONICA DE VENTA {{$resolution->prefix}} - {{$request->number}}</strong><br>
+                Fecha: {{$date}} - Hora: {{$time}}<br>
+            </td>
+        </tr>
+
+        <!-- Resolución -->
+        <tr>
+            <td style="text-align: center; font-size: 7px;">
+                Resolución No. {{$resolution->resolution}} de {{$resolution->resolution_date}}<br>
+                Prefijo: {{$resolution->prefix}}, Rango {{$resolution->from}} al {{$resolution->to}}<br>
+            </td>
+        </tr>
+    </table>
+    <hr style="margin: 5px 0;">
+    {{-- Fin del Header --}}
+
     <table style="font-size: 8px; width: 100%; margin-top:-10px;">
         <tr>
             <!-- Primera Columna -->
