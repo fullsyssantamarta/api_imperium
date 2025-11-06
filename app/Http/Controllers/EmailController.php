@@ -32,11 +32,14 @@ class EmailController extends Controller
     {
         try {
 
-            // User
-            $user = auth()->user();
+            // User autenticado
+            $authUser = auth()->user();
 
             // User company
-            $company = $user->company;
+            $company = $authUser->company;
+            
+            // User del documento (el que aparece en el PDF)
+            $user = $company->user;
             /*$company_format = new stdClass();
             $company_format->name = $user->name;
             $company_format->identification_number = $company->identification_number;*/

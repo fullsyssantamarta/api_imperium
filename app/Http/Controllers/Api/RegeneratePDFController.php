@@ -252,11 +252,14 @@ class RegeneratePDFController extends Controller
         protected function regenerate_document($invoice_doc, $request = false){
         try{
 
-            // User
-            $user = auth()->user();
+            // User autenticado (para configuración de correo, etc)
+            $authUser = auth()->user();
 
             // User company
-            $company = $user->company;
+            $company = $authUser->company;
+            
+            // User del documento (el que aparece en el PDF) - usar el usuario asociado a la company del documento
+            $user = $company->user;
 
             if(!$request){
                 $basePayload = json_decode($invoice_doc[0]->request_api, true) ?: [];
@@ -605,11 +608,11 @@ class RegeneratePDFController extends Controller
     {
         try{
 
-            // User
-            $user = auth()->user();
+            // User autenticado
+            $authUser = auth()->user();
 
             // User company
-            $company = $user->company;
+            $company = $authUser->company;
 
             $validation = $this->validate_document_request($request, $company);
             if($validation['success'] == true){
@@ -637,11 +640,11 @@ class RegeneratePDFController extends Controller
     {
         try{
 
-            // User
-            $user = auth()->user();
+            // User autenticado
+            $authUser = auth()->user();
 
             // User company
-            $company = $user->company;
+            $company = $authUser->company;
 
             $validation = $this->validate_document_url($prefix, $number, $cufe, $company);
             if($validation['success'] == true){
