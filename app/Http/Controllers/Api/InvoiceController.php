@@ -42,12 +42,15 @@ class InvoiceController extends Controller
 
     public function preeliminarview(InvoiceRequest $request)
     {
-        // User
-        $user = auth()->user();
+        // User autenticado (para configuración de correo, etc)
+        $authUser = auth()->user();
 
         // User company - Obtener de la resolución para soportar multi-tenant con mismo token
         // La resolución contiene el company_id correcto del emisor
-        $company = $request->resolution->company ?? $user->company;
+        $company = $request->resolution->company ?? $authUser->company;
+        
+        // User del documento (el que aparece en el PDF) - usar el usuario asociado a la company del documento
+        $user = $company->user;
 
         // Actualizar Tablas
         $this->ActualizarTablas();
@@ -201,8 +204,8 @@ class InvoiceController extends Controller
      */
     public function store(InvoiceRequest $request)
     {
-        // User
-        $user = auth()->user();
+        // User autenticado (para configuración de correo, etc)
+        $authUser = auth()->user();
         $smtp_parameters = collect($request->smtp_parameters);
         if(isset($request->smtp_parameters)){
             \Config::set('mail.host', $smtp_parameters->toArray()['host']);
@@ -212,16 +215,19 @@ class InvoiceController extends Controller
             \Config::set('mail.encryption', $smtp_parameters->toArray()['encryption']);
         }
         else
-            if($user->validate_mail_server()){
-                \Config::set('mail.host', $user->mail_host);
-                \Config::set('mail.port', $user->mail_port);
-                \Config::set('mail.username', $user->mail_username);
-                \Config::set('mail.password', $user->mail_password);
-                \Config::set('mail.encryption', $user->mail_encryption);
+            if($authUser->validate_mail_server()){
+                \Config::set('mail.host', $authUser->mail_host);
+                \Config::set('mail.port', $authUser->mail_port);
+                \Config::set('mail.username', $authUser->mail_username);
+                \Config::set('mail.password', $authUser->mail_password);
+                \Config::set('mail.encryption', $authUser->mail_encryption);
             }
 
-        // User company
-        $company = $user->company;
+        // User company - Obtener de la resolución para multi-tenant
+        $company = $request->resolution->company ?? $authUser->company;
+        
+        // User del documento (el que aparece en el PDF) - usar el usuario asociado a la company del documento
+        $user = $company->user;
 
         // Verificar la disponibilidad de la DIAN antes de continuar
         $dian_url = $company->software->url;
@@ -806,11 +812,14 @@ class InvoiceController extends Controller
      */
     public function testSetStore(InvoiceRequest $request, $testSetId)
     {
-        // User
-        $user = auth()->user();
+        // User autenticado (para configuración de correo, etc)
+        $authUser = auth()->user();
 
-        // User company
-        $company = $user->company;
+        // User company - Obtener de la resolución para multi-tenant
+        $company = $request->resolution->company ?? $authUser->company;
+        
+        // User del documento (el que aparece en el PDF) - usar el usuario asociado a la company del documento
+        $user = $company->user;
 
         // Verificar la disponibilidad de la DIAN antes de continuar
         $dian_url = $company->software->url;
@@ -1103,11 +1112,11 @@ class InvoiceController extends Controller
 
     public function currentNumber($type, $prefix = null, $ignore_state_document_id = false)
     {
-        // User
-        $user = auth()->user();
+        // User autenticado
+        $authUser = auth()->user();
 
         // User company
-        $company = $user->company;
+        $company = $authUser->company;
         $resolution = $company->resolutions->where('type_document_id', $type)->first();
 
         if(is_null($prefix) || $prefix == "null"){
@@ -1143,11 +1152,11 @@ class InvoiceController extends Controller
 
     public function changestateDocument($type, $number)
     {
-        // User
-        $user = auth()->user();
+        // User autenticado
+        $authUser = auth()->user();
 
         // User company
-        $company = $user->company;
+        $company = $authUser->company;
         $invoice = Document::where('identification_number', $company->identification_number)->where('type_document_id', $type)->where('state_document_id', 0)->where('number', $number)->latest()->first();
         if($invoice){
             $invoice->state_document_id = 1;
